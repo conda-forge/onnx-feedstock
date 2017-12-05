@@ -24,6 +24,7 @@ requirements:
     - setuptools
     - toolchain
     - protobuf 3.4.*
+    - pytest-runner
     - ninja
   run:
     - python
@@ -31,11 +32,6 @@ requirements:
     - numpy
 
 test:
-  requires:
-    - pytest-runner
-    - pytest-cov
-    - nbval
-    - tabulate
   imports:
     - onnx
   commands:
