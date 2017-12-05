@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "0.2.1" %}
-{% set sha256 = "3eabd716ccaf54d857519101573ee8e652b7920b5fcbf01a21fcbdcfd73823d2" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "41f02eb3fe2b74f25c14cedf8b387c2b2889263774393e3104b6d8d4f7ea993f" %}
 
 package:
   name: {{ name|lower }}
@@ -25,6 +25,7 @@ requirements:
     - toolchain
     - protobuf 3.4.*
     - pytest-runner
+    - ninja
   run:
     - python
     - protobuf 3.4.*
