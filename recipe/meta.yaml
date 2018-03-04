@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   script:
     - ONNX_BINARY_BUILD=1        # [unix]
     - set "ONNX_BINARY_BUILD=1"  # [win]
