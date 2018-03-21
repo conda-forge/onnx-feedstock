@@ -19,6 +19,7 @@ build:
     - export ONNX_BINARY_BUILD=1  # [unix]
     - set "ONNX_BINARY_BUILD=1"   # [win]
     - python -m pip install --no-deps --ignore-installed .
+  skip: true  # [win and py2k]  # needs C++11
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
