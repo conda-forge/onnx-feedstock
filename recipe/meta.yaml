@@ -8,6 +8,8 @@ package:
 
 source:
   fn: {{ name }}-{{ version }}.tar.gz
+  # The PyPI version doesn't work with protobuf 3.5:
+  #   https://github.com/onnx/onnx/issues/639
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
