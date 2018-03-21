@@ -27,6 +27,7 @@ build:
 requirements:
   build:
     - python
+    - pip
     - setuptools
     - toolchain
     - protobuf 3.5.*
