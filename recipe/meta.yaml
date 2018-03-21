@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "eed7a7eb65907c8c098e3bbc3dd94fff9919c74cb694bcd4745f41ea47e4e520" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "7cd7cf2338ccb29a41e7074d863e95af786fdee9e085ffdfedc71a1154ab4af0" %}
 
 package:
   name: {{ name|lower }}
@@ -8,15 +8,19 @@ package:
 
 source:
   fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   script:
-    - ONNX_BINARY_BUILD=1        # [unix]
-    - set "ONNX_BINARY_BUILD=1"  # [win]
-    - python setup.py install --single-version-externally-managed --record=record.txt
+    - export ONNX_BINARY_BUILD=1  # [unix]
+    - set "ONNX_BINARY_BUILD=1"   # [win]
+    - python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - check-model = onnx.bin.checker:check_model
+    - check-node = onnx.bin.checker:check_node
+    - backend-test-tools = onnx.backend.test.cmd_tools:main
 
 requirements:
   build:
@@ -24,6 +28,7 @@ requirements:
     - setuptools
     - toolchain
     - protobuf 3.5.*
+    - pybind11  # submodule isn't included in github source file
     - pytest-runner
     - ninja
   run:
@@ -42,7 +47,7 @@ about:
   home: https://github.com/onnx/onnx/
   license: MIT
   license_family: MIT
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'  # https://github.com/onnx/onnx/pull/314
+  license_file: LICENSE
   summary: Open Neural Network Exchange library
   description: |
     Open Neural Network Exchange (ONNX) is the first step toward an open
