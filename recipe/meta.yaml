@@ -45,6 +45,9 @@ test:
   commands:
     - conda inspect linkages -p $PREFIX {{ name }}  # [unix]
     - conda inspect objects -p $PREFIX {{ name }}   # [osx]
+    - check-model --help
+    - check-node --help
+    - backend-test-tools --help
 
 about:
   home: https://github.com/onnx/onnx/
