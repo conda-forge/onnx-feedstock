@@ -17,6 +17,10 @@ build:
     - export ONNX_BINARY_BUILD=1  # [unix]
     - set "ONNX_BINARY_BUILD=1"   # [win]
     - python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - check-model = onnx.bin.checker:check_model
+    - check-node = onnx.bin.checker:check_node
+    - backend-test-tools = onnx.backend.test.cmd_tools:main
 
 requirements:
   build:
@@ -35,6 +39,9 @@ test:
   imports:
     - onnx
   commands:
+    - check-model --help
+    - check-node --help
+    - backend-test-tools --help
     - conda inspect linkages -p $PREFIX {{ name }}  # [unix]
     - conda inspect objects -p $PREFIX {{ name }}   # [osx]
 
