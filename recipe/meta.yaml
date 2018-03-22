@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "eed7a7eb65907c8c098e3bbc3dd94fff9919c74cb694bcd4745f41ea47e4e520" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "39c1cd8547d31e16b65733f7d1b6a59c123870266b50d3b79054480cbdfe372d" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   script:
     - ONNX_BINARY_BUILD=1        # [unix]
     - set "ONNX_BINARY_BUILD=1"  # [win]
