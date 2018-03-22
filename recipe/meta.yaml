@@ -16,12 +16,12 @@ build:
   script:
     - export ONNX_BINARY_BUILD=1  # [unix]
     - set "ONNX_BINARY_BUILD=1"   # [win]
-    - python setup.py install --single-version-externally-managed --record=record.txt
+    - python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
     - python
-    - setuptools
+    - pip
     - toolchain
     - protobuf 3.5.*
     - pytest-runner
