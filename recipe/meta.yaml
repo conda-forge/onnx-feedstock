@@ -42,7 +42,7 @@ about:
   home: https://github.com/onnx/onnx/
   license: MIT
   license_family: MIT
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'  # https://github.com/onnx/onnx/pull/314
+  license_file: LICENSE
   summary: Open Neural Network Exchange library
   description: |
     Open Neural Network Exchange (ONNX) is the first step toward an open
