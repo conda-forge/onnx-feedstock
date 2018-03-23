@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "eed7a7eb65907c8c098e3bbc3dd94fff9919c74cb694bcd4745f41ea47e4e520" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "44c9a09f4d9dc7b5c1df1e7202afa7756e1d90aea2ae8f3bad57655f95f4ba88" %}
 
 package:
   name: {{ name|lower }}
@@ -12,16 +12,21 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  skip: true  # need C++11, so have to skip on:  # [win and py2k]
   script:
-    - ONNX_BINARY_BUILD=1        # [unix]
-    - set "ONNX_BINARY_BUILD=1"  # [win]
-    - python setup.py install --single-version-externally-managed --record=record.txt
+    - export ONNX_BINARY_BUILD=1  # [unix]
+    - set "ONNX_BINARY_BUILD=1"   # [win]
+    - python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - check-model = onnx.bin.checker:check_model
+    - check-node = onnx.bin.checker:check_node
+    - backend-test-tools = onnx.backend.test.cmd_tools:main
 
 requirements:
   build:
     - python
-    - setuptools
+    - pip
     - toolchain
     - protobuf 3.5.*
     - pytest-runner
@@ -35,6 +40,9 @@ test:
   imports:
     - onnx
   commands:
+    - check-model --help
+    - check-node --help
+    - backend-test-tools --help
     - conda inspect linkages -p $PREFIX {{ name }}  # [unix]
     - conda inspect objects -p $PREFIX {{ name }}   # [osx]
 
@@ -42,7 +50,7 @@ about:
   home: https://github.com/onnx/onnx/
   license: MIT
   license_family: MIT
-  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'  # https://github.com/onnx/onnx/pull/314
+  license_file: LICENSE
   summary: Open Neural Network Exchange library
   description: |
     Open Neural Network Exchange (ONNX) is the first step toward an open
