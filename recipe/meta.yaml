@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.1.1" %}
-{% set sha256 = "44c9a09f4d9dc7b5c1df1e7202afa7756e1d90aea2ae8f3bad57655f95f4ba88" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "6e25b2a2ea3e5eaa6c74c5335801027bfc637b949ba42a4c4f16731ed18901f7" %}
 
 package:
   name: {{ name|lower }}
