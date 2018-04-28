@@ -35,6 +35,7 @@ requirements:
     - python
     - protobuf 3.5.*
     - numpy
+    - six
 
 test:
   imports:
