@@ -27,7 +27,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  build:
+  host:
     - python
     - pip
     - protobuf
