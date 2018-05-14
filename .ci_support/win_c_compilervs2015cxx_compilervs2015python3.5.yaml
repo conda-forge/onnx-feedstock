@@ -2,13 +2,17 @@ c_compiler:
 - vs2015
 cxx_compiler:
 - vs2015
+libprotobuf:
+- '3.5'
 pin_run_as_build:
+  libprotobuf:
+    max_pin: x.x
   python:
     min_pin: x.x
     max_pin: x.x
 python:
 - '3.5'
 zip_keys:
-- - python
-  - c_compiler
+- - c_compiler
   - cxx_compiler
+  - python
