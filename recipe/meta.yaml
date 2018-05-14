@@ -31,11 +31,13 @@ requirements:
     - python
     - pip
     - protobuf
+    - libprotobuf
     - pytest-runner
     - ninja
   run:
     - python
     - protobuf
+    - libprotobuf
     - numpy
     - six
 
