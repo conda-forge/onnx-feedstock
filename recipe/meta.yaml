@@ -13,7 +13,7 @@ source:
 
 build:
   number: 0
-  skip: true  # need C++11, so have to skip on:  # [win and py2k]
+  skip: true  # need C++11, so have to skip on:  # [win and vc<14]
   script:
     - export ONNX_BINARY_BUILD=1  # [unix]
     - set "ONNX_BINARY_BUILD=1"   # [win]
@@ -25,15 +25,17 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  build:
     - python
     - pip
-    - toolchain
-    - protobuf 3.5.*
+    - protobuf
     - pytest-runner
     - ninja
   run:
     - python
-    - protobuf 3.5.*
+    - protobuf
     - numpy
     - six
 
