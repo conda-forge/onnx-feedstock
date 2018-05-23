@@ -41,6 +41,7 @@ requirements:
     - protobuf
     - libprotobuf
     - numpy
+    - six
 
 test:
   imports:
