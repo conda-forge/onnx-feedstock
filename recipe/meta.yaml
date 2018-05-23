@@ -13,7 +13,9 @@ source:
 
 build:
   number: 0
-  skip: true  # need C++11, so have to skip on:  # [win and vc<14]
+  skip:
+    - true  # need C++11, so have to skip on:  # [win and vc<14]
+    - true  # temporary, see #14 - # [win]
   script:
     - export ONNX_ML=1               # [unix]
     - set "ONNX_ML=1"                # [win]
