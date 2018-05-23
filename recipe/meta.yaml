@@ -18,7 +18,7 @@ build:
     - export ONNX_BINARY_BUILD=1     # [unix]
     - export CONDA_PREFIX="$PREFIX"  # build script looks at this, but not set on  # [unix]
     - set "ONNX_BINARY_BUILD=1"   # [win]
-    - python -m pip install --no-deps --ignore-installed .
+    - python -m pip install --no-deps --ignore-installed --verbose .
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
