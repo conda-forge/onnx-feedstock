@@ -13,7 +13,7 @@ source:
 
 build:
   number: 0
-  skip: true  # need C++11, so have to skip on:  # [win and py2k]
+  skip: true  # need C++11, so have to skip on:  # [win and vc<14]
   script:
     - export ONNX_BINARY_BUILD=1  # [unix]
     - set "ONNX_BINARY_BUILD=1"   # [win]
