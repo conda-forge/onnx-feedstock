@@ -20,14 +20,16 @@ capabilities needed for inferencing (evaluation).
 Current build status
 ====================
 
-Linux: [![Circle CI](https://circleci.com/gh/conda-forge/onnx-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/onnx-feedstock)
-OSX: [![TravisCI](https://travis-ci.org/conda-forge/onnx-feedstock.svg?branch=master)](https://travis-ci.org/conda-forge/onnx-feedstock)
-Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/conda-forge/onnx-feedstock?svg=True)](https://ci.appveyor.com/project/conda-forge/onnx-feedstock/branch/master)
+[![Linux](https://img.shields.io/circleci/project/github/conda-forge/onnx-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/onnx-feedstock)
+[![OSX](https://img.shields.io/travis/conda-forge/onnx-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/onnx-feedstock)
+![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
 
 Current release info
 ====================
-Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/onnx/badges/version.svg)](https://anaconda.org/conda-forge/onnx)
-Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/onnx/badges/downloads.svg)](https://anaconda.org/conda-forge/onnx)
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-onnx-green.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) |
 
 Installing onnx
 ===============
