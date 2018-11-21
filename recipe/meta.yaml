@@ -16,11 +16,13 @@ build:
   skip:
     # Needs C++11
     - true  # [win and vc<14]
-    - true  # temporary, see #14 - # [win]
+    # temporary, see #14
+    - true  # [win]
   script:
-    - export ONNX_ML=1               # [unix]
-    - set "ONNX_ML=1"                # [win]
-    - export CONDA_PREFIX="$PREFIX"  # build script looks at this, but not set on  # [unix]
+    - export ONNX_ML=1  # [unix]
+    - set "ONNX_ML=1"  # [win]
+    # build script looks at this, but not set on
+    - export CONDA_PREFIX="$PREFIX"  # [unix]
     - python -m pip install --no-deps --ignore-installed --verbose .
   entry_points:
     - check-model = onnx.bin.checker:check_model
