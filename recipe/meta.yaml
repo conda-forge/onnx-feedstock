@@ -47,6 +47,7 @@ requirements:
     - libprotobuf
     - numpy
     - six
+    - typing  # [py<=27]
 
 test:
   imports:
