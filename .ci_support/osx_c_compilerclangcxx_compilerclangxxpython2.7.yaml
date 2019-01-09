@@ -11,7 +11,7 @@ channel_targets:
 cxx_compiler:
 - clangxx
 libprotobuf:
-- '3.5'
+- '3.6'
 macos_machine:
 - x86_64-apple-darwin13.4.0
 macos_min_version:
