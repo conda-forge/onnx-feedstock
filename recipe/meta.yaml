@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.1.2" %}
-{% set sha256 = "6e25b2a2ea3e5eaa6c74c5335801027bfc637b949ba42a4c4f16731ed18901f7" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "fa7d4fe66164303e94e2bf5169f751abdba9f9a565bbeb22f54b5497d1388ebe" %}
 
 package:
   name: {{ name|lower }}
@@ -12,14 +12,17 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1000
   skip:
-    - true  # need C++11, so have to skip on:  # [win and vc<14]
-    - true  # temporary, see #14 - # [win]
+    # Needs C++11
+    - true  # [win and vc<14]
+    # temporary, see #14
+    - true  # [win]
   script:
-    - export ONNX_ML=1               # [unix]
-    - set "ONNX_ML=1"                # [win]
-    - export CONDA_PREFIX="$PREFIX"  # build script looks at this, but not set on  # [unix]
+    - export ONNX_ML=1  # [unix]
+    - set "ONNX_ML=1"  # [win]
+    # build script looks at this, but not set on
+    - export CONDA_PREFIX="$PREFIX"  # [unix]
     - python -m pip install --no-deps --ignore-installed --verbose .
   entry_points:
     - check-model = onnx.bin.checker:check_model
@@ -44,6 +47,7 @@ requirements:
     - libprotobuf
     - numpy
     - six
+    - typing  # [py<=27]
 
 test:
   imports:
