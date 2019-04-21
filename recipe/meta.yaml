@@ -16,11 +16,11 @@ build:
   skip:
     # Needs C++11
     - true  # [win and vc<14]
-    # temporary, see #14
-    - true  # [win]
   script:
     - export ONNX_ML=1  # [unix]
     - set "ONNX_ML=1"  # [win]
+    # temporary, see #14
+    - set "CL=/wd4244 /wd4251 /DPROTOBUF_USE_DLLS"  # [win]
     # build script looks at this, but not set on
     - export CONDA_PREFIX="$PREFIX"  # [unix]
     - python -m pip install --no-deps --ignore-installed --verbose .
