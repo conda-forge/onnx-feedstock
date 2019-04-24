@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.4.1" %}
-{% set sha256 = "50f3cc33358685428ff7ab23042c2eef1d73fb58c38c7cc9b0a1b22af9086ee9" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "1a584a4ef62a6db178c257fffb06a9d8e61b41c0a80bfd8bcd8a253d72c4b0b4" %}
 
 package:
   name: {{ name|lower }}
@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   skip:
     # Needs C++11
     - true  # [win and vc<14]
