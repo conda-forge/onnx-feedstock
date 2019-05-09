@@ -18,12 +18,12 @@ build:
     - set "ONNX_ML=1"  # [win]
     # build script looks at this, but not set on
     - export CONDA_PREFIX="$PREFIX"  # [unix]
-    - set "CL=/wd4244 /wd4251 /DPROTOBUF_USE_DLLS"  # [win]
     - python -m pip install --no-deps --ignore-installed --verbose .
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
     - backend-test-tools = onnx.backend.test.cmd_tools:main
+  skip: true  # [win]
 
 requirements:
   build:
