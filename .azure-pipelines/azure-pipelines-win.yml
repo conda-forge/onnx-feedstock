@@ -16,6 +16,7 @@ jobs:
         UPLOAD_PACKAGES: False
       win_c_compilervs2015cxx_compilervs2015python3.7vc14:
         CONFIG: win_c_compilervs2015cxx_compilervs2015python3.7vc14
+
         CONDA_BLD_PATH: D:\\bld\\
         UPLOAD_PACKAGES: False
   steps:
@@ -72,7 +73,6 @@ jobs:
 
     # Configure the VM.
     - script: |
-        set "CI=azure"
         run_conda_forge_build_setup
       displayName: conda-forge build setup
     

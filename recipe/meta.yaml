@@ -1,6 +1,6 @@
 {% set name = "onnx" %}
-{% set version = "1.4.1" %}
-{% set sha256 = "50f3cc33358685428ff7ab23042c2eef1d73fb58c38c7cc9b0a1b22af9086ee9" %}
+{% set version = "1.5.0" %}
+{% set sha256 = "707887fffd79f36213baea7012fd1599c2c6d14ca4974484f1363dced4f7357a" %}
 
 package:
   name: {{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
@@ -28,6 +28,7 @@ build:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
     - backend-test-tools = onnx.backend.test.cmd_tools:main
+  skip: true  # [win]
 
 requirements:
   build:
@@ -38,16 +39,15 @@ requirements:
     - python
     - pip
     - protobuf
-    - libprotobuf
     - pytest-runner
     - ninja
+    - pybind11
   run:
     - python
     - protobuf
-    - libprotobuf
     - numpy
     - six
-    - typing  # [py<=27]
+    - typing  # [py2k]
 
 test:
   imports:
@@ -77,3 +77,4 @@ extra:
   recipe-maintainers:
     - ezyang
     - dougalsutherland
+    - marcelotrevisani
