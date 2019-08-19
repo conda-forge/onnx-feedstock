@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   script:
     - export ONNX_ML=1  # [unix]
     - set "ONNX_ML=1"  # [win]
@@ -34,17 +34,15 @@ requirements:
     - python
     - pip
     - protobuf
-    - libprotobuf
     - pytest-runner
     - ninja
     - pybind11
   run:
     - python
     - protobuf
-    - libprotobuf
     - numpy
     - six
-    - typing  # [py<=27]
+    - typing  # [py2k]
 
 test:
   imports:
