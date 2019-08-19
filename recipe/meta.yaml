@@ -28,7 +28,6 @@ build:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
     - backend-test-tools = onnx.backend.test.cmd_tools:main
-  skip: true  # [win]
 
 requirements:
   build:
