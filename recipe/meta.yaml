@@ -39,7 +39,7 @@ requirements:
     - pybind11
   run:
     - python
-    - libprotobuf
+    - protobuf
     - numpy
     - six
     - typing  # [py2k]
