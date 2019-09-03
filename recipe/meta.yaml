@@ -15,6 +15,7 @@ build:
   number: 3
   script:
     - set "CL=/wd4244 /wd4251 /DPROTOBUF_USE_DLLS"  # [win]
+    - set "CMAKE_GENERATOR_PLATFORM="  # [win]
     - set "ONNX_ML=1"  # [win]
     - export ONNX_ML=1  # [unix]
     # build script looks at this, but not set on
