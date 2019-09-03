@@ -12,10 +12,11 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 3
   script:
-    - export ONNX_ML=1  # [unix]
+    - set "CL=/wd4244 /wd4251 /DPROTOBUF_USE_DLLS"  # [win]
     - set "ONNX_ML=1"  # [win]
+    - export ONNX_ML=1  # [unix]
     # build script looks at this, but not set on
     - export CONDA_PREFIX="$PREFIX"  # [unix]
     - python -m pip install --no-deps --ignore-installed --verbose .
@@ -23,7 +24,7 @@ build:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
     - backend-test-tools = onnx.backend.test.cmd_tools:main
-  skip: true  # [win]
+  skip: true  # [win and vc<14]
 
 requirements:
   build:
