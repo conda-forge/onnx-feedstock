@@ -17,6 +17,7 @@ build:
     - set "CL=/wd4244 /wd4251 /DPROTOBUF_USE_DLLS"  # [win]
     - set "CMAKE_GENERATOR_PLATFORM="  # [win]
     - set "CMAKE_GENERATOR=Visual Studio 14 2015"  # [win]
+    - set "CMAKE_PREFIX_PATH=%LIBRARY_PREFIX%"   # [win]
     - set "ONNX_ML=1"  # [win]
     - export ONNX_ML=1  # [unix]
     # build script looks at this, but not set on
