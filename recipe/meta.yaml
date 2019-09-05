@@ -17,6 +17,8 @@ build:
     - set "CL=/wd4244 /wd4251 /DPROTOBUF_USE_DLLS"  # [win]
     - set "CMAKE_GENERATOR_PLATFORM="  # [win]
     - set "CMAKE_GENERATOR=Visual Studio 14 2015"  # [win]
+    - set "PYTHON_LIBRARY=%LIBRARY_LIB%"  # [win]
+    - set "PYTHON_INCLUDE_DIR=%LIBRARY_INC%"  # [win]
     - set "CMAKE_PREFIX_PATH=%LIBRARY_PREFIX%"   # [win]
     - set "ONNX_ML=1"  # [win]
     - export ONNX_ML=1  # [unix]
