@@ -36,11 +36,12 @@ requirements:
     - pytest-runner
     - ninja
     - pybind11
+    - numpy
   run:
     - python
     - protobuf
     - libprotobuf
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - six
     - typing  # [py2k]
 
