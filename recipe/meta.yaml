@@ -21,6 +21,7 @@ build:
     - set "PYTHON_INCLUDE_DIR=%LIBRARY_INC%"  # [win]
     - set "CMAKE_PREFIX_PATH=%LIBRARY_PREFIX%"   # [win]
     - set "PYTHON_EXECUTABLE=%PYTHON%"
+    - set "PYTHON_LIBRARIES=%LIBRARY_LIB%"  # [win]
     - set "ONNX_ML=1"  # [win]
     - export ONNX_ML=1  # [unix]
     # build script looks at this, but not set on
