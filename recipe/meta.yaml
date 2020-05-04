@@ -1,18 +1,18 @@
 {% set name = "onnx" %}
 {% set version = "1.6.0" %}
-{% set sha256 = "a725df7c1bbed3456794c9fb8c4a5443ba0d3496f96ef3685a4625dc947de855" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: a725df7c1bbed3456794c9fb8c4a5443ba0d3496f96ef3685a4625dc947de855
+  patches:
+    - patch-cmake.patch
 
 build:
-  number: 0
+  number: 1
   script:
     - export ONNX_ML=1  # [unix]
     - set "ONNX_ML=1"  # [win]
@@ -34,15 +34,19 @@ requirements:
     - python
     - pip
     - protobuf
+    - libprotobuf
     - pytest-runner
     - ninja
     - pybind11
+    - numpy
   run:
     - python
     - protobuf
-    - numpy
+    - libprotobuf
+    - {{ pin_compatible('numpy') }}
     - six
-    - typing  # [py2k]
+    - typing  # [py<35]
+    - typing-extensions >=3.6.2.1
 
 test:
   imports:
