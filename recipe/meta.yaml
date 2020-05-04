@@ -12,7 +12,7 @@ source:
     - patch-cmake.patch
 
 build:
-  number: 1
+  number: 101
   script:
     - export ONNX_ML=1  # [unix]
     - set "ONNX_ML=1"  # [win]
@@ -33,16 +33,16 @@ requirements:
   host:
     - python
     - pip
-    - protobuf
-    - libprotobuf
+    - protobuf >=3.8,<3.9
+    - libprotobuf >=3.8,<3.9
     - pytest-runner
     - ninja
     - pybind11
     - numpy
   run:
     - python
-    - protobuf
-    - libprotobuf
+    - protobuf >=3.8,<3.9
+    - libprotobuf >=3.8,<3.9
     - {{ pin_compatible('numpy') }}
     - six
     - typing  # [py<35]
