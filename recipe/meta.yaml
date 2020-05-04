@@ -8,6 +8,8 @@ package:
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: a725df7c1bbed3456794c9fb8c4a5443ba0d3496f96ef3685a4625dc947de855
+  patches:
+    - patch-cmake.patch
 
 build:
   number: 1
