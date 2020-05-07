@@ -12,7 +12,7 @@ source:
     - patch-cmake.patch
 
 build:
-  number: 1
+  number: 2
   script:
     - export ONNX_ML=1  # [unix]
     - set "ONNX_ML=1"  # [win]
