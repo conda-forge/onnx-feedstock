@@ -30,19 +30,21 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - ninja
   host:
     - python
     - pip
     - protobuf
     - libprotobuf
     - pytest-runner
-    - ninja
+    - numpy
   run:
     - python
     - protobuf
     - libprotobuf
     - numpy
     - six
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
