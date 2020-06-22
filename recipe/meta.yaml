@@ -42,7 +42,6 @@ requirements:
     - python
     - protobuf
     - libprotobuf
-    - numpy
     - six
     - {{ pin_compatible('numpy') }}
 
