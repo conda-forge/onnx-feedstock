@@ -12,6 +12,10 @@ source:
 build:
   number: 3
   script:
+    - set CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
+    - set "PYTHON_EXECUTABLE=%PYTHON%"  # [win]
+    - set "PYTHON_LIBRARIES=%LIBRARY_LIB%"  # [win]
+    - set USE_MSVC_STATIC_RUNTIME=0
     - export ONNX_ML=1  # [unix]
     - set "ONNX_ML=1"  # [win]
     # build script looks at this, but not set on
