@@ -13,7 +13,7 @@ build:
   number: 3
   script:
     - set CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
-    - set "PYTHON_EXECUTABLE=%PYTHON%"  # [win]
+    - set "PYTHON_EXECUTAsBLE=%PYTHON%"  # [win]
     - set "PYTHON_LIBRARIES=%LIBRARY_LIB%"  # [win]
     - set USE_MSVC_STATIC_RUNTIME=0
     - export ONNX_ML=1  # [unix]
@@ -25,7 +25,9 @@ build:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
     - backend-test-tools = onnx.backend.test.cmd_tools:main
-  skip: true  # [win]
+  skip:
+    # Needs C++11
+    - true  # [win and vc<14]
 
 requirements:
   build:
