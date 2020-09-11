@@ -13,11 +13,13 @@ build:
   number: 4
   script:
     - set "ONNX_ML=1"  # [win]
+    - set CONDA_PREFIX=%PREFIX%  # [win]
+    - set CMAKE_GENERATOR=Ninja  # [win]
     - set CMAKE_BUILD_TYPE=Release  # [win]
-    - set CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
+    - set "CMAKE_ARGS=-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
     - set "PYTHON_EXECUTAsBLE=%PYTHON%"  # [win]
     - set "PYTHON_LIBRARIES=%LIBRARY_LIB%"  # [win]
-    - set USE_MSVC_STATIC_RUNTIME=0
+    - set USE_MSVC_STATIC_RUNTIME=0  # [win]
     - export ONNX_ML=1  # [unix] 
     # build script looks at this, but not set on
     - export CONDA_PREFIX="$PREFIX"  # [unix]
