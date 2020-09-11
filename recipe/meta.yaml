@@ -13,7 +13,7 @@ build:
   number: 4
   script:
     - set "ONNX_ML=1"  # [win]
-    - set CONDA_PREFIX=%PREFIX%  # [win]
+    - set CONDA_PREFIX=%LIBRARY_PREFIX%  # [win]
     - set CMAKE_GENERATOR=Ninja  # [win]
     - set CMAKE_BUILD_TYPE=Release  # [win]
     - set "CMAKE_ARGS=-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
