@@ -12,7 +12,7 @@ source:
 build:
   number: 3
   script:
-    - set CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
+    - set CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON -G 'Visual Studio 16 2019'"  # [win]
     - set "PYTHON_EXECUTAsBLE=%PYTHON%"  # [win]
     - set "PYTHON_LIBRARIES=%LIBRARY_LIB%"  # [win]
     - set USE_MSVC_STATIC_RUNTIME=0
