@@ -14,9 +14,9 @@ build:
   script:
     - set "ONNX_ML=1"  # [win]
     - set CONDA_PREFIX=%LIBRARY_PREFIX%  # [win]
-    - set CMAKE_GENERATOR="Visual Studio 16 2019" # [win]
+    - set CMAKE_GENERATOR="Visual Studio 15 2017" # [win]
     - set CMAKE_BUILD_TYPE=Release  # [win]
-    - set "CMAKE_ARGS=-DONNX_USE_PROTOBUF_SHARED_LIBS=OFF -DProtobuf_USE_STATIC_LIBS=ON"  # [win]
+    - set CMAKE_ARGS="-DONNX_USE_PROTOBUF_SHARED_LIBS=ON -DProtobuf_USE_STATIC_LIBS=OFF -DONNX_USE_LITE_PROTO=ON"  # [win]
     - set "PYTHON_EXECUTABLE=%PYTHON%"  # [win]
     - set "PYTHON_LIBRARIES=%LIBRARY_LIB%"  # [win]
     - set USE_MSVC_STATIC_RUNTIME=0  # [win]
