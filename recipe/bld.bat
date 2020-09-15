@@ -13,7 +13,7 @@ cd cmake
 cmake -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -DCMAKE_INSTALL_PREFIX=%PROTOBUF_INSTALL_DIR%
 msbuild protobuf.sln /m /p:Configuration=Release
 msbuild INSTALL.vcxproj /p:Configuration=Release
-set "PATH=%PROTOBUF_INSTALL_DIR%\bin;%PATH"
+set "PATH=%PROTOBUF_INSTALL_DIR%\bin;%PATH%"
 cd %ROOT_DIR%
 
 set ONNX_ML=1
