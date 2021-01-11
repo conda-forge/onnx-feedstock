@@ -10,7 +10,7 @@ source:
   sha256: daaece05c1b828ed91b1f46b749c844970777caf27d66f7e7a85bf6fbf7fc35b
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -49,8 +49,6 @@ test:
     - check-model --help
     - check-node --help
     - backend-test-tools --help
-    - conda inspect linkages -p $PREFIX {{ name }}  # [unix]
-    - conda inspect objects -p $PREFIX {{ name }}   # [osx]
 
 about:
   home: https://github.com/onnx/onnx/
