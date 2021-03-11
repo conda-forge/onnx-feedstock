@@ -15,9 +15,6 @@ build:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
     - backend-test-tools = onnx.backend.test.cmd_tools:main
-  skip:
-    # Needs C++11  
-    - true  # [win and vc<14]
 
 requirements:
   build:
@@ -28,6 +25,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - make
     - libprotobuf
   host:
     - python
