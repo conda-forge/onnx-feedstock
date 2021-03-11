@@ -262,4 +262,5 @@ Feedstock Maintainers
 
 * [@ezyang](https://github.com/ezyang/)
 * [@marcelotrevisani](https://github.com/marcelotrevisani/)
+* [@xhochy](https://github.com/xhochy/)
 
