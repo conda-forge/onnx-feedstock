@@ -21,9 +21,14 @@ build:
 
 requirements:
   build:
+    - python                                 # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - numpy                                  # [build_platform != target_platform]
+    - pybind11                               # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - libprotobuf
   host:
     - python
     - pip
@@ -68,3 +73,4 @@ extra:
   recipe-maintainers:
     - ezyang
     - marcelotrevisani
+    - xhochy
