@@ -44,9 +44,12 @@ requirements:
     - typing-extensions >=3.6.2.1
 
 test:
+  requires:
+    - pip
   imports:
     - onnx
   commands:
+    - pip check
     - check-model --help
     - check-node --help
     - backend-test-tools --help
