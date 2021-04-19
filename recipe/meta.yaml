@@ -39,10 +39,8 @@ requirements:
   run:
     - python
     - protobuf
-    - libprotobuf
     - {{ pin_compatible('numpy') }}
     - six
-    - typing  # [py<35]
     - typing-extensions >=3.6.2.1
 
 test:
