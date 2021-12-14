@@ -7,7 +7,7 @@ channel_targets:
 cxx_compiler:
 - vs2017
 libprotobuf:
-- '3.18'
+- '3.19'
 numpy:
 - '1.21'
 pin_run_as_build:
