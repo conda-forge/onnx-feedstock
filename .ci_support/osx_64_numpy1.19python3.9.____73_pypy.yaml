@@ -3,7 +3,7 @@ MACOSX_DEPLOYMENT_TARGET:
 c_compiler:
 - clang
 c_compiler_version:
-- '12'
+- '13'
 channel_sources:
 - conda-forge
 channel_targets:
@@ -11,7 +11,7 @@ channel_targets:
 cxx_compiler:
 - clangxx
 cxx_compiler_version:
-- '12'
+- '13'
 libprotobuf:
 - '3.20'
 macos_machine:
@@ -23,7 +23,7 @@ pin_run_as_build:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.7.* *_73_pypy
+- 3.9.* *_73_pypy
 target_platform:
 - osx-64
 zip_keys:
