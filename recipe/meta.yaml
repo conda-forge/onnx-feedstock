@@ -1,13 +1,15 @@
 {% set name = "onnx" %}
 {% set version = "1.12.0" %}
+{% set git_commit = "1f3cecc6a07527dd132e416f78f5400667fa9e6f" %}
+{% set version = "1.12.0." + git_commit %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: 052ad3d5dad358a33606e0fc89483f8150bb0655c99b12a43aa58b5b7f0cc507
+  url: https://github.com/onnx/onnx/archive/{{ git_commit }}.zip
+  sha256: 362f7d807e899e4ab0115f2685acded6cdb0517e1f86ed7593957185b5ddb619
 
 build:
   number: 0
