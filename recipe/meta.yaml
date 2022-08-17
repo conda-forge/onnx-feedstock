@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/{{ git_commit }}.zip
-  sha256: 362f7d807e899e4ab0115f2685acded6cdb0517e1f86ed7593957185b5ddb619
+  sha256: 41b4bf84aa13c6b144b8e5ff177c1e754cf1a0f24f3ad8054d9fe90105711514
 
 build:
   number: 0
