@@ -1,5 +1,5 @@
 {% set name = "onnx" %}
-{% set version = "12.0.0" %}
+{% set version = "1.12.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: 362f7d807e899e4ab0115f2685acded6cdb0517e1f86ed7593957185b5ddb619
+  sha256: 052ad3d5dad358a33606e0fc89483f8150bb0655c99b12a43aa58b5b7f0cc507
 
 build:
   number: 0
