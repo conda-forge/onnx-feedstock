@@ -1,13 +1,3 @@
-From 54e1cecde7709b081b2dbb9aabd3970d21c0846c Mon Sep 17 00:00:00 2001
-From: Chun-Wei Chen <jacky82226@gmail.com>
-Date: Thu, 22 Sep 2022 08:08:57 -0700
-Subject: [PATCH] relax protobuf version for any version below 4
-
-Signed-off-by: Chun-Wei Chen <jacky82226@gmail.com>
----
- requirements.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/requirements.txt b/requirements.txt
 index 21817ca808..3d597e4b5f 100644
 --- a/requirements.txt
@@ -15,5 +5,5 @@ index 21817ca808..3d597e4b5f 100644
 @@ -1,3 +1,3 @@
  numpy >= 1.16.6 # TODO: update once TensorFlow 2.6 is end of life
 -protobuf >= 3.12.2, <= 3.20.1
-+protobuf >= 3.12.2, < 4
++protobuf
  typing-extensions >= 3.6.2.1
