@@ -42,7 +42,6 @@ requirements:
     - python
     - protobuf
     - {{ pin_compatible('numpy') }}
-    - six
     - typing-extensions >=3.6.2.1
 
 test:
