@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: 66eb61fc0ff4b6189816eb8e4da52e1e6775a1c29f372cbd08b694aa5b4ca978
-  patches:
-    - 4535-relax_protobuf_to_under_4.patch
 
 build:
   number: 2
