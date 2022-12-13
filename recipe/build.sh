@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -euxo pipefail
+
 export ONNX_ML=1
 # build script looks at this, but not set on
 export CONDA_PREFIX="$PREFIX"
