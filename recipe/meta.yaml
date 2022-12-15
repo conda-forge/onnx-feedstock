@@ -1,5 +1,5 @@
 {% set name = "onnx" %}
-{% set version = "1.12.0" %}
+{% set version = "1.13.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: 052ad3d5dad358a33606e0fc89483f8150bb0655c99b12a43aa58b5b7f0cc507
+  sha256: 66eb61fc0ff4b6189816eb8e4da52e1e6775a1c29f372cbd08b694aa5b4ca978
   patches:
     - 4535-relax_protobuf_to_under_4.patch
 
@@ -42,7 +42,6 @@ requirements:
     - python
     - protobuf
     - {{ pin_compatible('numpy') }}
-    - six
     - typing-extensions >=3.6.2.1
 
 test:
