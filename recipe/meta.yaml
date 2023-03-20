@@ -1,5 +1,5 @@
 {% set name = "onnx" %}
-{% set version = "1.13.0" %}
+{% set version = "1.13.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: 66eb61fc0ff4b6189816eb8e4da52e1e6775a1c29f372cbd08b694aa5b4ca978
+  sha256: 090d3e10ec662a98a2a72f1bf053f793efc645824f0d4b779e0ce47468a0890e
   patches:
     - 4535-relax_protobuf_to_under_4.patch
 
 build:
-  number: 2
+  number: 0
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
