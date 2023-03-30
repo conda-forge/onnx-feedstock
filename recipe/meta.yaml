@@ -12,7 +12,7 @@ source:
     - 4535-relax_protobuf_to_under_4.patch
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
