@@ -28,12 +28,14 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
-    - libprotobuf
+    - libprotobuf  # [not win]
+    - libprotobuf-static  # [win]
   host:
     - python
     - pip
     - protobuf
-    - libprotobuf
+    - libprotobuf  # [not win]
+    - libprotobuf-static  # [win]
     - pytest-runner
     - ninja
     - pybind11
