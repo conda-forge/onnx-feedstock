@@ -61,8 +61,6 @@ about:
   license_family: Apache
   license_file:
     - LICENSE
-    - third_party/benchmark/LICENSE
-    - third_party/pybind11/LICENSE
   summary: Open Neural Network Exchange library
   description: |
     Open Neural Network Exchange (ONNX) is the first step toward an open
