@@ -59,8 +59,7 @@ about:
   home: https://github.com/onnx/onnx/
   license: Apache-2.0
   license_family: Apache
-  license_file:
-    - LICENSE
+  license_file: LICENSE
   summary: Open Neural Network Exchange library
   description: |
     Open Neural Network Exchange (ONNX) is the first step toward an open
