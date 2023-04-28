@@ -54,6 +54,8 @@ test:
     - check-model --help
     - check-node --help
     - backend-test-tools --help
+    - test -f "$PREFIX/lib/libonnx.so"  # [unix]
+    - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
 
 about:
   home: https://github.com/onnx/onnx/
