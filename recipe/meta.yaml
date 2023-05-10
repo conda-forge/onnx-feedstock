@@ -12,7 +12,7 @@ source:
     - 4535-relax_protobuf_to_under_4.patch
 
 build:
-  number: 1
+  number: 2
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -59,8 +59,7 @@ test:
 
 about:
   home: https://github.com/onnx/onnx/
-  license: MIT
-  license_family: MIT
+  license: Apache-2.0
   license_file: LICENSE
   summary: Open Neural Network Exchange library
   description: |
