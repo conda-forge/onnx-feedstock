@@ -1,5 +1,8 @@
 bot:
   run_deps_from_wheel: true
+  version_updates:
+    exclude:
+      - "12.0.0"
 build_platform:
   osx_arm64: osx_64
 conda_forge_output_validation: true
