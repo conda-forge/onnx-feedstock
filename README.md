@@ -5,7 +5,7 @@ Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/onnx-feedstock/
 
 Home: https://github.com/onnx/onnx/
 
-Package license: MIT
+Package license: Apache-2.0
 
 Summary: Open Neural Network Exchange library
 
@@ -401,6 +401,7 @@ In order to produce a uniquely identifiable distribution:
 Feedstock Maintainers
 =====================
 
+* [@cbourjau](https://github.com/cbourjau/)
 * [@ezyang](https://github.com/ezyang/)
 * [@janjagusch](https://github.com/janjagusch/)
 * [@marcelotrevisani](https://github.com/marcelotrevisani/)
