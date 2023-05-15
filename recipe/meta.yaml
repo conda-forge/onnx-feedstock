@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: 1B02AD523F79D83F9678C749D5A3F63F0BCD0934550D5E0D7B895F9A29320003
+  sha256: 1b02ad523f79d83f9678c749d5a3f63f0bcd0934550d5e0d7b895f9a29320003
 
 build:
   number: 0
