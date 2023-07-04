@@ -27,6 +27,8 @@ requirements:
     - cmake
     - make
     - libprotobuf
+    - sed  # [unix]
+    - m2-sed  # [win]
   host:
     - python
     - pip
