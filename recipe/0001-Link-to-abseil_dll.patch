@@ -16,7 +16,7 @@ index 4dd56b6..3a002a5 100644
    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
    $<INSTALL_INTERFACE:include>)
 -target_link_libraries(onnx PUBLIC onnx_proto)
-+target_link_libraries(onnx PUBLIC onnx_proto abseil_dll)
++target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
  add_onnx_global_defines(onnx)
  
  if(BUILD_ONNX_PYTHON)
