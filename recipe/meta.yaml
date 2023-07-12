@@ -8,9 +8,11 @@ package:
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: 1b02ad523f79d83f9678c749d5a3f63f0bcd0934550d5e0d7b895f9a29320003
+  patches:
+    - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -27,6 +29,8 @@ requirements:
     - cmake
     - make
     - libprotobuf
+    - sed  # [unix]
+    - m2-sed  # [win]
   host:
     - python
     - pip
