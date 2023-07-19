@@ -34,15 +34,11 @@ requirements:
   host:
     - python
     - pip
-    - protobuf
-    - libprotobuf
-    - pytest-runner
-    - ninja
     - pybind11
     - numpy
+    - libprotobuf-static
   run:
     - python
-    - protobuf
     - {{ pin_compatible('numpy') }}
     - typing-extensions >=3.6.2.1
 
@@ -79,3 +75,4 @@ extra:
     - xhochy
     - janjagusch
     - cbourjau
+    - ilya-lavrenov
