@@ -1,7 +1,4 @@
 @echo on
-sed -i '/CMAKE_CXX_STANDARD/d' CMakeLists.txt
-if %ERRORLEVEL% neq 0 exit 1
-
 set "ONNX_ML=1"
 set CONDA_PREFIX=%LIBRARY_PREFIX%
 set CMAKE_BUILD_TYPE=Release
