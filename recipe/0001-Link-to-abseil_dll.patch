@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 585786e1..64290187 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -519,7 +519,7 @@ target_include_directories(onnx PUBLIC
+   $<BUILD_INTERFACE:${ONNX_ROOT}>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+   $<INSTALL_INTERFACE:include>)
+-target_link_libraries(onnx PUBLIC onnx_proto)
++target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+ add_onnx_global_defines(onnx)
+ 
+ if(BUILD_ONNX_PYTHON)
