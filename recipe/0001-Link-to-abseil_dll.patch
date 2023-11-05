@@ -1,4 +1,4 @@
-From 9cafc13a9823dae104fc18abf8dc432083849b5d Mon Sep 17 00:00:00 2001
+From bcfcda2ddb3738acec2a96938060da9b16408d21 Mon Sep 17 00:00:00 2001
 From: "Uwe L. Korn" <uwe.korn@quantco.com>
 Date: Tue, 4 Jul 2023 11:29:21 +0200
 Subject: [PATCH] Link to abseil_dll
