@@ -10,7 +10,7 @@ source:
   patches:
     - undo_definitions_of_cxx_standard.patch
     - cinttypes_cpp2py_export.patch
-    # - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
+    - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
 build:
   number: 0

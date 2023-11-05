@@ -11,7 +11,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 4dd56b6..3a002a5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -430,7 +430,7 @@ target_include_directories(onnx PUBLIC
+@@ -519,7 +519,7 @@ target_include_directories(onnx PUBLIC
    $<BUILD_INTERFACE:${ONNX_ROOT}>
    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
    $<INSTALL_INTERFACE:include>)
