@@ -1,6 +1,9 @@
 @echo on
-sed -i '/CMAKE_CXX_STANDARD/d' CMakeLists.txt
-if %ERRORLEVEL% neq 0 exit 1
+
+REM Copy over our python only cmake script
+REM it is mostly just the original cmake script with everything not
+REM related to python deleted
+copy %RECIPE_DIR%\CMakeLists_python_only.txt CMakeLists.txt
 
 set "ONNX_ML=1"
 set CONDA_PREFIX=%LIBRARY_PREFIX%
