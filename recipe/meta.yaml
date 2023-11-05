@@ -55,6 +55,7 @@ outputs:
         - make  # [unix]
       host:
         - python
+        - setuptools
         - pip
         - protobuf
         - pytest-runner
