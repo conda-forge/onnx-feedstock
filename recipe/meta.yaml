@@ -9,6 +9,7 @@ source:
   sha256: e296f8867951fa6e71417a18f2e550a730550f8829bd35e947b4df5e3e777aa1
   patches:
     - undo_definitions_of_cxx_standard.patch
+    - cinttypes_cpp2py_export.patch
     - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
 build:
