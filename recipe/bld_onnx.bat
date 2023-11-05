@@ -3,7 +3,8 @@
 REM Copy over our python only cmake script
 REM it is mostly just the original cmake script with everything not
 REM related to python deleted
-copy %RECIPE_DIR%\CMakeLists_python_only.txt CMakeLists.txt
+REM I can't get this to work, so technically we will be building the same package multiple times
+REM copy %RECIPE_DIR%\CMakeLists_python_only.txt CMakeLists.txt
 
 set "ONNX_ML=1"
 set CONDA_PREFIX=%LIBRARY_PREFIX%
