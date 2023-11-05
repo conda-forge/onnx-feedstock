@@ -51,6 +51,7 @@ outputs:
         - pybind11                               # [build_platform != target_platform]
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        - libprotobuf
         - cmake
         - make  # [unix]
       host:
