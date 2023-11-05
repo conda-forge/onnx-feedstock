@@ -15,7 +15,7 @@ index 0372c54b..4e1db018 100644
  else()
    if(TARGET protobuf::libprotobuf)
      target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf PRIVATE ${protobuf_ABSL_USED_TARGETS})
-+    target_link_libraries(onnx_proto PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
++    target_link_libraries(onnx_proto PUBLIC $ENV{PREFIX}/Library/lib/abseil_dll.lib)
    else()
      target_link_libraries(onnx_proto PUBLIC ${PROTOBUF_LIBRARIES})
    endif()
