@@ -2,7 +2,7 @@ mkdir build
 cd build
 
 cmake %CMAKE_ARGS% ^
-    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_SHARED_LIBS=ON ^
     -DONNX_USE_PROTOBUF_SHARED_LIBS=ON ^
     -DProtobuf_USE_STATIC_LIBS=OFF ^
     ..
