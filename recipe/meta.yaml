@@ -63,6 +63,7 @@ outputs:
         - pybind11
         - numpy
         - {{ pin_subpackage('libonnx', exact=True) }}
+        - libprotobuf
       run:
         - python
         - protobuf
