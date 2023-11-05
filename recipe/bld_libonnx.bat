@@ -2,6 +2,7 @@ mkdir build
 cd build
 
 cmake %CMAKE_ARGS% ^
+    -DCMAKE_CXX_STANDARD=17 ^
     -DBUILD_SHARED_LIBS=ON ^
     -DONNX_USE_PROTOBUF_SHARED_LIBS=ON ^
     -DProtobuf_USE_STATIC_LIBS=OFF ^
