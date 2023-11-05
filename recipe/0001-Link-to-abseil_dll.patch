@@ -1,17 +1,24 @@
-From de8d30b39d3447363542e6680968c4f56127214b Mon Sep 17 00:00:00 2001
+From 9cafc13a9823dae104fc18abf8dc432083849b5d Mon Sep 17 00:00:00 2001
 From: "Uwe L. Korn" <uwe.korn@quantco.com>
 Date: Tue, 4 Jul 2023 11:29:21 +0200
 Subject: [PATCH] Link to abseil_dll
 
 ---
- CMakeLists.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ CMakeLists.txt | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0372c54b..40d0d6b1 100644
+index 0372c54b..1224759c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -510,8 +510,10 @@ if(ONNX_USE_LITE_PROTO)
+@@ -504,14 +504,17 @@ target_compile_definitions(onnx_proto PRIVATE ${ONNX_API_DEFINE})
+ if(ONNX_USE_LITE_PROTO)
+   if(TARGET protobuf::libprotobuf-lite)
+     target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf-lite PRIVATE ${protobuf_ABSL_USED_TARGETS})
++    target_link_libraries(onnx_proto PUBLIC $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+   else()
+     target_link_libraries(onnx_proto PUBLIC ${PROTOBUF_LITE_LIBRARIES})
+   endif()
  else()
    if(TARGET protobuf::libprotobuf)
      target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf PRIVATE ${protobuf_ABSL_USED_TARGETS})
@@ -22,7 +29,7 @@ index 0372c54b..40d0d6b1 100644
    endif()
  endif()
  add_onnx_global_defines(onnx_proto)
-@@ -528,7 +530,7 @@ target_include_directories(onnx PUBLIC
+@@ -528,7 +531,7 @@ target_include_directories(onnx PUBLIC
    $<BUILD_INTERFACE:${ONNX_ROOT}>
    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
    $<INSTALL_INTERFACE:include>)
