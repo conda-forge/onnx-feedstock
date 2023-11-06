@@ -29,8 +29,10 @@ outputs:
         - libprotobuf
         - cmake
         - make  # [unix]
+        - libabseil                                # [build_platform != target_platform]
       host:
         - libprotobuf
+        - libabseil
     test:
       commands:
         - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
@@ -50,6 +52,7 @@ outputs:
         - cross-python_{{ target_platform }}     # [build_platform != target_platform]
         - numpy                                  # [build_platform != target_platform]
         - pybind11                               # [build_platform != target_platform]
+        - libabseil                                # [build_platform != target_platform]
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - libprotobuf
@@ -66,6 +69,7 @@ outputs:
         - numpy
         - {{ pin_subpackage('libonnx', exact=True) }}
         - libprotobuf
+        - libabseil
       run:
         - python
         - protobuf
