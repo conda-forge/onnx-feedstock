@@ -1,8 +1,8 @@
 #!/bin/bash
-
+set -euxo pipefail
 mkdir build
 cd build
-    # -DCMAKE_CXX_STANDARD=17
+
 cmake ${CMAKE_ARGS} \
     -DBUILD_SHARED_LIBS=ON \
     -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc \
@@ -10,5 +10,5 @@ cmake ${CMAKE_ARGS} \
     -DProtobuf_INCLUDE_DIR:PATH=${PREFIX}/include \
     ..
 
-make -j ${CPU_COUNT}
+make -j${CPU_COUNT}
 make install
