@@ -13,6 +13,7 @@ source:
 
 build:
   number: 0
+  skip: true  # [not win]
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -20,40 +21,16 @@ build:
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - numpy                                  # [build_platform != target_platform]
-    - pybind11                               # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
     - make
     - libprotobuf
   host:
-    - python
-    - pip
-    - protobuf
     - libprotobuf
-    - pytest-runner
-    - ninja
-    - pybind11
-    - numpy
-  run:
-    - python
-    - protobuf
-    - {{ pin_compatible('numpy') }}
-    - typing-extensions >=3.6.2.1
 
 test:
-  requires:
-    - pip
-  imports:
-    - onnx
   commands:
-    - pip check
-    - check-model --help
-    - check-node --help
-    - backend-test-tools --help
     - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
     - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
 
