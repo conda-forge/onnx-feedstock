@@ -89,8 +89,7 @@ Current release info
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-libonnx-green.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-onnx-green.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-onnx--split-green.svg)](https://anaconda.org/conda-forge/onnx-split) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/onnx-split.svg)](https://anaconda.org/conda-forge/onnx-split) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/onnx-split.svg)](https://anaconda.org/conda-forge/onnx-split) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/onnx-split.svg)](https://anaconda.org/conda-forge/onnx-split) |
 
 Installing onnx-split
 =====================
@@ -102,41 +101,41 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `libonnx, onnx` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `onnx-split` can be installed with `conda`:
 
 ```
-conda install libonnx onnx
-```
-
-or with `mamba`:
-
-```
-mamba install libonnx onnx
-```
-
-It is possible to list all of the versions of `libonnx` available on your platform with `conda`:
-
-```
-conda search libonnx --channel conda-forge
+conda install onnx-split
 ```
 
 or with `mamba`:
 
 ```
-mamba search libonnx --channel conda-forge
+mamba install onnx-split
+```
+
+It is possible to list all of the versions of `onnx-split` available on your platform with `conda`:
+
+```
+conda search onnx-split --channel conda-forge
+```
+
+or with `mamba`:
+
+```
+mamba search onnx-split --channel conda-forge
 ```
 
 Alternatively, `mamba repoquery` may provide more information:
 
 ```
 # Search all versions available on your platform:
-mamba repoquery search libonnx --channel conda-forge
+mamba repoquery search onnx-split --channel conda-forge
 
-# List packages depending on `libonnx`:
-mamba repoquery whoneeds libonnx --channel conda-forge
+# List packages depending on `onnx-split`:
+mamba repoquery whoneeds onnx-split --channel conda-forge
 
-# List dependencies of `libonnx`:
-mamba repoquery depends libonnx --channel conda-forge
+# List dependencies of `onnx-split`:
+mamba repoquery depends onnx-split --channel conda-forge
 ```
 
 
