@@ -11,6 +11,7 @@ cmake %CMAKE_ARGS% ^
     -DONNX_USE_LITE_PROTO=ON ^
     -DCMAKE_CXX_FLAGS="/DPROTOBUF_USE_DLLS=1 /EHsc /std:c++17" ^
     -DUSE_MSVC_STATIC_RUNTIME=0 ^
+    -DBUILD_SHARED_LIBS=ON ^
     ..
 if %ERRORLEVEL% neq 0 (type CMakeError.log && exit 1)
 
