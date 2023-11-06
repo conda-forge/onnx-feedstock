@@ -32,6 +32,12 @@ outputs:
       host:
         - libprotobuf
         - libabseil  # [win]
+      run_consrained:
+        # onxx < 1.15.0 did not have a libonnx package
+        # together, all these constraints ensure that
+        # onnx and libonnx from a same build get 
+        # installed together
+        - {{ pin_subpackage('onnx', max_pin='x.x.x') }}
     test:
       commands:
         - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
