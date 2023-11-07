@@ -1,7 +1,7 @@
 From 4195334fa39b4aa929c9d84258323ea8a3a0f9c6 Mon Sep 17 00:00:00 2001
 From: Aditya Goel <agoel4512@gmail.com>
 Date: Tue, 7 Nov 2023 11:47:35 +0000
-Subject: [PATCH] Link to abseil_dll 
+Subject: [PATCH] Link to abseil_dll
 
 ---
  CMakeLists.txt | 2 +-
