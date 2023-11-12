@@ -6,10 +6,14 @@ package:
   version: {{ version }}
 
 source:
+  # folder: onnx
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: c757132e018dd0dd171499ef74fca88b74c5430a20781ec53da19eb7f937ef68
   patches:
-    - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
+    - 0001-Remove-cxx-standard.patch
+    - 0002-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
+    - 0003-Fix-compilation-with-BUILD_SHARED_LIBS-ON-on-Windows.patch
+    - 0004-Adjust-onnx_pb-for-shared-dll.patch
 
 build:
   number: 0
@@ -20,40 +24,16 @@ build:
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - numpy                                  # [build_platform != target_platform]
-    - pybind11                               # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
     - make
     - libprotobuf
   host:
-    - python
-    - pip
-    - protobuf
     - libprotobuf
-    - pytest-runner
-    - ninja
-    - pybind11
-    - numpy
-  run:
-    - python
-    - protobuf
-    - {{ pin_compatible('numpy') }}
-    - typing-extensions >=3.6.2.1
 
 test:
-  requires:
-    - pip
-  imports:
-    - onnx
   commands:
-    - pip check
-    - check-model --help
-    - check-node --help
-    - backend-test-tools --help
     - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
     - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
 

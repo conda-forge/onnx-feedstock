@@ -1,0 +1,43 @@
+From 7bcf24e99dffd09c7d239bafb04c75dbb612b3f9 Mon Sep 17 00:00:00 2001
+From: "Uwe L. Korn" <uwe.korn@quantco.com>
+Date: Tue, 4 Jul 2023 11:29:21 +0200
+Subject: [PATCH 2/4] Link to abseil_dll
+
+---
+ CMakeLists.txt | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dc5cd524..f3db17aa 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -493,14 +493,17 @@ target_compile_definitions(onnx_proto PRIVATE ${ONNX_API_DEFINE})
+ if(ONNX_USE_LITE_PROTO)
+   if(TARGET protobuf::libprotobuf-lite)
+     target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf-lite PRIVATE ${protobuf_ABSL_USED_TARGETS})
++    target_link_libraries(onnx_proto PUBLIC $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+   else()
+     target_link_libraries(onnx_proto PUBLIC ${PROTOBUF_LITE_LIBRARIES})
+   endif()
+ else()
+   if(TARGET protobuf::libprotobuf)
+     target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf PRIVATE ${protobuf_ABSL_USED_TARGETS})
++    target_link_libraries(onnx_proto PUBLIC $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+   else()
+     target_link_libraries(onnx_proto PUBLIC ${PROTOBUF_LIBRARIES})
++    target_link_libraries(onnx_proto PUBLIC $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+   endif()
+ endif()
+ add_onnx_global_defines(onnx_proto)
+@@ -517,7 +520,7 @@ target_include_directories(onnx PUBLIC
+   $<BUILD_INTERFACE:${ONNX_ROOT}>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+   $<INSTALL_INTERFACE:include>)
+-target_link_libraries(onnx PUBLIC onnx_proto)
++target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+ add_onnx_global_defines(onnx)
+ 
+ if(BUILD_ONNX_PYTHON)
+-- 
+2.42.0
+
