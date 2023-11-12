@@ -1,0 +1,52 @@
+From 03115d717ac53c6dfe4022f9903923a04c8dc12e Mon Sep 17 00:00:00 2001
+From: Silvio Traversaro <silvio@traversaro.it>
+Date: Mon, 6 Nov 2023 12:14:26 +0100
+Subject: [PATCH 2/3] Fix compilation with BUILD_SHARED_LIBS=ON on Windows
+
+---
+ CMakeLists.txt | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1224759c..5b1122f5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -294,8 +294,8 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP NAME SRCS HDRS ROOT_DIR DEPEND)
+     return()
+   endif()
+ 
+-  # Add ONNX_API prefix to protobuf classes and methods in all cases
+-  set(ONNX_DLLEXPORT_STR "dllexport_decl=ONNX_API:")
++  # Add ONNX_PROTO_API prefix to protobuf classes and methods in all cases
++  set(ONNX_DLLEXPORT_STR "dllexport_decl=ONNX_PROTO_API:")
+ 
+   set(${SRCS})
+   set(${HDRS})
+@@ -489,17 +489,20 @@ if (MSVC)
+     set(EXTRA_FLAGS "")
+   endif()
+   if (BUILD_SHARED_LIBS OR ONNX_BUILD_MAIN_LIB)
+-    set(ONNX_API_DEFINE "-DONNX_API=__declspec(dllexport)")
++    set(ONNX_PROTO_API_DEFINE "-DONNX_PROTO_API=__declspec(dllexport)")
++    set(ONNX_PROTO_API_DEFINE_EXTERNAL "-DONNX_PROTO_API=__declspec(dllimport)")
+   else()
+-    set(ONNX_API_DEFINE "-DONNX_API=")
++    set(ONNX_PROTO_API_DEFINE "-DONNX_PROTO_API=")
+   endif()
+ else()
+   # On non-Windows, hide all symbols we don't need
+-  set(ONNX_API_DEFINE "-DONNX_API=__attribute__\(\(__visibility__\(\"default\"\)\)\)")
++  set(ONNX_PROTO_API_DEFINE "-DONNX_PROTO_API=__attribute__\(\(__visibility__\(\"default\"\)\)\)")
++  set(ONNX_PROTO_API_DEFINE_EXTERNAL "-DONNX_PROTO_API=__attribute__\(\(__visibility__\(\"default\"\)\)\)")
+   set_target_properties(onnx_proto PROPERTIES CXX_VISIBILITY_PRESET hidden)
+   set_target_properties(onnx_proto PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
+ endif()
+-target_compile_definitions(onnx_proto PRIVATE ${ONNX_API_DEFINE})
++target_compile_definitions(onnx_proto PRIVATE ${ONNX_PROTO_API_DEFINE})
++target_compile_definitions(onnx_proto INTERFACE ${ONNX_PROTO_API_DEFINE_EXTERNAL})
+ 
+ if(ONNX_USE_LITE_PROTO)
+   if(TARGET protobuf::libprotobuf-lite)
+-- 
+2.34.1
+

@@ -6,10 +6,13 @@ package:
   version: {{ version }}
 
 source:
+  folder: onnx
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: c757132e018dd0dd171499ef74fca88b74c5430a20781ec53da19eb7f937ef68
   patches:
     - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
+    - 0002-Fix-compilation-with-BUILD_SHARED_LIBS-ON-on-Windows.patch
+    - 0003-Adjust-onnx_pb-for-shared-dll.patch
 
 build:
   number: 0
