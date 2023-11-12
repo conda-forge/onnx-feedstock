@@ -1,6 +1,4 @@
 #!/bin/bash
-cd onnx
-
 set -euxo pipefail
 mkdir build
 cd build
