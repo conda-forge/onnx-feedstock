@@ -12,7 +12,7 @@ source:
     - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
 build:
-  number: 3
+  number: 4
   skip: true  #[py<=38]
   entry_points:
     - check-model = onnx.bin.checker:check_model
