@@ -13,7 +13,7 @@ source:
 
 build:
   number: 4
-  skip: true  #[py<=38]
+  skip: true  # [py<=38]
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -38,12 +38,12 @@ requirements:
     - pytest-runner
     - ninja
     - pybind11
-    # numpy>=1.25 exports a C-API compatible with older versions of numpy
-    - numpy>=1.25
+    # numpy >=1.25 exports a C-API compatible with older versions of numpy
+    - numpy >=1.25
   run:
     - python
     - protobuf
-    - numpy>=1.19
+    - numpy >=1.19
     - typing-extensions >=3.6.2.1
 
 test:
