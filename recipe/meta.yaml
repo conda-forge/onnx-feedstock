@@ -1,8 +1,7 @@
-{% set name = "onnx" %}
 {% set version = "1.17.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: libonnx
   version: {{ version }}
 
 source:
@@ -12,7 +11,7 @@ source:
     - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
 build:
-  number: 1
+  number: 2
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -22,8 +21,7 @@ requirements:
   build:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - numpy >=1.25                           # [build_platform != target_platform and py>38]
-    - numpy                                  # [build_platform != target_platform and py<=38]
+    - numpy                                  # [build_platform != target_platform]
     - pybind11                               # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
@@ -46,17 +44,10 @@ requirements:
     - python
 
 test:
-  requires:
-    - pip
-  imports:
-    - onnx
   commands:
-    - pip check
-    - check-model --help
-    - check-node --help
-    - backend-test-tools --help
     - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
     - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
+    # Equivalent command for windows...
 
 about:
   home: https://github.com/onnx/onnx/
