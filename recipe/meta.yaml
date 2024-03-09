@@ -1,37 +1,44 @@
 {% set version = "1.15.0" %}
 
 package:
-  name: libonnx
+  name: onnx-split
   version: {{ version }}
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: c757132e018dd0dd171499ef74fca88b74c5430a20781ec53da19eb7f937ef68
   patches:
-    - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
+    - patches/0001-Link-to-abseil_dll.patch
+    - patches/0002-Let-conda-forge-define-CXX-standard.patch
 
 build:
   number: 4
-  entry_points:
-    - check-model = onnx.bin.checker:check_model
-    - check-node = onnx.bin.checker:check_node
-    - backend-test-tools = onnx.backend.test.cmd_tools:main
 
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-    - make
-    - libprotobuf
-  host:
-    - libprotobuf
-
-test:
-  commands:
-    - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
-    - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
-    # Equivalent command for windows...
+outputs:
+  - name: libonnx
+    script: build_libonnx.sh  # [unix]
+    script: bld_libonnx.bat   # [win]
+    build:
+      run_exports:
+        # No stable C API offered for onnx
+        - {{ pin_subpackage('libonnx', max_pin='x.x.x') }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - make
+        - libprotobuf
+        # required to build the proto files
+        - python=3.10
+      host:
+        - libprotobuf
+    test:
+      commands:
+        - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
+        - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
+        - if not exist %PREFIX%\\Library\\bin\\onnx.dll exit 1   # [win]
+        - if not exist %PREFIX%\\Library\\lib\\onnx.lib exit 1   # [win]
 
 about:
   home: https://github.com/onnx/onnx/
