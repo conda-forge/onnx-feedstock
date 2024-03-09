@@ -1,5 +1,5 @@
-About libonnx-feedstock
-=======================
+About onnx-split-feedstock
+==========================
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/onnx-feedstock/blob/main/LICENSE.txt)
 
@@ -90,27 +90,28 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libonnx-green.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-onnx-green.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) |
 
-Installing libonnx
-==================
+Installing onnx-split
+=====================
 
-Installing `libonnx` from the `conda-forge` channel can be achieved by adding `conda-forge` to your channels with:
+Installing `onnx-split` from the `conda-forge` channel can be achieved by adding `conda-forge` to your channels with:
 
 ```
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `libonnx` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `libonnx, onnx` can be installed with `conda`:
 
 ```
-conda install libonnx
+conda install libonnx onnx
 ```
 
 or with `mamba`:
 
 ```
-mamba install libonnx
+mamba install libonnx onnx
 ```
 
 It is possible to list all of the versions of `libonnx` available on your platform with `conda`:
@@ -180,17 +181,17 @@ Terminology
                   produce the finished article (built conda distributions)
 
 
-Updating libonnx-feedstock
-==========================
+Updating onnx-split-feedstock
+=============================
 
-If you would like to improve the libonnx recipe or build a new
+If you would like to improve the onnx-split recipe or build a new
 package version, please fork this repository and submit a PR. Upon submission,
 your changes will be run on the appropriate platforms to give the reviewer an
 opportunity to confirm that the changes result in a successful build. Once
 merged, the recipe will be re-built and uploaded automatically to the
 `conda-forge` channel, whereupon the built conda packages will be available for
 everybody to install and use from the `conda-forge` channel.
-Note that all branches in the conda-forge/libonnx-feedstock are
+Note that all branches in the conda-forge/onnx-split-feedstock are
 immediately built and any created packages are uploaded, so PRs should be based
 on branches in forks and branches in the main repository should only be used to
 build distinct package versions.
