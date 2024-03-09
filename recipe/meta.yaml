@@ -48,7 +48,8 @@ outputs:
       commands:
         - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
         - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
-        - if not exist %PREFIX%\\Library\\bin\\onnx.dll exit 1   # [win]
+        # Windows for now only has static libraries
+        # - if not exist %PREFIX%\\Library\\bin\\onnx.dll exit 1   # [win]
         - if not exist %PREFIX%\\Library\\lib\\onnx.lib exit 1   # [win]
   - name: onnx
     script: build_onnx.sh  # [unix]
