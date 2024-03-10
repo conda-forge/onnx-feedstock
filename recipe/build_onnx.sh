@@ -1,11 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
 
-# Copy over our python only cmake script
-# it is mostly just the original cmake script with everything not
-# related to python deleted
-# cp ${RECIPE_DIR}/CMakeLists_python_only.txt CMakeLists.txt
-
 # This will technically rebuild the onnx librayr too......
 export ONNX_ML=1
 # build script looks at this, but not set on
@@ -20,5 +15,6 @@ export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_LIBRARY=$PREFIX/lib/libprotobuf${SHLIB_EXT}"
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_INCLUDE_DIR:PATH=${PREFIX}/include"
 export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_STANDARD=17"
+export CMAKE_ARGS="${CMAKE_ARGS} -DPython_FIND_STRATEGY=LOCATION"
 
 $PYTHON -m pip install --no-deps --ignore-installed --verbose .
