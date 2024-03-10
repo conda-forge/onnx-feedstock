@@ -12,4 +12,5 @@ set "CMAKE_ARGS=%CMAKE_ARGS% -DUSE_MSVC_STATIC_RUNTIME=0"
 
 set "PYTHON_EXECUTABLE=%PYTHON%"
 set "PYTHON_LIBRARIES=%LIBRARY_LIB%"
+set "PYTHON_INCLUDE_DIRS=%LIBRARY_INC%"
 %PYTHON% -m pip install --no-deps --ignore-installed --verbose .
