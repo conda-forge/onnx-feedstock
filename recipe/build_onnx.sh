@@ -14,6 +14,7 @@ export CONDA_PREFIX="$PREFIX"
 # Ensure that these options match those of the libonnx compilation
 export CMAKE_ARGS="${CMAKE_ARGS} -DONNX_ML=${ONNX_ML}"
 export CMAKE_ARGS="${CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON"
+export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_USE_STATIC_LIBS=OFF"
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_LIBRARY=$PREFIX/lib/libprotobuf${SHLIB_EXT}"
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_INCLUDE_DIR:PATH=${PREFIX}/include"
