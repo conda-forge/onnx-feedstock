@@ -1,0 +1,34 @@
+From 88eebff5c0bff0b7b07a8bba115a079cc6ea08a0 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sat, 9 Mar 2024 15:48:09 -0500
+Subject: [PATCH] Let conda-forge define CXX standard
+
+---
+ CMakeLists.txt | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0372c54..dc5cd52 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -55,17 +55,6 @@ else()
+   set(Protobuf_USE_STATIC_LIBS ON)
+ endif()
+ 
+-# Required to use C++17 or higher on Windows
+-# For other platforms, set C++14 as standard for the whole project
+-if(NOT DEFINED CMAKE_CXX_STANDARD)
+-  set(CMAKE_CXX_STANDARD 14)
+-endif()
+-if(MSVC AND CMAKE_CXX_STANDARD LESS 17)
+-  set(CMAKE_CXX_STANDARD 17)
+-elseif(CMAKE_CXX_STANDARD LESS 14)
+-  set(CMAKE_CXX_STANDARD 14)
+-endif()
+-
+ include(GNUInstallDirs)
+ 
+ set(ONNX_ROOT ${PROJECT_SOURCE_DIR})
+-- 
+2.43.2
+
