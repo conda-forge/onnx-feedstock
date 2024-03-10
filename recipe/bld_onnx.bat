@@ -1,4 +1,8 @@
 @echo on
+echo STARTING TO BUILD ONNX for %PYTHON%
+dir
+del /s /f /q build
+dir
 set "ONNX_ML=1"
 set CONDA_PREFIX=%LIBRARY_PREFIX%
 
