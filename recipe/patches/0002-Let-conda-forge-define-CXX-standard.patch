@@ -1,14 +1,14 @@
-From 88eebff5c0bff0b7b07a8bba115a079cc6ea08a0 Mon Sep 17 00:00:00 2001
+From 6e354e3463ea5676716dea60e6275a148a95db93 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sat, 9 Mar 2024 15:48:09 -0500
-Subject: [PATCH] Let conda-forge define CXX standard
+Subject: [PATCH 2/5] Let conda-forge define CXX standard
 
 ---
  CMakeLists.txt | 11 -----------
  1 file changed, 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0372c54..dc5cd52 100644
+index ebefc3be..87044788 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -55,17 +55,6 @@ else()
@@ -30,5 +30,5 @@ index 0372c54..dc5cd52 100644
  
  set(ONNX_ROOT ${PROJECT_SOURCE_DIR})
 -- 
-2.43.2
+2.40.1
 
