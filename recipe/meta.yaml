@@ -8,13 +8,8 @@ source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: 8d5e983c36037003615e5a02d36b18fc286541bf52de1a78f6cf9f32005a820e
   patches:
-    # hmaarrfk - 202403
-    # Unclear to me why we need this for windows, but not linux
-    # it may be that the only parts that are needed are the absl::string
-    # portions which in recent version of absl::c++17 just point to std::string
-    # equivalents
-    - patches/0001-Link-to-abseil_dll.patch                    # [win]
     - patches/0002-Let-conda-forge-define-CXX-standard.patch
+    - patches/0003-link-protobuf-privately.patch
     - patches/cinttypes_cpp2py_export.patch
 
 build:

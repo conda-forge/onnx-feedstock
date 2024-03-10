@@ -1,0 +1,45 @@
+From b334f2d910825d3518c853775e30ad332830b8ea Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sat, 9 Mar 2024 21:16:50 -0500
+Subject: [PATCH] link protobuf privately
+
+---
+ CMakeLists.txt | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dc5cd52..1e39ed6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -492,15 +492,15 @@ target_compile_definitions(onnx_proto PRIVATE ${ONNX_API_DEFINE})
+ 
+ if(ONNX_USE_LITE_PROTO)
+   if(TARGET protobuf::libprotobuf-lite)
+-    target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf-lite PRIVATE ${protobuf_ABSL_USED_TARGETS})
++    target_link_libraries(onnx_proto PRIVATE protobuf::libprotobuf-lite PRIVATE ${protobuf_ABSL_USED_TARGETS})
+   else()
+-    target_link_libraries(onnx_proto PUBLIC ${PROTOBUF_LITE_LIBRARIES})
++    target_link_libraries(onnx_proto PRIVATE ${PROTOBUF_LITE_LIBRARIES})
+   endif()
+ else()
+   if(TARGET protobuf::libprotobuf)
+-    target_link_libraries(onnx_proto PUBLIC protobuf::libprotobuf PRIVATE ${protobuf_ABSL_USED_TARGETS})
++    target_link_libraries(onnx_proto PRIVATE protobuf::libprotobuf PRIVATE ${protobuf_ABSL_USED_TARGETS})
+   else()
+-    target_link_libraries(onnx_proto PUBLIC ${PROTOBUF_LIBRARIES})
++    target_link_libraries(onnx_proto PRIVATE ${PROTOBUF_LIBRARIES})
+   endif()
+ endif()
+ add_onnx_global_defines(onnx_proto)
+@@ -517,7 +517,7 @@ target_include_directories(onnx PUBLIC
+   $<BUILD_INTERFACE:${ONNX_ROOT}>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+   $<INSTALL_INTERFACE:include>)
+-target_link_libraries(onnx PUBLIC onnx_proto)
++target_link_libraries(onnx PRIVATE onnx_proto)
+ add_onnx_global_defines(onnx)
+ 
+ if(BUILD_ONNX_PYTHON)
+-- 
+2.43.2
+
