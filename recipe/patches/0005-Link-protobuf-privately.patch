@@ -1,4 +1,4 @@
-From f5b862ef9862060381562c30e38775c9918fce90 Mon Sep 17 00:00:00 2001
+From 8962feadc919b02171be884aaad51091a3f7f186 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 10 Mar 2024 17:57:54 -0400
 Subject: [PATCH 5/6] Link protobuf privately
