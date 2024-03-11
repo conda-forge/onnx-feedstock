@@ -13,6 +13,7 @@ source:
     - patches/0003-include-cinttypes-in-cpp2py_export.cc.patch
     - patches/0004-Use-new-FindPython.patch
     - patches/0005-Link-protobuf-privately.patch
+    - patches/0006-Install-shared-windows-libraries.patch
 
 build:
   number: 4

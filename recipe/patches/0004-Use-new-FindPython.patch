@@ -1,7 +1,7 @@
 From 312fb56621d88ec07f3659445635170b61b9459b Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 10 Mar 2024 17:49:48 -0400
-Subject: [PATCH 4/5] Use new FindPython
+Subject: [PATCH 4/6] Use new FindPython
 
 ---
  CMakeLists.txt      | 13 +++++--------
