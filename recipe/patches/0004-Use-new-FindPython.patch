@@ -1,4 +1,4 @@
-From 312fb56621d88ec07f3659445635170b61b9459b Mon Sep 17 00:00:00 2001
+From 31e0e07d8e591d8792a29900245728264da5ea9c Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 10 Mar 2024 17:49:48 -0400
 Subject: [PATCH 4/6] Use new FindPython
@@ -55,7 +55,7 @@ index 87044788..b4fdf131 100644
                             PRIVATE /MP
                                     /wd4244 # 'argument': conversion from 'google::
 diff --git a/cmake/summary.cmake b/cmake/summary.cmake
-index 39f28466..030ca83f 100644
+index 39f28466..3905f97f 100644
 --- a/cmake/summary.cmake
 +++ b/cmake/summary.cmake
 @@ -35,8 +35,8 @@ function (onnx_print_configuration_summary)
@@ -67,7 +67,7 @@ index 39f28466..030ca83f 100644
 -    message(STATUS "    Python includes               : ${PYTHON_INCLUDE_DIR}")
 +    message(STATUS "    Python version                : ${Python_VERSION}")
 +    message(STATUS "    Python executable             : ${Python_EXECUTABLE}")
-+    message(STATUS "    Python includes               : ${Python_INCLUDE_DIR}")
++    message(STATUS "    Python includes               : ${Python_INCLUDE_DIRS}")
    endif()
  endfunction()
 -- 
