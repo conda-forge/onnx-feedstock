@@ -53,6 +53,7 @@ outputs:
     script: build_onnx.sh  # [unix]
     script: bld_onnx.bat   # [win]
     build:
+      skip: true  # [py!=310]
       entry_points:
         - check-model = onnx.bin.checker:check_model
         - check-node = onnx.bin.checker:check_node
