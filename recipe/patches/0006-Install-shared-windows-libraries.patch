@@ -1,23 +1,46 @@
-From 586fccf442d418b18e3d9159fb897d1897721c45 Mon Sep 17 00:00:00 2001
+From a6c1fa09c530dd4af891bb54f8456f0bc4449f47 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Mon, 11 Mar 2024 00:12:19 -0400
 Subject: [PATCH 6/6] Install shared windows libraries
 
 ---
- CMakeLists.txt | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ CMakeLists.txt | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d1a4bb78..30b07214 100644
+index d1a4bb78..63d3d6f0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -710,7 +710,10 @@ install(FILES
+@@ -567,6 +567,8 @@ if(BUILD_ONNX_PYTHON)
+     # In MSVC, we will add whole archive in default
+     target_link_libraries(onnx_cpp2py_export
+                           PRIVATE -WHOLEARCHIVE:$<TARGET_FILE:onnx>)
++    target_link_libraries(onnx_cpp2py_export
++                          PRIVATE -WHOLEARCHIVE:$<TARGET_FILE:onnx_proto>)
+   elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+     # whole-archive linker option not available on AIX
+     target_sources(onnx_cpp2py_export
+@@ -665,14 +667,6 @@ if(MSVC)
+   endif()
+   add_msvc_runtime_flag(onnx_proto)
+   add_msvc_runtime_flag(onnx)
+-  set(onnx_static_library_flags
+-      -IGNORE:4221 # LNK4221: This object file does not define any previously
+-                   # undefined public symbols, so it will not be used by any
+-                   # link operation that consumes this library
+-      )
+-  set_target_properties(onnx
+-                        PROPERTIES STATIC_LIBRARY_FLAGS
+-                                   "${onnx_static_library_flags}")
+ elseif(APPLE)
+ 
+ else()
+@@ -710,7 +704,9 @@ install(FILES
  install(EXPORT ONNXTargets DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/ONNX")
  install(TARGETS
    onnx onnx_proto
 -  EXPORT ONNXTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-+  EXPORT ONNXTargets
-+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  EXPORT ONNXTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
 +  ARCHIVE DESTINATION ${CMAKE_INSTALL_BINDIR}
 +)
  
