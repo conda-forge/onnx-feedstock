@@ -1,7 +1,7 @@
 From 4381d246acc48b816065ea54966bb9019ca251a2 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 10 Mar 2024 17:47:05 -0400
-Subject: [PATCH 3/5] include cinttypes in cpp2py_export.cc
+Subject: [PATCH 3/6] include cinttypes in cpp2py_export.cc
 
 ---
  onnx/cpp2py_export.cc | 2 ++

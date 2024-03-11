@@ -1,7 +1,7 @@
 From 6e354e3463ea5676716dea60e6275a148a95db93 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sat, 9 Mar 2024 15:48:09 -0500
-Subject: [PATCH 2/5] Let conda-forge define CXX standard
+Subject: [PATCH 2/6] Let conda-forge define CXX standard
 
 ---
  CMakeLists.txt | 11 -----------
