@@ -12,7 +12,7 @@ source:
     - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
 build:
-  number: 3
+  number: 4
   entry_points:
     - check-model = onnx.bin.checker:check_model
     - check-node = onnx.bin.checker:check_node
@@ -22,7 +22,8 @@ requirements:
   build:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - numpy                                  # [build_platform != target_platform]
+    - numpy >=1.25                           # [build_platform != target_platform and py>38]
+    - numpy                                  # [build_platform != target_platform and py<=38]
     - pybind11                               # [build_platform != target_platform]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -37,12 +38,15 @@ requirements:
     - pytest-runner
     - ninja
     - pybind11
-    - numpy
+    # numpy >=1.25 exports a C-API compatible with older versions of numpy
+    - numpy >=1.25  # [py>38]
+    - numpy  # [py<=38]
   run:
-    - python
     - protobuf
-    - {{ pin_compatible('numpy') }}
+    - python
     - typing-extensions >=3.6.2.1
+    - {{ pin_compatible('numpy') }}  # [py<=38]
+    - {{ pin_compatible('numpy', lower_bound='1.19', upper_bound='3.0') }}  # [py>38]
 
 test:
   requires:
