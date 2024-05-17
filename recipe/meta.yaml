@@ -39,9 +39,7 @@ requirements:
     - pytest-runner
     - ninja
     - pybind11
-    # numpy >=1.25 exports a C-API compatible with older versions of numpy
-    - numpy >=1.25  # [py>38]
-    - numpy  # [py<=38]
+    - numpy
   run:
     - protobuf
     - python
