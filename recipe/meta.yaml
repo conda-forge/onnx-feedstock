@@ -1,5 +1,5 @@
 {% set name = "onnx" %}
-{% set version = "1.16.1" %}
+{% set version = "1.16.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
-  sha256: 0e6aa2c0a59bb2d90858ad0040ea1807117cc2f05b97702170f18e6cd6b66fb3
+  sha256: 84fc1c3d6133417f8a13af6643ed50983c91dacde5ffba16cc8bb39b22c2acbb
   patches:
     - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
 
