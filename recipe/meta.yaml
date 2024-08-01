@@ -43,7 +43,6 @@ requirements:
   run:
     - protobuf
     - python
-    - typing-extensions >=3.6.2.1
 
 test:
   requires:
