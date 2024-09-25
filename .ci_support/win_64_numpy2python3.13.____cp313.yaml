@@ -9,7 +9,7 @@ channel_targets:
 cxx_compiler:
 - vs2019
 libprotobuf:
-- 4.25.3
+- 5.27.5
 numpy:
 - '2'
 pin_run_as_build:
