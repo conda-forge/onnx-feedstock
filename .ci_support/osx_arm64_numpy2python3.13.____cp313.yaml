@@ -19,7 +19,7 @@ cxx_compiler:
 cxx_compiler_version:
 - '17'
 libprotobuf:
-- 4.25.3
+- 5.27.5
 macos_machine:
 - arm64-apple-darwin20.0.0
 numpy:
