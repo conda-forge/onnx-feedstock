@@ -32,14 +32,15 @@ requirements:
     - make
     - libprotobuf
   host:
-    - python
+    - libprotobuf
+    - ninja
+    - numpy
     - pip
     - protobuf
-    - libprotobuf
-    - pytest-runner
-    - ninja
     - pybind11
-    - numpy
+    - pytest-runner
+    - python
+    - setuptools
   run:
     - protobuf
     - python
