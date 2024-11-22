@@ -28,6 +28,7 @@ outputs:
         - {{ pin_subpackage('libonnx', max_pin='x.x.x') }}
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - cmake
@@ -66,6 +67,7 @@ outputs:
           #       - numpy                                  # [build_platform != target_platform]
           #       - pybind11                               # [build_platform != target_platform]
           #       - libabseil                              # [build_platform != target_platform]
+          #       - {{ stdlib('c') }}
           #       - {{ compiler('c') }}
           #       - {{ compiler('cxx') }}
           #       - libprotobuf
@@ -86,8 +88,8 @@ outputs:
           #     run:
           #       - python
           #       - protobuf
+          #       - numpy >=1.21.1
           #       - {{ pin_subpackage('libonnx', exact=True) }}
-          #       - {{ pin_compatible('numpy') }}
           #       - typing-extensions >=3.6.2.1
           #   test:
           #     requires:
