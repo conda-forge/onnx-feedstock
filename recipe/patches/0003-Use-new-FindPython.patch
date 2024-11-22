@@ -1,0 +1,75 @@
+From 298a029745991c47bd10ac17c7ba27fb146d6b68 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 10 Mar 2024 17:49:48 -0400
+Subject: [PATCH 3/5] Use new FindPython
+
+---
+ CMakeLists.txt      | 13 +++++--------
+ cmake/summary.cmake |  6 +++---
+ 2 files changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 024aa55e..9f6e7a5c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -100,12 +100,9 @@ if(ONNX_DISABLE_EXCEPTIONS)
+   endif()
+ endif()
+ 
+-# find_package Python has replaced PythonInterp and PythonLibs since cmake 3.12
+-# Use the following command in the future; now this is only compatible with the latest pybind11
+-# find_package(Python ${PY_VERSION} COMPONENTS Interpreter Development REQUIRED)
+-find_package(PythonInterp ${PY_VERSION} REQUIRED)
++find_package(Python ${PY_VERSION} COMPONENTS Interpreter REQUIRED)
+ if(BUILD_ONNX_PYTHON)
+-  find_package(PythonLibs ${PY_VERSION})
++  find_package(Python ${PY_VERSION} COMPONENTS Interpreter Development REQUIRED)
+ endif()
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+@@ -360,7 +357,7 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP NAME SRCS HDRS ROOT_DIR DEPEND)
+     endif()
+ 
+     add_custom_command(OUTPUT "${GENERATED_PROTO}"
+-                       COMMAND "${PYTHON_EXECUTABLE}" "${GEN_PROTO_PY}"
++                       COMMAND "${Python_EXECUTABLE}" "${GEN_PROTO_PY}"
+                                ARGS ${GEN_PROTO_ARGS}
+                        DEPENDS ${INFILE}
+                        COMMENT "Running gen_proto.py on ${INFILE}"
+@@ -568,7 +565,7 @@ if(BUILD_ONNX_PYTHON)
+ 
+   target_include_directories(onnx_cpp2py_export PUBLIC
+     "${pybind11_INCLUDE_DIRS}"
+-    "${PYTHON_INCLUDE_DIRS}")
++    "${Python_INCLUDE_DIRS}")
+ 
+   if(APPLE)
+     set_target_properties(onnx_cpp2py_export
+@@ -602,7 +599,7 @@ if(BUILD_ONNX_PYTHON)
+   target_link_libraries(onnx_cpp2py_export PRIVATE onnx)
+ 
+   if(MSVC)
+-    target_link_libraries(onnx_cpp2py_export PRIVATE ${PYTHON_LIBRARIES})
++    target_link_libraries(onnx_cpp2py_export PRIVATE ${Python_LIBRARIES})
+     target_compile_options(onnx_cpp2py_export
+                            PRIVATE /MP
+                                    /wd4244 # 'argument': conversion from 'google::
+diff --git a/cmake/summary.cmake b/cmake/summary.cmake
+index fbe6b28a..e61232e7 100644
+--- a/cmake/summary.cmake
++++ b/cmake/summary.cmake
+@@ -34,8 +34,8 @@ function (onnx_print_configuration_summary)
+   message(STATUS "  Protobuf libraries                : ${PROTOBUF_LIBRARIES}")
+   message(STATUS "  BUILD_ONNX_PYTHON                 : ${BUILD_ONNX_PYTHON}")
+   if (${BUILD_ONNX_PYTHON})
+-    message(STATUS "    Python version                : ${PY_VERSION}")
+-    message(STATUS "    Python executable             : ${PYTHON_EXECUTABLE}")
+-    message(STATUS "    Python includes               : ${PYTHON_INCLUDE_DIR}")
++    message(STATUS "    Python version                : ${Python_VERSION}")
++    message(STATUS "    Python executable             : ${Python_EXECUTABLE}")
++    message(STATUS "    Python includes               : ${Python_INCLUDE_DIRS}")
+   endif()
+ endfunction()
+-- 
+2.45.2
+

@@ -10,16 +10,5 @@ cxx_compiler:
 - vs2019
 libprotobuf:
 - 5.28.2
-numpy:
-- '2.0'
-pin_run_as_build:
-  python:
-    min_pin: x.x
-    max_pin: x.x
-python:
-- 3.11.* *_cpython
 target_platform:
 - win-64
-zip_keys:
-- - python
-  - numpy

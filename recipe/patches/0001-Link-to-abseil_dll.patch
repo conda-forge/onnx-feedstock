@@ -1,0 +1,35 @@
+From 0a7a6550d228bc79403b72ec0e7e7816d42ffd93 Mon Sep 17 00:00:00 2001
+From: Aditya Goel <agoel4512@gmail.com>
+Date: Tue, 7 Nov 2023 11:47:35 +0000
+Subject: [PATCH 1/5] Link to abseil_dll
+
+---
+ CMakeLists.txt | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d15d97ed..024aa55e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -529,6 +529,9 @@ target_include_directories(onnx PUBLIC
+   $<BUILD_INTERFACE:${ONNX_ROOT}>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+   $<INSTALL_INTERFACE:include>)
++if(WIN32)
++  target_link_libraries(onnx PRIVATE $ENV{PREFIX}/Library/lib/abseil_dll.lib)
++endif()
+ target_link_libraries(onnx PUBLIC onnx_proto)
+ add_onnx_global_defines(onnx)
+ 
+@@ -587,7 +590,7 @@ if(BUILD_ONNX_PYTHON)
+     target_link_libraries(onnx_cpp2py_export
+                           PRIVATE "-Wl,--whole-archive" $<TARGET_FILE:onnx>
+                                   "-Wl,--no-whole-archive")
+-    # Prevent "undefined symbol: _ZNSt10filesystem7__cxx114path14_M_split_cmptsEv" 
++    # Prevent "undefined symbol: _ZNSt10filesystem7__cxx114path14_M_split_cmptsEv"
+     # (std::filesystem::__cxx11::path::_M_split_cmpts()) on gcc 8
+     if (CMAKE_CXX_STANDARD EQUAL 17 AND CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+       target_link_libraries(onnx_cpp2py_export PRIVATE "-lstdc++fs")
+-- 
+2.45.2
+

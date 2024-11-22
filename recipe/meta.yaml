@@ -1,62 +1,105 @@
-{% set name = "onnx" %}
 {% set version = "1.17.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: onnx-split
   version: {{ version }}
 
 source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: 8d5e983c36037003615e5a02d36b18fc286541bf52de1a78f6cf9f32005a820e
   patches:
-    - 0001-Link-to-abseil_dll.patch  # [win and (libprotobuf != "3.21")]
+    - patches/0001-Link-to-abseil_dll.patch
+    - patches/0002-include-cinttypes-in-cpp2py_export.cc.patch
+    - patches/0003-Use-new-FindPython.patch
+    - patches/0004-Link-protobuf-privately.patch
+    - patches/0005-Install-shared-windows-libraries.patch
 
 build:
-  number: 1
-  entry_points:
-    - check-model = onnx.bin.checker:check_model
-    - check-node = onnx.bin.checker:check_node
-    - backend-test-tools = onnx.backend.test.cmd_tools:main
+  number: 4
 
-requirements:
-  build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - numpy >=1.25                           # [build_platform != target_platform and py>38]
-    - numpy                                  # [build_platform != target_platform and py<=38]
-    - pybind11                               # [build_platform != target_platform]
-    - {{ compiler('c') }}
-    - {{ stdlib("c") }}
-    - {{ compiler('cxx') }}
-    - cmake
-    - make
-    - libprotobuf
-  host:
-    - libprotobuf
-    - ninja
-    - numpy
-    - pip
-    - protobuf
-    - pybind11
-    - pytest-runner
-    - python
-    - setuptools
-  run:
-    - protobuf
-    - python
-
-test:
-  requires:
-    - pip
-  imports:
-    - onnx
-  commands:
-    - pip check
-    - check-model --help
-    - check-node --help
-    - backend-test-tools --help
-    - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
-    - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
+outputs:
+  - name: libonnx
+    script: build_libonnx.sh  # [unix]
+    script: bld_libonnx.bat   # [win]
+    build:
+      run_exports:
+        # No stable C API offered for onnx
+        - {{ pin_subpackage('libonnx', max_pin='x.x.x') }}
+    requirements:
+      build:
+        - {{ stdlib('c') }}
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
+        - make
+        - libprotobuf
+        # required to build the proto files
+        - python=3.10
+      host:
+        - libprotobuf
+      run_constrained:
+        # Ensure that the libonnx package isn't installed with
+        # older versions of the package
+        - onnx {{ version }}=*_{{ build }}   # [version == "1.17.0"]
+        - onnx {{ version }}                 # [version != "1.17.0"]
+    test:
+      commands:
+        - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
+        - test -f "$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake"  # [unix]
+        # Windows for now only has static libraries
+        - if not exist %PREFIX%\\Library\\bin\\onnx.dll exit 1   # [win]
+        - if not exist %PREFIX%\\Library\\lib\\onnx.lib exit 1   # [win]
+          # - name: onnx
+          #   script: build_onnx.sh  # [unix]
+          #   script: bld_onnx.bat   # [win]
+          #   build:
+          #     # build a few pytons
+          #     skip: true  # [py!=310 and py!=39]
+          #     entry_points:
+          #       - check-model = onnx.bin.checker:check_model
+          #       - check-node = onnx.bin.checker:check_node
+          #       - backend-test-tools = onnx.backend.test.cmd_tools:main
+          #   requirements:
+          #     build:
+          #       - python                                 # [build_platform != target_platform]
+          #       - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+          #       - numpy                                  # [build_platform != target_platform]
+          #       - pybind11                               # [build_platform != target_platform]
+          #       - libabseil                              # [build_platform != target_platform]
+          #       - {{ stdlib('c') }}
+          #       - {{ compiler('c') }}
+          #       - {{ compiler('cxx') }}
+          #       - libprotobuf
+          #       - cmake
+          #       - make  # [unix]
+          #     host:
+          #       - python
+          #       - setuptools
+          #       - pip
+          #       - protobuf
+          #       - pytest-runner
+          #       - ninja
+          #       - pybind11
+          #       - numpy
+          #       - {{ pin_subpackage('libonnx', exact=True) }}
+          #       - libprotobuf
+          #       - libabseil  # [win]
+          #     run:
+          #       - python
+          #       - protobuf
+          #       - numpy >=1.21.1
+          #       - {{ pin_subpackage('libonnx', exact=True) }}
+          #       - typing-extensions >=3.6.2.1
+          #   test:
+          #     requires:
+          #       - pip
+          #     imports:
+          #       - onnx
+          #     commands:
+          #       - pip check
+          #       - check-model --help
+          #       - check-node --help
+          #       - backend-test-tools --help
 
 about:
   home: https://github.com/onnx/onnx/
