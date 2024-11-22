@@ -8,7 +8,7 @@ source:
   url: https://github.com/onnx/onnx/archive/v{{ version }}.tar.gz
   sha256: 8d5e983c36037003615e5a02d36b18fc286541bf52de1a78f6cf9f32005a820e
   patches:
-    - patches/0001-Link-to-abseil_dll.patch
+    - patches/0001-Link-to-abseil_dll.patch   # [win]
       # - patches/0002-Let-conda-forge-define-CXX-standard.patch
       # - patches/0003-include-cinttypes-in-cpp2py_export.cc.patch
       # - patches/0004-Use-new-FindPython.patch
@@ -49,56 +49,56 @@ outputs:
         # Windows for now only has static libraries
         # - if not exist %PREFIX%\\Library\\bin\\onnx.dll exit 1   # [win]
         - if not exist %PREFIX%\\Library\\lib\\onnx.lib exit 1   # [win]
-  - name: onnx
-    script: build_onnx.sh  # [unix]
-    script: bld_onnx.bat   # [win]
-    build:
-      # build a few pytons
-      skip: true  # [py!=310 and py!=39]
-      entry_points:
-        - check-model = onnx.bin.checker:check_model
-        - check-node = onnx.bin.checker:check_node
-        - backend-test-tools = onnx.backend.test.cmd_tools:main
-    requirements:
-      build:
-        - python                                 # [build_platform != target_platform]
-        - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-        - numpy                                  # [build_platform != target_platform]
-        - pybind11                               # [build_platform != target_platform]
-        - libabseil                              # [build_platform != target_platform]
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - libprotobuf
-        - cmake
-        - make  # [unix]
-      host:
-        - python
-        - setuptools
-        - pip
-        - protobuf
-        - pytest-runner
-        - ninja
-        - pybind11
-        - numpy
-        - {{ pin_subpackage('libonnx', exact=True) }}
-        - libprotobuf
-        - libabseil  # [win]
-      run:
-        - python
-        - protobuf
-        - {{ pin_subpackage('libonnx', exact=True) }}
-        - {{ pin_compatible('numpy') }}
-        - typing-extensions >=3.6.2.1
-    test:
-      requires:
-        - pip
-      imports:
-        - onnx
-      commands:
-        - pip check
-        - check-model --help
-        - check-node --help
-        - backend-test-tools --help
+          # - name: onnx
+          #   script: build_onnx.sh  # [unix]
+          #   script: bld_onnx.bat   # [win]
+          #   build:
+          #     # build a few pytons
+          #     skip: true  # [py!=310 and py!=39]
+          #     entry_points:
+          #       - check-model = onnx.bin.checker:check_model
+          #       - check-node = onnx.bin.checker:check_node
+          #       - backend-test-tools = onnx.backend.test.cmd_tools:main
+          #   requirements:
+          #     build:
+          #       - python                                 # [build_platform != target_platform]
+          #       - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+          #       - numpy                                  # [build_platform != target_platform]
+          #       - pybind11                               # [build_platform != target_platform]
+          #       - libabseil                              # [build_platform != target_platform]
+          #       - {{ compiler('c') }}
+          #       - {{ compiler('cxx') }}
+          #       - libprotobuf
+          #       - cmake
+          #       - make  # [unix]
+          #     host:
+          #       - python
+          #       - setuptools
+          #       - pip
+          #       - protobuf
+          #       - pytest-runner
+          #       - ninja
+          #       - pybind11
+          #       - numpy
+          #       - {{ pin_subpackage('libonnx', exact=True) }}
+          #       - libprotobuf
+          #       - libabseil  # [win]
+          #     run:
+          #       - python
+          #       - protobuf
+          #       - {{ pin_subpackage('libonnx', exact=True) }}
+          #       - {{ pin_compatible('numpy') }}
+          #       - typing-extensions >=3.6.2.1
+          #   test:
+          #     requires:
+          #       - pip
+          #     imports:
+          #       - onnx
+          #     commands:
+          #       - pip check
+          #       - check-model --help
+          #       - check-node --help
+          #       - backend-test-tools --help
 
 about:
   home: https://github.com/onnx/onnx/
