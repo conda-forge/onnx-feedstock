@@ -90,7 +90,6 @@ Current release info
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-libonnx-green.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/libonnx.svg)](https://anaconda.org/conda-forge/libonnx) |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-onnx-green.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/onnx.svg)](https://anaconda.org/conda-forge/onnx) |
 
 Installing onnx-split
 =====================
@@ -102,16 +101,16 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `libonnx, onnx` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `libonnx` can be installed with `conda`:
 
 ```
-conda install libonnx onnx
+conda install libonnx
 ```
 
 or with `mamba`:
 
 ```
-mamba install libonnx onnx
+mamba install libonnx
 ```
 
 It is possible to list all of the versions of `libonnx` available on your platform with `conda`:
