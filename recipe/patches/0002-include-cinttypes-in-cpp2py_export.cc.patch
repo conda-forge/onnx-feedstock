@@ -1,0 +1,25 @@
+From 37b5f9d9c14994b0ff14f12407375fab64e11e93 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 10 Mar 2024 17:47:05 -0400
+Subject: [PATCH 2/5] include cinttypes in cpp2py_export.cc
+
+---
+ onnx/cpp2py_export.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/onnx/cpp2py_export.cc b/onnx/cpp2py_export.cc
+index 5f75c25f..a21aa7c9 100644
+--- a/onnx/cpp2py_export.cc
++++ b/onnx/cpp2py_export.cc
+@@ -2,6 +2,8 @@
+ //
+ // SPDX-License-Identifier: Apache-2.0
+ 
++#include <cinttypes>
++
+ #include <pybind11/pybind11.h>
+ #include <pybind11/stl.h>
+ 
+-- 
+2.45.2
+
