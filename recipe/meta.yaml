@@ -40,8 +40,8 @@ outputs:
       run_constrained:
         # Ensure that the libonnx package isn't installed with
         # older versions of the package
-        - onnx {{ version }}=*_{{ build }}   # [version == "1.15.0"]
-        - onnx {{ version }}                 # [version != "1.15.0"]
+        - onnx {{ version }}=*_{{ build }}   # [version == "1.17.0"]
+        - onnx {{ version }}                 # [version != "1.17.0"]
     test:
       commands:
         - test -f "$PREFIX/lib/libonnx${SHLIB_EXT}"  # [unix]
