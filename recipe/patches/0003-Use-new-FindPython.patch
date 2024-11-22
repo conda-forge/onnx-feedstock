@@ -1,4 +1,4 @@
-From c23ea78a9a02fe89e0114e0128a8b0304af8deb2 Mon Sep 17 00:00:00 2001
+From 298a029745991c47bd10ac17c7ba27fb146d6b68 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 10 Mar 2024 17:49:48 -0400
 Subject: [PATCH 3/5] Use new FindPython
@@ -9,7 +9,7 @@ Subject: [PATCH 3/5] Use new FindPython
  2 files changed, 8 insertions(+), 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 98c87c9f..696f843a 100644
+index 024aa55e..9f6e7a5c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -100,12 +100,9 @@ if(ONNX_DISABLE_EXCEPTIONS)
@@ -36,7 +36,7 @@ index 98c87c9f..696f843a 100644
                                 ARGS ${GEN_PROTO_ARGS}
                         DEPENDS ${INFILE}
                         COMMENT "Running gen_proto.py on ${INFILE}"
-@@ -565,7 +562,7 @@ if(BUILD_ONNX_PYTHON)
+@@ -568,7 +565,7 @@ if(BUILD_ONNX_PYTHON)
  
    target_include_directories(onnx_cpp2py_export PUBLIC
      "${pybind11_INCLUDE_DIRS}"
@@ -45,7 +45,7 @@ index 98c87c9f..696f843a 100644
  
    if(APPLE)
      set_target_properties(onnx_cpp2py_export
-@@ -599,7 +596,7 @@ if(BUILD_ONNX_PYTHON)
+@@ -602,7 +599,7 @@ if(BUILD_ONNX_PYTHON)
    target_link_libraries(onnx_cpp2py_export PRIVATE onnx)
  
    if(MSVC)

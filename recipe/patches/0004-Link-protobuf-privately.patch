@@ -1,4 +1,4 @@
-From b1e2354a6ed8e7e37bd07daec5cd6b202e003c32 Mon Sep 17 00:00:00 2001
+From 11f46101780c25d38bc5fbfd19d034c3826dca2c Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 10 Mar 2024 17:57:54 -0400
 Subject: [PATCH 4/5] Link protobuf privately
@@ -8,10 +8,10 @@ Subject: [PATCH 4/5] Link protobuf privately
  1 file changed, 17 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 696f843a..589f12e1 100644
+index 9f6e7a5c..30441acf 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -499,34 +499,38 @@ else()
+@@ -499,29 +499,33 @@ else()
  endif()
  target_compile_definitions(onnx_proto PRIVATE ${ONNX_API_DEFINE})
  
@@ -57,8 +57,11 @@ index 696f843a..589f12e1 100644
  target_include_directories(onnx PUBLIC
    $<BUILD_INTERFACE:${ONNX_ROOT}>
    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-   $<INSTALL_INTERFACE:include>)
--target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+@@ -529,7 +533,7 @@ target_include_directories(onnx PUBLIC
+ if(WIN32)
+   target_link_libraries(onnx PRIVATE $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+ endif()
+-target_link_libraries(onnx PUBLIC onnx_proto)
 +target_link_libraries(onnx PRIVATE onnx_proto)
  add_onnx_global_defines(onnx)
  

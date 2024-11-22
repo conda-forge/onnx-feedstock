@@ -1,26 +1,17 @@
-From d11265aa11f21d01fc52aec61f5833f4f870442e Mon Sep 17 00:00:00 2001
+From 003496bf63ce85a505c32951bb48b8c80af0d751 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Fri, 22 Nov 2024 13:14:55 +0530
 Subject: [PATCH 5/5] Install shared windows libraries
 
 ---
- CMakeLists.txt | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ CMakeLists.txt | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 589f12e1..1c18b7f3 100644
+index 30441acf..d4e1bac4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -588,7 +588,7 @@ if(BUILD_ONNX_PYTHON)
-     target_link_libraries(onnx_cpp2py_export
-                           PRIVATE "-Wl,--whole-archive" $<TARGET_FILE:onnx>
-                                   "-Wl,--no-whole-archive")
--    # Prevent "undefined symbol: _ZNSt10filesystem7__cxx114path14_M_split_cmptsEv" 
-+    # Prevent "undefined symbol: _ZNSt10filesystem7__cxx114path14_M_split_cmptsEv"
-     # (std::filesystem::__cxx11::path::_M_split_cmpts()) on gcc 8
-     if (CMAKE_CXX_STANDARD EQUAL 17 AND CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-       target_link_libraries(onnx_cpp2py_export PRIVATE "-lstdc++fs")
-@@ -597,7 +597,7 @@ if(BUILD_ONNX_PYTHON)
+@@ -600,7 +600,7 @@ if(BUILD_ONNX_PYTHON)
                            PROPERTIES LINK_FLAGS "-Wl,--exclude-libs,ALL")
    endif()
  
@@ -29,7 +20,7 @@ index 589f12e1..1c18b7f3 100644
  
    if(MSVC)
      target_link_libraries(onnx_cpp2py_export PRIVATE ${Python_LIBRARIES})
-@@ -661,14 +661,6 @@ if(MSVC)
+@@ -664,14 +664,6 @@ if(MSVC)
    endif()
    add_msvc_runtime_flag(onnx_proto)
    add_msvc_runtime_flag(onnx)
@@ -44,7 +35,7 @@ index 589f12e1..1c18b7f3 100644
  elseif(APPLE)
  
  else()
-@@ -747,7 +739,9 @@ endif()
+@@ -750,7 +742,9 @@ endif()
  
  install(TARGETS
    onnx onnx_proto
