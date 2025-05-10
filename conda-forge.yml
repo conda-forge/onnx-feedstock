@@ -2,7 +2,7 @@ bot:
   run_deps_from_wheel: true
   version_updates:
     exclude:
-    - 12.0.0
+      - 12.0.0
 build_platform:
   osx_arm64: osx_64
 conda_build:
@@ -16,3 +16,5 @@ provider:
   linux_ppc64le: azure
   win: azure
 test: native_and_emulated
+conda_install_tool: pixi
+conda_build_tool: rattler-build
