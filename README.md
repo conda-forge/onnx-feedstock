@@ -16,7 +16,6 @@ defines an extensible computation graph model, as well as definitions of
 built-in operators and standard data types. Initially we focus on the
 capabilities needed for inferencing (evaluation).
 
-
 Current build status
 ====================
 

@@ -20,6 +20,3 @@ index 585786e1..64290187 100644
  add_onnx_global_defines(onnx)
  
  if(BUILD_ONNX_PYTHON)
--- 
-2.40.1
-
