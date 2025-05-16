@@ -1,0 +1,35 @@
+From 4bab7af1105f953b3dea746de3f12648454f5f1d Mon Sep 17 00:00:00 2001
+From: "Uwe L. Korn" <uwe.korn@quantco.com>
+Date: Fri, 16 May 2025 19:03:35 +0200
+Subject: [PATCH] Don't hide all the symbols
+
+---
+ CMakeLists.txt | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8b5af30..843da66 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -521,8 +521,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+ else()
+   add_library(onnx ${ONNX_SRCS})
+ endif()
+-set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
+-set_target_properties(onnx PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
++#set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
++#set_target_properties(onnx PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
+ 
+ target_include_directories(onnx PUBLIC
+   $<BUILD_INTERFACE:${ONNX_ROOT}>
+@@ -534,8 +534,8 @@ add_onnx_global_defines(onnx)
+ if(ONNX_BUILD_PYTHON)
+   Python3_add_library(onnx_cpp2py_export MODULE WITH_SOABI "${ONNX_ROOT}/onnx/cpp2py_export.cc")
+   set_target_properties(onnx_cpp2py_export PROPERTIES PREFIX "")
+-  set_target_properties(onnx_cpp2py_export PROPERTIES CXX_VISIBILITY_PRESET hidden)
+-  set_target_properties(onnx_cpp2py_export PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
++  #set_target_properties(onnx_cpp2py_export PROPERTIES CXX_VISIBILITY_PRESET hidden)
++  #set_target_properties(onnx_cpp2py_export PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
+   set_target_properties(onnx_cpp2py_export
+                         PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+   target_include_directories(onnx_cpp2py_export PRIVATE
