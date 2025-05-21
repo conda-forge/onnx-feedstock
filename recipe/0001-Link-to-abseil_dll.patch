@@ -1,4 +1,4 @@
-From 4195334fa39b4aa929c9d84258323ea8a3a0f9c6 Mon Sep 17 00:00:00 2001
+From 175435c621e895209d983ca6962b3bc77d5e15e3 Mon Sep 17 00:00:00 2001
 From: Aditya Goel <agoel4512@gmail.com>
 Date: Tue, 7 Nov 2023 11:47:35 +0000
 Subject: [PATCH] Link to abseil_dll
@@ -8,10 +8,10 @@ Subject: [PATCH] Link to abseil_dll
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 585786e1..64290187 100644
+index 843da66..dfb1244 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -519,7 +519,7 @@ target_include_directories(onnx PUBLIC
+@@ -528,7 +528,7 @@ target_include_directories(onnx PUBLIC
    $<BUILD_INTERFACE:${ONNX_ROOT}>
    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
    $<INSTALL_INTERFACE:include>)
@@ -19,4 +19,4 @@ index 585786e1..64290187 100644
 +target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
  add_onnx_global_defines(onnx)
  
- if(BUILD_ONNX_PYTHON)
+ if(ONNX_BUILD_PYTHON)
