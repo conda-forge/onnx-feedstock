@@ -12,7 +12,8 @@ source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
   sha256: b466af96fd8d9f485d1bb14f9bbdd2dfb8421bc5544583f014088fb941a1d21e
   patches:
-    - 0001-Link-to-abseil_dll.patch
+    - if: win
+      then: 0001-Link-to-abseil_dll.patch
     - 0001-Don-t-hide-all-the-symbols.patch
 
 build:
