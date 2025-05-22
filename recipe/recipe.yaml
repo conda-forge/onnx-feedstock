@@ -54,6 +54,7 @@ requirements:
   run:
     - protobuf
     - python
+    - typing_extensions
 
 tests:
   - python:
