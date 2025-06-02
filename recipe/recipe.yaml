@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: onnx
-  version: 1.17.0
+  version: "1.18.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,13 +10,14 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: 8d5e983c36037003615e5a02d36b18fc286541bf52de1a78f6cf9f32005a820e
+  sha256: b466af96fd8d9f485d1bb14f9bbdd2dfb8421bc5544583f014088fb941a1d21e
   patches:
-    - if: "win and (libprotobuf != \"3.21\")"
+    - if: win
       then: 0001-Link-to-abseil_dll.patch
+    - 0002-dont-hide-all-symbols-and-set-ext-suffix.patch
 
 build:
-  number: 4
+  number: 0
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
@@ -26,15 +27,14 @@ build:
 requirements:
   build:
     - if: build_platform != target_platform
-      then: python
-    - if: build_platform != target_platform
-      then: cross-python_${{ target_platform }}
-    - if: build_platform != target_platform and match(python, ">3.8")
-      then: numpy >=1.25
-    - if: build_platform != target_platform and match(python, "<=3.8")
-      then: numpy
-    - if: build_platform != target_platform
-      then: pybind11
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - if: match(python, ">3.8")
+          then: numpy >=1.25
+        - if: match(python, "<=3.8")
+          then: numpy
+        - pybind11
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
@@ -54,6 +54,7 @@ requirements:
   run:
     - protobuf
     - python
+    - typing_extensions
 
 tests:
   - python:
@@ -68,10 +69,9 @@ tests:
       - check-node --help
       - backend-test-tools --help
       - if: unix
-        then: "test -f \"$PREFIX/lib/libonnx${SHLIB_EXT}\""
-      - if: unix
-        then: "test -f \"$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake\""
-
+        then:
+          - "test -f \"$PREFIX/lib/libonnx${SHLIB_EXT}\""
+          - "test -f \"$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake\""
 about:
   license: Apache-2.0
   license_file: LICENSE
