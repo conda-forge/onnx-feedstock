@@ -14,7 +14,7 @@ source:
   patches:
     - if: win
       then: 0001-Link-to-abseil_dll.patch
-    - 0001-Don-t-hide-all-the-symbols.patch
+    - 0002-dont-hide-all-symbols-and-set-ext-suffix.patch
 
 build:
   number: 0

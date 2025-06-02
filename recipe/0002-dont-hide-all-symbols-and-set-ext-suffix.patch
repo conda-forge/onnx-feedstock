@@ -1,0 +1,61 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8b5af303..5720250d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -521,8 +521,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+ else()
+   add_library(onnx ${ONNX_SRCS})
+ endif()
+-set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
+-set_target_properties(onnx PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
++#set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
++#set_target_properties(onnx PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
+ 
+ target_include_directories(onnx PUBLIC
+   $<BUILD_INTERFACE:${ONNX_ROOT}>
+@@ -532,10 +532,19 @@ target_link_libraries(onnx PUBLIC onnx_proto)
+ add_onnx_global_defines(onnx)
+ 
+ if(ONNX_BUILD_PYTHON)
+-  Python3_add_library(onnx_cpp2py_export MODULE WITH_SOABI "${ONNX_ROOT}/onnx/cpp2py_export.cc")
++  if(NOT PY_EXT_SUFFIX)
++    if(WIN32)
++      set(PY_EXT_SUFFIX ".pyd")
++    else()
++      set(PY_EXT_SUFFIX ".so")
++    endif()
++  endif()
++
++  add_library(onnx_cpp2py_export MODULE "${ONNX_ROOT}/onnx/cpp2py_export.cc")
+   set_target_properties(onnx_cpp2py_export PROPERTIES PREFIX "")
+-  set_target_properties(onnx_cpp2py_export PROPERTIES CXX_VISIBILITY_PRESET hidden)
+-  set_target_properties(onnx_cpp2py_export PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
++  #set_target_properties(onnx_cpp2py_export PROPERTIES CXX_VISIBILITY_PRESET hidden)
++  #set_target_properties(onnx_cpp2py_export PROPERTIES VISIBILITY_INLINES_HIDDEN ON)  
++  set_target_properties(onnx_cpp2py_export PROPERTIES SUFFIX ${PY_EXT_SUFFIX})
+   set_target_properties(onnx_cpp2py_export
+                         PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+   target_include_directories(onnx_cpp2py_export PRIVATE
+diff --git a/setup.py b/setup.py
+index 02fa58e4..cbe2e2f6 100644
+--- a/setup.py
++++ b/setup.py
+@@ -93,6 +93,10 @@ def cd(path):
+         os.chdir(orig_path)
+ 
+ 
++def get_ext_suffix():
++    return sysconfig.get_config_var("EXT_SUFFIX")
++
++
+ def get_python_execute():
+     if WINDOWS:
+         return sys.executable
+@@ -173,6 +177,7 @@ class CmakeBuild(setuptools.Command):
+                 f"-DPython3_EXECUTABLE={get_python_execute()}",
+                 "-DONNX_BUILD_PYTHON=ON",
+                 f"-DONNX_NAMESPACE={ONNX_NAMESPACE}",
++                f"-DPY_EXT_SUFFIX={get_ext_suffix() or ''}",
+             ]
+             if COVERAGE:
+                 cmake_args.append("-DONNX_COVERAGE=ON")
