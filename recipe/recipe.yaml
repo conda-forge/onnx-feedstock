@@ -9,11 +9,8 @@ package:
   version: ${{ version }}
 
 source:
-  url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: b466af96fd8d9f485d1bb14f9bbdd2dfb8421bc5544583f014088fb941a1d21e
-  patches:
-    - if: win
-      then: 0001-Link-to-abseil_dll.patch
+  url: https://github.com/cyyever/onnx/archive/refs/tags/0.3.tar.gz
+  sha256: f18460b7e250cacfd62000d70f9c5c7defb4e9c38b964c2ece5603bb686edd4a
 
 build:
   number: 1
