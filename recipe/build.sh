@@ -10,5 +10,9 @@ export CMAKE_ARGS="${CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON -DProtobuf_PROTOC_EXECUT
 if [[ "${target_platform}" == osx-64 ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
-$PYTHON -m pip install --no-deps --ignore-installed --verbose .
+if [[ "${target_platform}" != "${build_platform}" ]]; then
+  ${BUILD_PREFIX}/bin/python -m pip install --no-deps --ignore-installed --verbose .
+else
+  $PYTHON -m pip install --no-deps --ignore-installed --verbose .
+fi
 cmake --install .setuptools-cmake-build
