@@ -9,15 +9,11 @@ package:
   version: ${{ version }}
 
 source:
-  url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: b466af96fd8d9f485d1bb14f9bbdd2dfb8421bc5544583f014088fb941a1d21e
-  patches:
-    - if: win
-      then: 0001-Link-to-abseil_dll.patch
-    - 0002-dont-hide-all-symbols-and-set-ext-suffix.patch
+  url: https://github.com/cyyever/onnx/archive/refs/tags/0.3.tar.gz
+  sha256: f18460b7e250cacfd62000d70f9c5c7defb4e9c38b964c2ece5603bb686edd4a
 
 build:
-  number: 0
+  number: 1
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
@@ -30,10 +26,7 @@ requirements:
       then:
         - python
         - cross-python_${{ target_platform }}
-        - if: match(python, ">3.8")
-          then: numpy >=1.25
-        - if: match(python, "<=3.8")
-          then: numpy
+        - numpy
         - pybind11
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
