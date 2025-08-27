@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.18.0"
+  version: "1.19.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,14 +10,14 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: b466af96fd8d9f485d1bb14f9bbdd2dfb8421bc5544583f014088fb941a1d21e
+  sha256: 2c2ac5a078b0350a0723fac606be8cd9e9e8cbd4c99bab1bffe2623b188fd236
   patches:
     - if: win
       then: 0001-Link-to-abseil_dll.patch
     - 0002-dont-hide-all-symbols-and-set-ext-suffix.patch
 
 build:
-  number: 2
+  number: 0
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
