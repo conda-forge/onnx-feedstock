@@ -47,7 +47,7 @@ requirements:
     - numpy
     - pip
     - protobuf
-    - pybind11 <=3
+    - pybind11 <3
     - pytest-runner
     - python
     - setuptools
