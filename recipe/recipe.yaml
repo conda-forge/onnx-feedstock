@@ -17,7 +17,7 @@ source:
     - 0002-dont-hide-all-symbols-and-set-ext-suffix.patch
 
 build:
-  number: 1
+  number: 2
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
