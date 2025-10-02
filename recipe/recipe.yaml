@@ -34,7 +34,7 @@ requirements:
           then: numpy >=1.25
         - if: match(python, "<=3.8")
           then: numpy
-        - pybind11
+        - pybind11 <3
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
