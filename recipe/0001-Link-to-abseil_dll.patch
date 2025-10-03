@@ -1,4 +1,4 @@
-From 175435c621e895209d983ca6962b3bc77d5e15e3 Mon Sep 17 00:00:00 2001
+From 18fb86cb2fc45dc134b500da5e5ab2cc4828c383 Mon Sep 17 00:00:00 2001
 From: Aditya Goel <agoel4512@gmail.com>
 Date: Tue, 7 Nov 2023 11:47:35 +0000
 Subject: [PATCH] Link to abseil_dll
@@ -8,13 +8,13 @@ Subject: [PATCH] Link to abseil_dll
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 843da66..dfb1244 100644
+index 4799557..de44ef2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -528,7 +528,7 @@ target_include_directories(onnx PUBLIC
-   $<BUILD_INTERFACE:${ONNX_ROOT}>
-   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-   $<INSTALL_INTERFACE:include>)
+@@ -464,7 +464,7 @@ endif()
+ set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
+ set_target_properties(onnx PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
+ 
 -target_link_libraries(onnx PUBLIC onnx_proto)
 +target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
  add_onnx_global_defines(onnx)
