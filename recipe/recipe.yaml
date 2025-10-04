@@ -31,7 +31,7 @@ requirements:
         - python
         - cross-python_${{ target_platform }}
         - numpy
-        - pybind11 <3
+        - pybind11
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
@@ -39,18 +39,19 @@ requirements:
     - make
     - libprotobuf
   host:
+    - python
     - libprotobuf
     - ninja
     - numpy
     - pip
     - protobuf
-    - pybind11 <3
+    - pybind11
     - pytest-runner
-    - python
     - setuptools
   run:
-    - protobuf
     - python
+    - ml_dtypes
+    - protobuf
     - typing_extensions
 
 tests:
