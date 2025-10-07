@@ -38,7 +38,8 @@ requirements:
     - cmake
     - make
     - libprotobuf
-    - sed
+    - if: unix
+      then: sed
   host:
     - python
     - libprotobuf
