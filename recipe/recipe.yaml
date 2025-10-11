@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.19.0"
+  version: "1.19.1"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: 2c2ac5a078b0350a0723fac606be8cd9e9e8cbd4c99bab1bffe2623b188fd236
+  sha256: ce9d2569a61d64e8a3d05b92194f60ffb7c868dbb754a71f5b4d992273a9413d
   patches:
     - if: win
       then: 0001-Link-to-abseil_dll.patch
