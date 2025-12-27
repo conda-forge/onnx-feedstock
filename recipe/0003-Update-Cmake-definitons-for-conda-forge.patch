@@ -1,0 +1,92 @@
+From a95766d201d2be2ee08e0f5485ca84ad1443e990 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sat, 27 Dec 2025 18:33:59 -0500
+Subject: [PATCH] Update Cmake definitons for conda-forge
+
+---
+ CMakeLists.txt      | 35 +++--------------------------------
+ cmake/summary.cmake | 14 +++++++-------
+ 2 files changed, 10 insertions(+), 39 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 160fa08..829ed51 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -129,26 +129,8 @@ if(ONNX_DISABLE_EXCEPTIONS)
+   endif()
+ endif()
+ 
+-if(ONNX_BUILD_PYTHON)
+-  set(python_dev_component Development.Module Development.SABIModule)
+-endif()
+-
+-if(CMAKE_CROSSCOMPILING)
+-  # When cross-compiling, the interpreter and the compiling/linking steps
+-  # must use a different package. See the discussion about this at
+-  # https://gitlab.kitware.com/cmake/cmake/-/issues/25145
+-  if(ONNX_BUILD_PYTHON)
+-    find_package(Python3 REQUIRED COMPONENTS ${python_dev_component})
+-  endif()
+-  find_package(Python REQUIRED COMPONENTS Interpreter)
+-  set(ONNX_PYTHON_INTERPRETER Python::Interpreter)
+-else()
+-  find_package(Python3 REQUIRED COMPONENTS Interpreter ${python_dev_component})
+-  # Find Python for nanobind
+-  set(Python_EXECUTABLE ${Python3_EXECUTABLE})
+-  find_package(Python REQUIRED COMPONENTS Interpreter ${python_dev_component})
+-  set(ONNX_PYTHON_INTERPRETER Python3::Interpreter)
+-endif()
++find_package(Python REQUIRED COMPONENTS Interpreter Development)
++set(ONNX_PYTHON_INTERPRETER Python::Interpreter)
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+   set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
+@@ -466,18 +448,7 @@ target_compile_options(onnx_proto_object PUBLIC ${protobuf_warnings})
+ 
+ if(ONNX_BUILD_PYTHON)
+   # find system nanobind
+-  find_package(nanobind)
+-  if(NOT nanobind_FOUND)
+-    include(FetchContent)
+-
+-    FetchContent_Declare(
+-      nanobind
+-      GIT_REPOSITORY https://github.com/wjakob/nanobind.git
+-      GIT_TAG v2.8.0
+-      GIT_SHALLOW TRUE
+-    )
+-    FetchContent_MakeAvailable(nanobind)
+-  endif()
++  find_package(nanobind REQUIRED)
+ 
+   # Configure nanobind: https://nanobind.readthedocs.io/en/latest/api_cmake.html
+   nanobind_add_module(
+diff --git a/cmake/summary.cmake b/cmake/summary.cmake
+index 740d4ad..ec26944 100644
+--- a/cmake/summary.cmake
++++ b/cmake/summary.cmake
+@@ -72,14 +72,14 @@ function(onnx_print_configuration_summary)
+   endif()
+   message(STATUS "  ONNX_BUILD_PYTHON                 : ${ONNX_BUILD_PYTHON}")
+   if(ONNX_BUILD_PYTHON)
+-    message(STATUS "    Python3 version                : ${Python3_VERSION}")
+-    message(STATUS "    Python3 executable             : ${Python3_EXECUTABLE}")
+-    message(STATUS "    Python3 includes               : ${Python3_INCLUDE_DIRS}")
+-    message(STATUS "    Python3 libraries              : ${Python3_LIBRARIES}")
+-    if(Python3_PyPy_VERSION)
+-      message(STATUS "    Python3 PyPy version          : ${Python3_PyPy_VERSION}")
++    message(STATUS "    Python version                : ${Python_VERSION}")
++    message(STATUS "    Python executable             : ${Python_EXECUTABLE}")
++    message(STATUS "    Python includes               : ${Python_INCLUDE_DIRS}")
++    message(STATUS "    Python libraries              : ${Python_LIBRARIES}")
++    if(Python_PyPy_VERSION)
++      message(STATUS "    Python PyPy version          : ${Python_PyPy_VERSION}")
+     endif()
+-    message(STATUS "    Python3 interpreter ID        : ${Python3_INTERPRETER_ID}")
++    message(STATUS "    Python interpreter ID        : ${Python_INTERPRETER_ID}")
+     if(Python_SOABI)
+       message(STATUS "    Python SOABI                  : ${Python_SOABI}")
+     endif()
+-- 
+2.51.0
+

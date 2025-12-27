@@ -15,6 +15,8 @@ source:
     - if: win
       then: 0001-Link-to-abseil_dll.patch
     - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
+    - 0003-Update-Cmake-definitons-for-conda-forge.patch
+    - 0004-Adjust-nanobind-usage-for-conda-forge.patch
 
 build:
   number: 0
@@ -31,15 +33,16 @@ requirements:
         - python
         - cross-python_${{ target_platform }}
         - numpy
-        - pybind11
+        - nanobind
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
     - cmake
-    - make
+    - ninja
     - libprotobuf
     - if: unix
-      then: sed
+      then:
+        - make
   host:
     - python
     - libprotobuf
@@ -47,7 +50,7 @@ requirements:
     - numpy
     - pip
     - protobuf
-    - pybind11
+    - nanobind
     - pytest-runner
     - setuptools
   run:
