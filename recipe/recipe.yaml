@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.19.1"
+  version: "1.20.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,11 +10,13 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: ce9d2569a61d64e8a3d05b92194f60ffb7c868dbb754a71f5b4d992273a9413d
+  sha256: e9e9273cd39d460348aa3e2eb370a444b510e138c5f45dfa86ce50461901257b
   patches:
     - if: win
       then: 0001-Link-to-abseil_dll.patch
-    - 0002-dont-hide-all-symbols-and-set-ext-suffix.patch
+    - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
+    - 0003-Update-Cmake-definitons-for-conda-forge.patch
+    - 0004-Adjust-nanobind-usage-for-conda-forge.patch
 
 build:
   number: 0
@@ -31,15 +33,16 @@ requirements:
         - python
         - cross-python_${{ target_platform }}
         - numpy
-        - pybind11
+        - nanobind
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
     - cmake
-    - make
+    - ninja
     - libprotobuf
     - if: unix
-      then: sed
+      then:
+        - make
   host:
     - python
     - libprotobuf
@@ -47,7 +50,7 @@ requirements:
     - numpy
     - pip
     - protobuf
-    - pybind11
+    - nanobind
     - pytest-runner
     - setuptools
   run:

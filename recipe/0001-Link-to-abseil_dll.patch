@@ -1,22 +1,21 @@
-From 18fb86cb2fc45dc134b500da5e5ab2cc4828c383 Mon Sep 17 00:00:00 2001
+From a1aff4b75dc5e40de19456e0437f1543bbd948e6 Mon Sep 17 00:00:00 2001
 From: Aditya Goel <agoel4512@gmail.com>
 Date: Tue, 7 Nov 2023 11:47:35 +0000
-Subject: [PATCH] Link to abseil_dll
+Subject: [PATCH 1/2] Link to abseil_dll
 
 ---
- CMakeLists.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4799557..de44ef2 100644
+index 4a7df7d..e187405 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -464,7 +464,7 @@ endif()
- set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
- set_target_properties(onnx PROPERTIES VISIBILITY_INLINES_HIDDEN ON)
- 
--target_link_libraries(onnx PUBLIC onnx_proto)
-+target_link_libraries(onnx PUBLIC onnx_proto $ENV{PREFIX}/Library/lib/abseil_dll.lib)
- add_onnx_global_defines(onnx)
- 
- if(ONNX_BUILD_PYTHON)
+@@ -457,6 +457,7 @@ foreach(ABSL_USED_TARGET IN LISTS protobuf_ABSL_USED_TARGETS)
+ endforeach()
+ add_library(onnx)
+ target_link_libraries(onnx PUBLIC $<BUILD_INTERFACE:onnx_object> $<BUILD_INTERFACE:onnx_proto_object>)
++target_link_libraries(onnx PUBLIC $ENV{PREFIX}/Library/lib/abseil_dll.lib)
+ target_include_directories(onnx PUBLIC $<INSTALL_INTERFACE:include>)
+ if(ONNX_ML)
+   target_compile_definitions(onnx PUBLIC ONNX_ML=1)

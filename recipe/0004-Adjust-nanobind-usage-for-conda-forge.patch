@@ -1,0 +1,54 @@
+From 4f22b80626be1c4d2c36ea95a887d727dfbd4af8 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sat, 27 Dec 2025 19:04:24 -0500
+Subject: [PATCH] Adjust nanobind usage for conda-forge
+
+---
+ CMakeLists.txt | 12 ++++++++++--
+ setup.py       |  2 +-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 829ed51..44704c6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -447,13 +447,21 @@ target_compile_options(onnx_object PUBLIC ${protobuf_warnings})
+ target_compile_options(onnx_proto_object PUBLIC ${protobuf_warnings})
+ 
+ if(ONNX_BUILD_PYTHON)
+-  # find system nanobind
++  if(NOT nanobind_DIR)
++    execute_process(
++      COMMAND "${Python_EXECUTABLE}" -c
++              "import nanobind; print(nanobind.cmake_dir())"
++      OUTPUT_VARIABLE nanobind_DIR
++      OUTPUT_STRIP_TRAILING_WHITESPACE
++    )
++    message(STATUS "Using nanobind_DIR: ${nanobind_DIR}")
++  endif()
+   find_package(nanobind REQUIRED)
+ 
+   # Configure nanobind: https://nanobind.readthedocs.io/en/latest/api_cmake.html
+   nanobind_add_module(
+     onnx_cpp2py_export
+-    NB_STATIC NB_DOMAIN onnx STABLE_ABI FREE_THREADED LTO
++    NB_STATIC NB_DOMAIN onnx FREE_THREADED LTO
+     "${ONNX_ROOT}/onnx/cpp2py_export.cc")
+ 
+   target_link_libraries(onnx_cpp2py_export PRIVATE $<BUILD_INTERFACE:onnx_object> $<BUILD_INTERFACE:onnx_proto_object>)
+diff --git a/setup.py b/setup.py
+index 2b60ff6..42db96e 100644
+--- a/setup.py
++++ b/setup.py
+@@ -322,7 +322,7 @@ CMD_CLASS = {
+ 
+ NO_GIL = hasattr(sys, "_is_gil_enabled") and not sys._is_gil_enabled()
+ PY_312_OR_NEWER = sys.version_info >= (3, 12)
+-USE_LIMITED_API = not NO_GIL and PY_312_OR_NEWER
++USE_LIMITED_API = False and not NO_GIL and PY_312_OR_NEWER
+ 
+ macros = []
+ if USE_LIMITED_API:
+-- 
+2.51.0
+
