@@ -12,14 +12,18 @@ source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
   sha256: e9e9273cd39d460348aa3e2eb370a444b510e138c5f45dfa86ce50461901257b
   patches:
-    - if: win
-      then: 0001-Link-to-abseil_dll.patch
+    - 0001-Link-to-abseil_dll.patch
     - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
     - 0003-Update-Cmake-definitons-for-conda-forge.patch
     - 0004-Adjust-nanobind-usage-for-conda-forge.patch
+    - 0005-link-privately-and-abseil.patch
+    - 0006-Link-to-libonnx.patch
+    - 0007-Ensure-the-library-location-is-found.patch
+    # https://github.com/onnx/onnx/pull/7532
+    - 0008-Keep-windows-slashes.patch
 
 build:
-  number: 0
+  number: 1
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
@@ -32,26 +36,19 @@ requirements:
       then:
         - python
         - cross-python_${{ target_platform }}
-        - numpy
         - nanobind
+        - libprotobuf
     - ${{ compiler('c') }}
-    - ${{ stdlib("c") }}
+    - ${{ stdlib('c') }}
     - ${{ compiler('cxx') }}
     - cmake
     - ninja
-    - libprotobuf
-    - if: unix
-      then:
-        - make
   host:
     - python
     - libprotobuf
-    - ninja
-    - numpy
     - pip
     - protobuf
     - nanobind
-    - pytest-runner
     - setuptools
   run:
     - python
@@ -73,8 +70,16 @@ tests:
       - backend-test-tools --help
       - if: unix
         then:
-          - "test -f \"$PREFIX/lib/libonnx${SHLIB_EXT}\""
-          - "test -f \"$PREFIX/lib/cmake/ONNX/ONNXConfig.cmake\""
+          - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
+          - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
+          - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
+      # - if: win
+      #   then:
+      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx.dll" exit 1
+      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.dll" exit 1
+      #     - if not exist "%LIBRARY_PREFIX%\\lib\\onnx.lib" exit 1
+      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.lib" exit 1
+
 about:
   license: Apache-2.0
   license_file: LICENSE

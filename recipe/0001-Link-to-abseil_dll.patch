@@ -1,14 +1,14 @@
-From a1aff4b75dc5e40de19456e0437f1543bbd948e6 Mon Sep 17 00:00:00 2001
+From b34790be4f251ad54b6d4f4634b6f8475129cf74 Mon Sep 17 00:00:00 2001
 From: Aditya Goel <agoel4512@gmail.com>
 Date: Tue, 7 Nov 2023 11:47:35 +0000
-Subject: [PATCH 1/2] Link to abseil_dll
+Subject: [PATCH 1/8] Link to abseil_dll
 
 ---
  CMakeLists.txt | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4a7df7d..e187405 100644
+index 4a7df7d71..e187405d7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -457,6 +457,7 @@ foreach(ABSL_USED_TARGET IN LISTS protobuf_ABSL_USED_TARGETS)
@@ -19,3 +19,6 @@ index 4a7df7d..e187405 100644
  target_include_directories(onnx PUBLIC $<INSTALL_INTERFACE:include>)
  if(ONNX_ML)
    target_compile_definitions(onnx PUBLIC ONNX_ML=1)
+-- 
+2.51.0
+

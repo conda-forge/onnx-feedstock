@@ -1,0 +1,28 @@
+From b7d3e4b46915de445fd1b5f8aee7c2303dc2277b Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 28 Dec 2025 11:44:50 -0500
+Subject: [PATCH 8/8] Keep windows slashes
+
+---
+ setup.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/setup.py b/setup.py
+index 42db96e9d..ec4975216 100644
+--- a/setup.py
++++ b/setup.py
+@@ -209,7 +209,10 @@ class CmakeBuild(setuptools.Command):
+             if ONNX_DISABLE_STATIC_REGISTRATION:
+                 cmake_args.append("-DONNX_DISABLE_STATIC_REGISTRATION=ON")
+             if "CMAKE_ARGS" in os.environ:
+-                extra_cmake_args = shlex.split(os.environ["CMAKE_ARGS"])
++                extra_cmake_args = shlex.split(
++                    os.environ["CMAKE_ARGS"],
++                    posix=not WINDOWS,
++                )
+                 # prevent crossfire with downstream scripts
+                 del os.environ["CMAKE_ARGS"]
+                 logging.info("Extra cmake args: %s", extra_cmake_args)  # noqa: LOG015
+-- 
+2.51.0
+

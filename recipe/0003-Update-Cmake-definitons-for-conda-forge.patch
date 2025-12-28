@@ -1,7 +1,7 @@
-From a95766d201d2be2ee08e0f5485ca84ad1443e990 Mon Sep 17 00:00:00 2001
+From 4f94bb541497489de7b3f88af5dbcd22e388cf91 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sat, 27 Dec 2025 18:33:59 -0500
-Subject: [PATCH] Update Cmake definitons for conda-forge
+Subject: [PATCH 3/8] Update Cmake definitons for conda-forge
 
 ---
  CMakeLists.txt      | 35 +++--------------------------------
@@ -9,7 +9,7 @@ Subject: [PATCH] Update Cmake definitons for conda-forge
  2 files changed, 10 insertions(+), 39 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 160fa08..829ed51 100644
+index 277997f72..42c706187 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -129,26 +129,8 @@ if(ONNX_DISABLE_EXCEPTIONS)
@@ -41,7 +41,7 @@ index 160fa08..829ed51 100644
  
  if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
    set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
-@@ -466,18 +448,7 @@ target_compile_options(onnx_proto_object PUBLIC ${protobuf_warnings})
+@@ -467,18 +449,7 @@ target_compile_options(onnx_proto_object PUBLIC ${protobuf_warnings})
  
  if(ONNX_BUILD_PYTHON)
    # find system nanobind
@@ -62,7 +62,7 @@ index 160fa08..829ed51 100644
    # Configure nanobind: https://nanobind.readthedocs.io/en/latest/api_cmake.html
    nanobind_add_module(
 diff --git a/cmake/summary.cmake b/cmake/summary.cmake
-index 740d4ad..ec26944 100644
+index 740d4ad81..ec269446d 100644
 --- a/cmake/summary.cmake
 +++ b/cmake/summary.cmake
 @@ -72,14 +72,14 @@ function(onnx_print_configuration_summary)

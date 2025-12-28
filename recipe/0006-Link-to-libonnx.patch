@@ -1,0 +1,25 @@
+From a680a0606844e1340f508150b9bcc4ebeda7bc94 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 28 Dec 2025 09:52:28 -0500
+Subject: [PATCH 6/8] Link to libonnx
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5e0a65c9b..4f976f525 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -467,7 +467,7 @@ if(ONNX_BUILD_PYTHON)
+     NB_STATIC NB_DOMAIN onnx FREE_THREADED LTO
+     "${ONNX_ROOT}/onnx/cpp2py_export.cc")
+ 
+-  target_link_libraries(onnx_cpp2py_export PRIVATE $<BUILD_INTERFACE:onnx_object> $<BUILD_INTERFACE:onnx_proto_object>)
++  target_link_libraries(onnx_cpp2py_export PRIVATE onnx onnx_proto)
+   # Prevent "undefined symbol: _ZNSt10filesystem7__cxx114path14_M_split_cmptsEv"
+   # (std::filesystem::__cxx11::path::_M_split_cmpts()) on gcc 8
+   if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+-- 
+2.51.0
+

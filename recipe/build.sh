@@ -5,7 +5,11 @@ export ONNX_ML=1
 # build script looks at this, but not set on
 export CONDA_PREFIX="$PREFIX"
 export CMAKE_ARGS="${CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON"
-export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
+if [[ ${CONDA_BUILD_CROSS_COMPILATION:-} == "1" ]]; then
+    export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
+else
+    export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$PREFIX/bin/protoc"
+fi
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_LIBRARY=$PREFIX/lib/libprotobuf${SHLIB_EXT}"
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_INCLUDE_DIR:PATH=${PREFIX}/include"
 export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_STANDARD=17"
