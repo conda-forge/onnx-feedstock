@@ -1,14 +1,14 @@
-From 71298158eac2651881e8466934c54f83ad833c86 Mon Sep 17 00:00:00 2001
+From 4709a430dadd72cdb7e8a1975fe6458066986344 Mon Sep 17 00:00:00 2001
 From: "Uwe L. Korn" <uwe.korn@quantco.com>
 Date: Mon, 1 Dec 2025 20:28:57 +0100
-Subject: [PATCH 2/2] Don't hide all symbols and set ext suffix
+Subject: [PATCH 2/8] Don't hide all symbols and set ext suffix
 
 ---
  CMakeLists.txt | 2 --
  1 file changed, 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e187405..277997f 100644
+index e187405d7..277997f72 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -443,8 +443,6 @@ add_library(onnx_object OBJECT ${ONNX_SRCS})
@@ -20,3 +20,6 @@ index e187405..277997f 100644
  target_include_directories(onnx_object PUBLIC $<BUILD_INTERFACE:${ONNX_ROOT}>)
  add_onnx_global_defines(onnx_object)
  target_link_libraries(onnx_proto_object PUBLIC ${LINKED_PROTOBUF_TARGET})
+-- 
+2.51.0
+

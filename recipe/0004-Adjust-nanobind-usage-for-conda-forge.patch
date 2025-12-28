@@ -1,7 +1,7 @@
-From 4f22b80626be1c4d2c36ea95a887d727dfbd4af8 Mon Sep 17 00:00:00 2001
+From 020c8341b668a4967acc7849bb84fe8475b1357d Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sat, 27 Dec 2025 19:04:24 -0500
-Subject: [PATCH] Adjust nanobind usage for conda-forge
+Subject: [PATCH 4/8] Adjust nanobind usage for conda-forge
 
 ---
  CMakeLists.txt | 12 ++++++++++--
@@ -9,10 +9,10 @@ Subject: [PATCH] Adjust nanobind usage for conda-forge
  2 files changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 829ed51..44704c6 100644
+index 42c706187..b63a9c07c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -447,13 +447,21 @@ target_compile_options(onnx_object PUBLIC ${protobuf_warnings})
+@@ -448,13 +448,21 @@ target_compile_options(onnx_object PUBLIC ${protobuf_warnings})
  target_compile_options(onnx_proto_object PUBLIC ${protobuf_warnings})
  
  if(ONNX_BUILD_PYTHON)
@@ -37,7 +37,7 @@ index 829ed51..44704c6 100644
  
    target_link_libraries(onnx_cpp2py_export PRIVATE $<BUILD_INTERFACE:onnx_object> $<BUILD_INTERFACE:onnx_proto_object>)
 diff --git a/setup.py b/setup.py
-index 2b60ff6..42db96e 100644
+index 2b60ff68a..42db96e9d 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -322,7 +322,7 @@ CMD_CLASS = {

@@ -1,0 +1,29 @@
+From ec6db27c642bcc203624bfc4e4759619eab47a74 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 28 Dec 2025 10:09:52 -0500
+Subject: [PATCH 7/8] Ensure the library location is found
+
+---
+ CMakeLists.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4f976f525..b9a7d6f71 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -445,6 +445,12 @@ if(ONNX_ML)
+   target_compile_definitions(onnx PUBLIC ONNX_ML=1)
+ endif()
+ target_compile_definitions(onnx PUBLIC ONNX_NAMESPACE=${ONNX_NAMESPACE})
++target_include_directories(onnx
++  PUBLIC
++    $<BUILD_INTERFACE:${ONNX_ROOT}>
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
++    $<INSTALL_INTERFACE:include>
++)
+ 
+ target_compile_options(onnx_object PUBLIC ${protobuf_warnings})
+ target_compile_options(onnx_proto_object PUBLIC ${protobuf_warnings})
+-- 
+2.51.0
+
