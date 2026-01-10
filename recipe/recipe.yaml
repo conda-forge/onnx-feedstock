@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.20.0"
+  version: "1.20.1"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: e9e9273cd39d460348aa3e2eb370a444b510e138c5f45dfa86ce50461901257b
+  sha256: 9bcd6473c689b1ac3aeba8df572891756e01c1a151ae788df5cbc7a4499e5db5
   patches:
     - 0001-Link-to-abseil_dll.patch
     - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
@@ -23,7 +23,7 @@ source:
     - 0008-Keep-windows-slashes.patch
 
 build:
-  number: 1
+  number: 0
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
