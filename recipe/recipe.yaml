@@ -2,25 +2,15 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.20.0"
+  version: "1.21.0rc3"
 
 package:
   name: ${{ name|lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: e9e9273cd39d460348aa3e2eb370a444b510e138c5f45dfa86ce50461901257b
-  patches:
-    - 0001-Link-to-abseil_dll.patch
-    - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
-    - 0003-Update-Cmake-definitons-for-conda-forge.patch
-    - 0004-Adjust-nanobind-usage-for-conda-forge.patch
-    - 0005-link-privately-and-abseil.patch
-    - 0006-Link-to-libonnx.patch
-    - 0007-Ensure-the-library-location-is-found.patch
-    # https://github.com/onnx/onnx/pull/7532
-    - 0008-Keep-windows-slashes.patch
+  url: https://github.com/onnx/onnx/archive/e6c12c5fa7857729e081e2ec90f96dfefeb79b83.tar.gz
+  sha256: 85357dd093404838f97c6278f6e6238fc5adb6409eb433e35f72a5aacf124a7b
 
 build:
   number: 2
