@@ -13,7 +13,7 @@ source:
   sha256: 85357dd093404838f97c6278f6e6238fc5adb6409eb433e35f72a5aacf124a7b
 
 build:
-  number: 2
+  number: 0
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
@@ -63,12 +63,12 @@ tests:
           - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
           - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
           - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
-      # - if: win
-      #   then:
-      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx.dll" exit 1
-      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.dll" exit 1
-      #     - if not exist "%LIBRARY_PREFIX%\\lib\\onnx.lib" exit 1
-      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.lib" exit 1
+      - if: win
+        then:
+          - if not exist "%LIBRARY_PREFIX%\\bin\\onnx.dll" exit 1
+          - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.dll" exit 1
+          - if not exist "%LIBRARY_PREFIX%\\lib\\onnx.lib" exit 1
+          - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.lib" exit 1
 
 about:
   license: Apache-2.0
