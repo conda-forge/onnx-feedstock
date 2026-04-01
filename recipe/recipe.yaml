@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.20.0"
+  version: "1.21.0"
 
 package:
   name: ${{ name|lower }}
@@ -10,20 +10,13 @@ package:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: e9e9273cd39d460348aa3e2eb370a444b510e138c5f45dfa86ce50461901257b
+  sha256: 42ffedcd8c9b6363694300c6ffec1ada77f9620176465719acb27b13a4d6f2de
   patches:
-    - 0001-Link-to-abseil_dll.patch
-    - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
-    - 0003-Update-Cmake-definitons-for-conda-forge.patch
-    - 0004-Adjust-nanobind-usage-for-conda-forge.patch
-    - 0005-link-privately-and-abseil.patch
-    - 0006-Link-to-libonnx.patch
-    - 0007-Ensure-the-library-location-is-found.patch
-    # https://github.com/onnx/onnx/pull/7532
-    - 0008-Keep-windows-slashes.patch
+    - 0001-Patch-Python-and-nanobind-cmake-config.patch
+    - 0002-Link-protobuf-and-abseil-privately.patch
 
 build:
-  number: 2
+  number: 0
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
@@ -73,6 +66,9 @@ tests:
           - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
           - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
           - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
+          - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
+          - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
+
       # - if: win
       #   then:
       #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx.dll" exit 1
