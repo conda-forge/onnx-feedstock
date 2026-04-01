@@ -65,6 +65,9 @@ tests:
           - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
           - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
           - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
+          - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
+          - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
+
       # - if: win
       #   then:
       #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx.dll" exit 1
