@@ -12,15 +12,7 @@ source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
   sha256: 42ffedcd8c9b6363694300c6ffec1ada77f9620176465719acb27b13a4d6f2de
   patches:
-    - 0001-Link-to-abseil_dll.patch
-    - 0002-Don-t-hide-all-symbols-and-set-ext-suffix.patch
-    - 0003-Update-Cmake-definitons-for-conda-forge.patch
-    - 0004-Adjust-nanobind-usage-for-conda-forge.patch
-    - 0005-link-privately-and-abseil.patch
-    - 0006-Link-to-libonnx.patch
-    - 0007-Ensure-the-library-location-is-found.patch
-    # https://github.com/onnx/onnx/pull/7532
-    - 0008-Keep-windows-slashes.patch
+    - 0001-Patch-Python-and-nanobind-cmake-config.patch
 
 build:
   number: 0

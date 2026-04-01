@@ -15,6 +15,7 @@ export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_INCLUDE_DIR:PATH=${PREFIX}/include"
 export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_STANDARD=17"
 export CMAKE_ARGS="${CMAKE_ARGS} -DNPY_TARGET_VERSION=NPY_1_19_API_VERSION"
 export CMAKE_ARGS="${CMAKE_ARGS} -DPython_EXECUTABLE=$PYTHON"
+export CMAKE_ARGS="${CMAKE_ARGS} -DFETCHCONTENT_FULLY_DISCONNECTED=ON"
 
 # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
 # Does not apply to osx-arm64 as its SDK is higher
