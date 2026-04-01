@@ -23,7 +23,7 @@ source:
     - 0008-Keep-windows-slashes.patch
 
 build:
-  number: 2
+  number: 3
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
