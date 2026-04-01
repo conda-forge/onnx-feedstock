@@ -13,6 +13,7 @@ source:
   sha256: 42ffedcd8c9b6363694300c6ffec1ada77f9620176465719acb27b13a4d6f2de
   patches:
     - 0001-Patch-Python-and-nanobind-cmake-config.patch
+    - 0002-Link-protobuf-and-abseil-privately.patch
 
 build:
   number: 0
