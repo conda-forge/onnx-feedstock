@@ -1,0 +1,40 @@
+From b76fe5147a01f79b76dfec9a6521755f7abd3484 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 16:30:44 -0400
+Subject: [PATCH 6/9] Link the Python module against the shared onnx library
+
+onnx_cpp2py_export recompiled the whole of ONNX (ONNX_SRCS and
+ONNX_PROTO_SRCS) into the Python extension, duplicating every ONNX symbol
+and the operator-schema registry between the module and the onnx shared
+library. Build the module from cpp2py_export.cc alone and link the onnx
+shared library instead, so there is a single shared instance.
+---
+ CMakeLists.txt | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f37ffde..2812283 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -442,10 +442,17 @@ if(ONNX_BUILD_PYTHON)
+   find_package(nanobind REQUIRED)
+ 
+   # Configure nanobind: https://nanobind.readthedocs.io/en/latest/api_cmake.html
++  #
++  # Build the Python extension from cpp2py_export.cc alone and link it
++  # against the onnx shared library, instead of recompiling the whole of
++  # ${ONNX_SRCS}/${ONNX_PROTO_SRCS} into the module. This keeps a single
++  # copy of the ONNX symbols (and a single operator-schema registry) in the
++  # onnx shared library; the module merely imports them.
+   nanobind_add_module(
+     onnx_cpp2py_export
+     NB_STATIC NB_DOMAIN onnx FREE_THREADED LTO
+-    "${ONNX_ROOT}/onnx/cpp2py_export.cc" ${ONNX_SRCS} ${ONNX_PROTO_SRCS})
++    "${ONNX_ROOT}/onnx/cpp2py_export.cc")
++  target_link_libraries(onnx_cpp2py_export PRIVATE onnx)
+   add_dependencies(onnx_cpp2py_export onnx)
+ endif()
+ 
+-- 
+2.53.0
+

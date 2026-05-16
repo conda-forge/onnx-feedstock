@@ -1,0 +1,213 @@
+From 3a0691cfe4569ff53d610339d8a0b03e4f891d3d Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 22:40:01 -0400
+Subject: [PATCH 9/9] Annotate the remaining public C++ API with ONNX_API
+
+Several public functions in checker.h, inliner.h, schema.h,
+shape_inference/implementation.h and printer.h were not annotated with
+ONNX_API, so they were not exported from the ONNX shared library on
+Windows and a separate consumer (onnx_cpp2py_export) failed to link
+against them. Annotate the checker free functions, the inliner entry
+points, OpSchema::Verify, the shape-inference helpers and the proto
+streaming operators.
+
+Also drop ONNX_API from the RegisterOpSetSchema function template: a
+template is instantiated in every translation unit, so a definition
+carrying __declspec(dllimport) is rejected by MSVC (C2491).
+---
+ onnx/checker.h                        | 22 ++++++++++-----------
+ onnx/defs/printer.h                   | 28 +++++++++++++--------------
+ onnx/defs/schema.h                    |  6 ++++--
+ onnx/inliner/inliner.h                | 10 +++++-----
+ onnx/shape_inference/implementation.h |  4 ++--
+ 5 files changed, 36 insertions(+), 34 deletions(-)
+
+diff --git a/onnx/checker.h b/onnx/checker.h
+index ad3d7be..a43e445 100644
+--- a/onnx/checker.h
++++ b/onnx/checker.h
+@@ -144,16 +144,16 @@ class LexicalScopeContext final {
+ };
+ 
+ using IR_VERSION_TYPE = decltype(Version::IR_VERSION);
+-void check_value_info(const ValueInfoProto& value_info, const CheckerContext& /*ctx*/);
+-void check_tensor(const TensorProto& tensor, const CheckerContext& /*ctx*/);
+-void check_sparse_tensor(const SparseTensorProto& sparse_tensor, const CheckerContext& /*ctx*/);
+-void check_sequence(const SequenceProto& sequence, const CheckerContext& /*ctx*/);
+-void check_map(const MapProto& map, const CheckerContext& /*ctx*/);
+-void check_optional(const OptionalProto& opt, const CheckerContext& /*ctx*/);
+-void check_attribute(const AttributeProto& attr, const CheckerContext& /*ctx*/, const LexicalScopeContext& /*lex_ctx*/);
+-void check_node(const NodeProto& node, const CheckerContext& /*ctx*/, const LexicalScopeContext& /*lex_ctx*/);
+-void check_graph(const GraphProto& graph, const CheckerContext& /*ctx*/, const LexicalScopeContext& /*parent_lex*/);
+-void check_function(
++ONNX_API void check_value_info(const ValueInfoProto& value_info, const CheckerContext& /*ctx*/);
++ONNX_API void check_tensor(const TensorProto& tensor, const CheckerContext& /*ctx*/);
++ONNX_API void check_sparse_tensor(const SparseTensorProto& sparse_tensor, const CheckerContext& /*ctx*/);
++ONNX_API void check_sequence(const SequenceProto& sequence, const CheckerContext& /*ctx*/);
++ONNX_API void check_map(const MapProto& map, const CheckerContext& /*ctx*/);
++ONNX_API void check_optional(const OptionalProto& opt, const CheckerContext& /*ctx*/);
++ONNX_API void check_attribute(const AttributeProto& attr, const CheckerContext& /*ctx*/, const LexicalScopeContext& /*lex_ctx*/);
++ONNX_API void check_node(const NodeProto& node, const CheckerContext& /*ctx*/, const LexicalScopeContext& /*lex_ctx*/);
++ONNX_API void check_graph(const GraphProto& graph, const CheckerContext& /*ctx*/, const LexicalScopeContext& /*parent_lex*/);
++ONNX_API void check_function(
+     const FunctionProto& function,
+     const CheckerContext& /*ctx*/,
+     const LexicalScopeContext& /*parent_lex*/);
+@@ -181,7 +181,7 @@ ONNX_API void check_model(
+     bool full_check = false,
+     bool skip_opset_compatibility_check = false,
+     bool check_custom_domain = false);
+-std::string resolve_external_data_location(
++ONNX_API std::string resolve_external_data_location(
+     const std::string& base_dir,
+     const std::string& location,
+     const std::string& tensor_name);
+diff --git a/onnx/defs/printer.h b/onnx/defs/printer.h
+index 98d695f..7d225c1 100644
+--- a/onnx/defs/printer.h
++++ b/onnx/defs/printer.h
+@@ -12,33 +12,33 @@
+ 
+ namespace ONNX_NAMESPACE {
+ 
+-std::ostream& operator<<(std::ostream& os, const TensorShapeProto_Dimension& dim);
++ONNX_API std::ostream& operator<<(std::ostream& os, const TensorShapeProto_Dimension& dim);
+ 
+-std::ostream& operator<<(std::ostream& os, const TensorShapeProto& shape);
++ONNX_API std::ostream& operator<<(std::ostream& os, const TensorShapeProto& shape);
+ 
+-std::ostream& operator<<(std::ostream& os, const TypeProto_Tensor& tensortype);
++ONNX_API std::ostream& operator<<(std::ostream& os, const TypeProto_Tensor& tensortype);
+ 
+-std::ostream& operator<<(std::ostream& os, const TypeProto& type);
++ONNX_API std::ostream& operator<<(std::ostream& os, const TypeProto& type);
+ 
+-std::ostream& operator<<(std::ostream& os, const TensorProto& tensor);
++ONNX_API std::ostream& operator<<(std::ostream& os, const TensorProto& tensor);
+ 
+-std::ostream& operator<<(std::ostream& os, const ValueInfoProto& value_info);
++ONNX_API std::ostream& operator<<(std::ostream& os, const ValueInfoProto& value_info);
+ 
+-std::ostream& operator<<(std::ostream& os, const ValueInfoList& vilist);
++ONNX_API std::ostream& operator<<(std::ostream& os, const ValueInfoList& vilist);
+ 
+-std::ostream& operator<<(std::ostream& os, const AttributeProto& attr);
++ONNX_API std::ostream& operator<<(std::ostream& os, const AttributeProto& attr);
+ 
+-std::ostream& operator<<(std::ostream& os, const AttrList& attrlist);
++ONNX_API std::ostream& operator<<(std::ostream& os, const AttrList& attrlist);
+ 
+-std::ostream& operator<<(std::ostream& os, const NodeProto& node);
++ONNX_API std::ostream& operator<<(std::ostream& os, const NodeProto& node);
+ 
+-std::ostream& operator<<(std::ostream& os, const NodeList& nodelist);
++ONNX_API std::ostream& operator<<(std::ostream& os, const NodeList& nodelist);
+ 
+-std::ostream& operator<<(std::ostream& os, const GraphProto& graph);
++ONNX_API std::ostream& operator<<(std::ostream& os, const GraphProto& graph);
+ 
+-std::ostream& operator<<(std::ostream& os, const FunctionProto& fn);
++ONNX_API std::ostream& operator<<(std::ostream& os, const FunctionProto& fn);
+ 
+-std::ostream& operator<<(std::ostream& os, const ModelProto& model);
++ONNX_API std::ostream& operator<<(std::ostream& os, const ModelProto& model);
+ 
+ template <typename ProtoType>
+ std::string ProtoToString(const ProtoType& proto) {
+diff --git a/onnx/defs/schema.h b/onnx/defs/schema.h
+index 30293d1..767ae28 100644
+--- a/onnx/defs/schema.h
++++ b/onnx/defs/schema.h
+@@ -331,7 +331,7 @@ class OpSchema final {
+    * @brief Verifies if a NodeProto matches the pattern specified in
+    * the schema.
+    */
+-  void Verify(const NodeProto& node) const;
++  ONNX_API void Verify(const NodeProto& node) const;
+ 
+   // Functions to set the property of the operator schemas.
+   // Sets the number of inputs, either a fixed number or a min and a max.
+@@ -1267,7 +1267,9 @@ ONNX_API void DeregisterSchema(const std::string& op_type, int version, const st
+ // Registers the latest opset schema before opset_version_to_load
+ // By default opset_version_to_load=0 means it will register all versions
+ template <class T>
+-ONNX_API void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_duplicate_schema = true) {
++// Not annotated with ONNX_API: a function template is instantiated in each
++// translation unit, so it must not carry __declspec(dllimport/dllexport).
++void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_duplicate_schema = true) {
+   T::ForEachSchema([opset_version_to_load, fail_duplicate_schema](OpSchema&& schema) {
+     RegisterSchema(std::move(schema), opset_version_to_load, fail_duplicate_schema);
+   });
+diff --git a/onnx/inliner/inliner.h b/onnx/inliner/inliner.h
+index c883309..0422b30 100644
+--- a/onnx/inliner/inliner.h
++++ b/onnx/inliner/inliner.h
+@@ -37,7 +37,7 @@ class FunctionIdSet {
+ 
+   // Creates a set representing the elements in the given vector, if invert is false.
+   // Otherwise, creates a set representing elements not in the given vector.
+-  static std::unique_ptr<FunctionIdSet> Create(FunctionIdVector&& function_ids, bool invert = false);
++  ONNX_API static std::unique_ptr<FunctionIdSet> Create(FunctionIdVector&& function_ids, bool invert = false);
+ };
+ 
+ /**
+@@ -48,7 +48,7 @@ class FunctionIdSet {
+  *        the default schema registry is used.
+  * @note Only call-sites in the main graph are inlined.
+  */
+-void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline, const ISchemaRegistry* schema_registry);
++ONNX_API void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline, const ISchemaRegistry* schema_registry);
+ 
+ /**
+  * @brief Inlines the model-local functions in the given model that are in the given set.
+@@ -63,7 +63,7 @@ void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline,
+  * @note This function does not perform schema-defined function inlining. For schema-defined
+  *       function inlining, use InlineSelectedFunctions instead.
+  */
+-void InlineSelectedLocalFunctions(ModelProto& model, const FunctionIdSet& to_inline);
++ONNX_API void InlineSelectedLocalFunctions(ModelProto& model, const FunctionIdSet& to_inline);
+ 
+ /**
+  * @brief Inlines the model-local functions in the given model that are in the given set.
+@@ -71,14 +71,14 @@ void InlineSelectedLocalFunctions(ModelProto& model, const FunctionIdSet& to_inl
+  * to avoid confusion with the overloaded version of InlineSelectedFunctions that
+  * inlines schema-defined functions as well.
+  */
+-void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline);
++ONNX_API void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline);
+ 
+ // Inlines all model-local functions in the given model. This supports version
+ // conversion, an advanced feature that is not enabled by default. When enabled,
+ // the inliner will attempt to convert the version of the inlined function to
+ // match the version of the model. If not enabled, the inliner will only inline
+ // functions that use opset versions that are compatible with the model.
+-void InlineLocalFunctions(ModelProto& model, bool convert_version = false);
++ONNX_API void InlineLocalFunctions(ModelProto& model, bool convert_version = false);
+ 
+ /**
+  * @brief A utility class for renaming variables during graph inlining operations.
+diff --git a/onnx/shape_inference/implementation.h b/onnx/shape_inference/implementation.h
+index c3fd19e..1468da1 100644
+--- a/onnx/shape_inference/implementation.h
++++ b/onnx/shape_inference/implementation.h
+@@ -125,7 +125,7 @@ class GraphInferencerImpl : public GraphInferencer {
+   GraphInferencerImpl(GraphProto& g, GraphInferenceContext& context, const ShapeInferenceOptions& options)
+       : g_{&g}, context_{&context}, options_(options) {}
+ 
+-  std::vector<const TypeProto*> doInferencing(
++  ONNX_API std::vector<const TypeProto*> doInferencing(
+       const std::vector<const TypeProto*>& input_types,
+       const std::vector<const TensorProto*>& input_data) override;
+ 
+@@ -532,7 +532,7 @@ void InferShapeForFunctionNode(
+ /// A TypeProto with value_case() == TypeProto::ValueCase::VALUE_NOT_SET is used
+ /// for missing optional parameters.
+ ///
+-std::vector<TypeProto> InferFunctionOutputTypes(
++ONNX_API std::vector<TypeProto> InferFunctionOutputTypes(
+     const FunctionProto& function_proto,
+     const std::vector<TypeProto>& input_types,
+     const std::vector<AttributeProto>& attributes);
+-- 
+2.53.0
+
