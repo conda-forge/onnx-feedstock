@@ -32,3 +32,14 @@ cmake -G Ninja -S . -B build ${CMAKE_ARGS} \
 
 cmake --build build
 cmake --install build
+
+# Provide unversioned development symlinks (libonnx${SHLIB_EXT} ->
+# libonnx-X.Y${SHLIB_EXT}) so downstreams can link -lonnx without hard-coding
+# the version. These ship only in the single-version libonnx-dev package; the
+# versioned libraries (in the co-installable runtime) are what keep different
+# ONNX versions from colliding on disk. The target is discovered from the
+# installed file so it tracks whatever version patch 0010 stamped in.
+for _lib in onnx onnx_proto; do
+    versioned="$(basename "$(ls "${PREFIX}/lib/lib${_lib}-"*"${SHLIB_EXT}")")"
+    ln -sf "${versioned}" "${PREFIX}/lib/lib${_lib}${SHLIB_EXT}"
+done

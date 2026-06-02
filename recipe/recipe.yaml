@@ -2,6 +2,15 @@ schema_version: 1
 
 context:
   version: "1.21.0"
+  # ONNX provides no stable C++ ABI, even across minor releases. Each
+  # major.minor is therefore treated as a separate, co-installable runtime
+  # library whose version is baked into both the shared library file name
+  # (patch 0010) and the runtime package name -- mirroring the libLLVM-<ver>
+  # co-installability scheme used by conda-forge's llvmdev feedstock.
+  # major.minor with a dot identifies the shared library files (libonnx-1.21.so);
+  # the dash form is used for the conda package name, which may not contain dots.
+  abi_version: ${{ (version | split("."))[0] ~ "." ~ (version | split("."))[1] }}
+  libonnx: ${{ "libonnx" ~ (version | split("."))[0] ~ "-" ~ (version | split("."))[1] }}
 
 recipe:
   name: onnx
@@ -20,24 +29,20 @@ source:
     - 0007-Only-require-the-Python-Development-component-for-th.patch
     - 0008-Make-ONNX_API-resolve-to-dllimport-for-shared-librar.patch
     - 0009-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
+    - 0010-Version-the-onnx-shared-libraries-for-co-installabil.patch
 
 build:
-  number: 1
+  number: 2
 
 outputs:
-  # The ONNX C++ shared library (libonnx / libonnx_proto), headers and the
-  # ONNX CMake package. Built directly with CMake and no Python involvement.
-  - package:
-      name: libonnx
-      version: ${{ version }}
+  # Build the ONNX C++ shared libraries, headers and CMake package exactly
+  # once. The result is split below into a version-stamped, co-installable
+  # runtime package and a single (one-version-at-a-time) development package.
+  - staging:
+      name: libonnx-build
     build:
       script:
         file: ${{ "build_libonnx.bat" if win else "build_libonnx.sh" }}
-      variant:
-        # libonnx is a pure C++ library; the Python interpreter is only a
-        # build tool (gen_proto.py), so the package is not Python-versioned.
-        ignore_keys:
-          - python
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -53,31 +58,109 @@ outputs:
         - libprotobuf
       host:
         - libprotobuf
+
+  # The co-installable ONNX C++ runtime: only the version-stamped shared
+  # libraries (libonnx-X.Y.so / onnx-X.Y.dll). Because the version is in the
+  # package name and in every file name, multiple ONNX runtimes can be
+  # installed in the same environment at once.
+  - package:
+      name: ${{ libonnx }}
+      version: ${{ version }}
+    build:
+      variant:
+        ignore_keys:
+          - python
+      files:
+        - lib/libonnx-*.so
+        - lib/libonnx_proto-*.so
+        - lib/libonnx-*.dylib
+        - lib/libonnx_proto-*.dylib
+        - Library/bin/onnx-*.dll
+        - Library/bin/onnx_proto-*.dll
+    inherit: libonnx-build
+    requirements:
       run_exports:
-        # ONNX offers no stable ABI for its C++ library.
-        - ${{ pin_subpackage('libonnx', upper_bound='x.x.x') }}
+        # ONNX offers no stable C++ ABI; the major.minor is already part of the
+        # package name (so unrelated versions stay co-installable), and this
+        # pin keeps a consumer on the exact libonnx it built against.
+        - ${{ pin_subpackage(libonnx, upper_bound="x.x.x") }}
+    tests:
+      - script:
+          - if: linux
+            then:
+              - test -f "${PREFIX}/lib/libonnx-${{ abi_version }}${SHLIB_EXT}"
+              - test -f "${PREFIX}/lib/libonnx_proto-${{ abi_version }}${SHLIB_EXT}"
+          - if: osx
+            then:
+              - test -f "${PREFIX}/lib/libonnx-${{ abi_version }}${SHLIB_EXT}"
+              - test -f "${PREFIX}/lib/libonnx_proto-${{ abi_version }}${SHLIB_EXT}"
+          - if: win
+            then:
+              - if not exist %LIBRARY_PREFIX%\bin\onnx-${{ abi_version }}.dll exit 1
+              - if not exist %LIBRARY_PREFIX%\bin\onnx_proto-${{ abi_version }}.dll exit 1
+
+  # The ONNX C++ development package: headers, the ONNX CMake package and (on
+  # Windows) the import libraries. Only one version can be installed at a time
+  # -- it pulls in the exact matching runtime. Downstreams build against this
+  # and, via the inherited run_exports, get a runtime dependency on the
+  # co-installable ${{ libonnx }}.
+  - package:
+      name: libonnx-dev
+      version: ${{ version }}
+    build:
+      variant:
+        ignore_keys:
+          - python
+      files:
+        - include/onnx/**
+        - lib/cmake/ONNX/**
+        # Unversioned linker symlinks/import libraries (libonnx.so ->
+        # libonnx-X.Y.so, onnx.lib) created by the build scripts, so
+        # downstreams can link -lonnx without knowing the version. Safe here
+        # because only one libonnx-dev is ever installed at a time.
+        - lib/libonnx.so
+        - lib/libonnx_proto.so
+        - lib/libonnx.dylib
+        - lib/libonnx_proto.dylib
+        - Library/include/onnx/**
+        - Library/lib/cmake/ONNX/**
+        - Library/lib/onnx-*.lib
+        - Library/lib/onnx_proto-*.lib
+        - Library/lib/onnx.lib
+        - Library/lib/onnx_proto.lib
+    inherit: libonnx-build
+    requirements:
+      run:
+        - ${{ pin_subpackage(libonnx, exact=True) }}
+      run_exports:
+        # A downstream that builds against these headers needs the matching
+        # co-installable runtime at run time.
+        - ${{ pin_subpackage(libonnx, upper_bound="x.x.x") }}
     tests:
       - script:
           - if: unix
             then:
-              - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
-              - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
+              - test -f "${PREFIX}/include/onnx/onnx_pb.h"
               - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
               - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
-              - test -f "${PREFIX}/include/onnx/onnx_pb.h"
+              # The unversioned linker symlink resolves to the runtime library.
+              - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
+              - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
               # protobuf and abseil must be linked privately (patch 0002).
               - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
           - if: win
             then:
-              - if not exist %LIBRARY_PREFIX%\bin\onnx.dll exit 1
-              - if not exist %LIBRARY_PREFIX%\bin\onnx_proto.dll exit 1
+              - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\ONNX\ONNXConfig.cmake exit 1
+              - if not exist %LIBRARY_PREFIX%\lib\onnx-${{ abi_version }}.lib exit 1
+              - if not exist %LIBRARY_PREFIX%\lib\onnx_proto-${{ abi_version }}.lib exit 1
               - if not exist %LIBRARY_PREFIX%\lib\onnx.lib exit 1
               - if not exist %LIBRARY_PREFIX%\lib\onnx_proto.lib exit 1
-              - if not exist %LIBRARY_PREFIX%\lib\cmake\ONNX\ONNXConfig.cmake exit 1
-              - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
 
   # The ONNX Python package. The onnx_cpp2py_export extension links the
-  # libonnx shared library rather than recompiling ONNX (patch 0005).
+  # versioned libonnx shared library (patch 0006 + 0010) rather than
+  # recompiling ONNX into the module, and resolves it at run time from the
+  # co-installable ${{ libonnx }} package.
   - package:
       name: onnx
       version: ${{ version }}
@@ -109,13 +192,13 @@ outputs:
         - nanobind
         - libprotobuf
         - protobuf
-        - ${{ pin_subpackage('libonnx', exact=True) }}
+        - ${{ pin_subpackage(libonnx, exact=True) }}
       run:
         - python
         - ml_dtypes
         - protobuf
         - typing_extensions
-        - ${{ pin_subpackage('libonnx', exact=True) }}
+        - ${{ pin_subpackage(libonnx, exact=True) }}
     tests:
       - python:
           imports:

@@ -1,0 +1,41 @@
+From 111a31f4bd76a4aa90a36c6dd9c4de7f34fb46e2 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Tue, 2 Jun 2026 12:00:00 -0400
+Subject: [PATCH] Version the onnx shared libraries for co-installability
+
+Bake the ONNX major.minor version into the onnx and onnx_proto shared
+library file names (libonnx-X.Y.so / onnx-X.Y.dll and their import
+libraries). ONNX provides no stable C++ ABI, so distinct releases must
+ship distinct runtime libraries to be co-installable, mirroring the
+libLLVM-<ver> scheme used by conda-forge. Downstream consumers use the
+find_package(ONNX) targets, so the physical file name is transparent.
+---
+ CMakeLists.txt | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 07eac9c..b200f28 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -432,6 +432,18 @@ add_onnx_global_defines(onnx)
+ if(BUILD_SHARED_LIBS)
+   target_compile_definitions(onnx PRIVATE ONNX_BUILD_SHARED_LIBS)
+   target_compile_definitions(onnx_proto PRIVATE ONNX_BUILD_SHARED_LIBS)
++
++  # Bake the ONNX major.minor version into the shared library file names
++  # (libonnx-X.Y.so / onnx-X.Y.dll, and the matching import libraries), so
++  # that ABI-incompatible ONNX releases ship distinct runtime libraries that
++  # can be installed side by side. ONNX makes no promise of C++ ABI stability
++  # even across minor releases, so the minor version is part of the name --
++  # mirroring conda-forge's libLLVM-<ver> co-installability scheme. Consumers
++  # use the find_package(ONNX) targets (ONNX::onnx), so the physical file name
++  # is transparent to them.
++  string(REGEX MATCH "^[0-9]+\\.[0-9]+" ONNX_ABI_VERSION "${ONNX_VERSION}")
++  set_target_properties(onnx PROPERTIES OUTPUT_NAME "onnx-${ONNX_ABI_VERSION}")
++  set_target_properties(onnx_proto PROPERTIES OUTPUT_NAME "onnx_proto-${ONNX_ABI_VERSION}")
+ endif()
+ 
+ if(ONNX_BUILD_PYTHON)
+-- 
+2.43.0
+

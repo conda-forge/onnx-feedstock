@@ -23,3 +23,15 @@ if %ERRORLEVEL% neq 0 exit 1
 
 cmake --install build
 if %ERRORLEVEL% neq 0 exit 1
+
+REM Provide unversioned import libraries (onnx.lib / onnx_proto.lib) so
+REM downstreams can link without the version suffix. Windows has no symlinks
+REM for this, so copy them. They ship only in the single-version libonnx-dev
+REM package; the versioned onnx-X.Y.dll (in the co-installable runtime) is what
+REM keeps different ONNX versions from colliding on disk. The versioned import
+REM library is discovered from the installed file (onnx-X.Y.lib) so it tracks
+REM whatever version patch 0010 stamped in.
+for %%F in ("%LIBRARY_PREFIX%\lib\onnx-*.lib") do copy /y "%%F" "%LIBRARY_PREFIX%\lib\onnx.lib"
+if %ERRORLEVEL% neq 0 exit 1
+for %%F in ("%LIBRARY_PREFIX%\lib\onnx_proto-*.lib") do copy /y "%%F" "%LIBRARY_PREFIX%\lib\onnx_proto.lib"
+if %ERRORLEVEL% neq 0 exit 1
