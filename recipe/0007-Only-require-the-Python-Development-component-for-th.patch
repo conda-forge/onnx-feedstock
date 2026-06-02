@@ -1,0 +1,39 @@
+From cd88c0667d7c5fee50030654b6550050410014fb Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 16:40:32 -0400
+Subject: [PATCH 7/9] Only require the Python Development component for the
+ Python build
+
+find_package(Python ... Development) demanded Python headers and
+libraries even for a pure C++ library build (ONNX_BUILD_PYTHON=OFF),
+which only needs the interpreter to run gen_proto.py. Require the
+Development component solely when ONNX_BUILD_PYTHON is set so the C++
+library build does not depend on a specific Python version.
+---
+ CMakeLists.txt | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2812283..07eac9c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -135,7 +135,15 @@ if(ONNX_BUILD_PYTHON)
+   set(python_dev_component Development.Module Development.SABIModule)
+ endif()
+ 
+-find_package(Python REQUIRED COMPONENTS Interpreter Development)
++# The Python Development component (headers and libraries) is only needed
++# to build the Python extension. A plain C++ library build (ONNX_BUILD_PYTHON
++# OFF) only needs the interpreter to run gen_proto.py, so it does not depend
++# on a particular Python version.
++if(ONNX_BUILD_PYTHON)
++  find_package(Python REQUIRED COMPONENTS Interpreter Development)
++else()
++  find_package(Python REQUIRED COMPONENTS Interpreter)
++endif()
+ set(ONNX_PYTHON_INTERPRETER Python::Interpreter)
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+-- 
+2.53.0
+

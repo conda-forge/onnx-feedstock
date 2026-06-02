@@ -22,5 +22,8 @@ export CMAKE_ARGS="${CMAKE_ARGS} -DFETCHCONTENT_FULLY_DISCONNECTED=ON"
 if [[ "${target_platform}" == osx-64 ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
+# Only the Python package is installed here. The onnx_cpp2py_export
+# extension links the libonnx shared library (provided by the libonnx
+# output); the C++ library, headers and CMake package are shipped by
+# libonnx, so this output does not run `cmake --install`.
 $PYTHON -m pip install --no-deps --ignore-installed --verbose .
-cmake --install .setuptools-cmake-build

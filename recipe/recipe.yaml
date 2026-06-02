@@ -1,11 +1,10 @@
 schema_version: 1
 
 context:
-  name: onnx
   version: "1.21.0"
 
-package:
-  name: ${{ name|lower }}
+recipe:
+  name: onnx
   version: ${{ version }}
 
 source:
@@ -14,67 +13,121 @@ source:
   patches:
     - 0001-Patch-Python-and-nanobind-cmake-config.patch
     - 0002-Link-protobuf-and-abseil-privately.patch
+    - 0003-Define-ONNX_BUILD_SHARED_LIBS-when-building-shared-l.patch
+    - 0004-Decorate-the-protobuf-generated-classes-with-ONNX_AP.patch
+    - 0005-Install-shared-libraries-to-standard-destinations.patch
+    - 0006-Link-the-Python-module-against-the-shared-onnx-libra.patch
+    - 0007-Only-require-the-Python-Development-component-for-th.patch
+    - 0008-Make-ONNX_API-resolve-to-dllimport-for-shared-librar.patch
+    - 0009-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
 
 build:
-  number: 0
-  python:
-    entry_points:
-      - check-model = onnx.bin.checker:check_model
-      - check-node = onnx.bin.checker:check_node
-      - backend-test-tools = onnx.backend.test.cmd_tools:main
+  number: 1
 
-requirements:
-  build:
-    - if: build_platform != target_platform
-      then:
+outputs:
+  # The ONNX C++ shared library (libonnx / libonnx_proto), headers and the
+  # ONNX CMake package. Built directly with CMake and no Python involvement.
+  - package:
+      name: libonnx
+      version: ${{ version }}
+    build:
+      script:
+        file: ${{ "build_libonnx.bat" if win else "build_libonnx.sh" }}
+      variant:
+        # libonnx is a pure C++ library; the Python interpreter is only a
+        # build tool (gen_proto.py), so the package is not Python-versioned.
+        ignore_keys:
+          - python
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - ${{ compiler('cxx') }}
+        - cmake
+        - ninja
+        # Python (build platform) only runs gen_proto.py to generate the
+        # *.proto sources; patch 0006 means no Python headers are needed,
+        # so libonnx is not tied to a Python version.
         - python
-        - cross-python_${{ target_platform }}
+        # protoc lives in libprotobuf and must match the build platform.
+        - libprotobuf
+      host:
+        - libprotobuf
+      run_exports:
+        # ONNX offers no stable ABI for its C++ library.
+        - ${{ pin_subpackage('libonnx', upper_bound='x.x.x') }}
+    tests:
+      - script:
+          - if: unix
+            then:
+              - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
+              - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
+              - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
+              - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
+              - test -f "${PREFIX}/include/onnx/onnx_pb.h"
+              # protobuf and abseil must be linked privately (patch 0002).
+              - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
+          - if: win
+            then:
+              - if not exist %LIBRARY_PREFIX%\bin\onnx.dll exit 1
+              - if not exist %LIBRARY_PREFIX%\bin\onnx_proto.dll exit 1
+              - if not exist %LIBRARY_PREFIX%\lib\onnx.lib exit 1
+              - if not exist %LIBRARY_PREFIX%\lib\onnx_proto.lib exit 1
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\ONNX\ONNXConfig.cmake exit 1
+              - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
+
+  # The ONNX Python package. The onnx_cpp2py_export extension links the
+  # libonnx shared library rather than recompiling ONNX (patch 0005).
+  - package:
+      name: onnx
+      version: ${{ version }}
+    build:
+      script:
+        file: ${{ "build_onnx.bat" if win else "build_onnx.sh" }}
+      python:
+        entry_points:
+          - check-model = onnx.bin.checker:check_model
+          - check-node = onnx.bin.checker:check_node
+          - backend-test-tools = onnx.backend.test.cmd_tools:main
+    requirements:
+      build:
+        - if: build_platform != target_platform
+          then:
+            - python
+            - cross-python_${{ target_platform }}
+            - nanobind
+            - libprotobuf
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - ${{ compiler('cxx') }}
+        - cmake
+        - ninja
+      host:
+        - python
+        - pip
+        - setuptools
         - nanobind
         - libprotobuf
-    - ${{ compiler('c') }}
-    - ${{ stdlib('c') }}
-    - ${{ compiler('cxx') }}
-    - cmake
-    - ninja
-  host:
-    - python
-    - libprotobuf
-    - pip
-    - protobuf
-    - nanobind
-    - setuptools
-  run:
-    - python
-    - ml_dtypes
-    - protobuf
-    - typing_extensions
-
-tests:
-  - python:
-      imports:
-        - onnx
-  - requirements:
+        - protobuf
+        - ${{ pin_subpackage('libonnx', exact=True) }}
       run:
-        - pip
-    script:
-      - pip check
-      - check-model --help
-      - check-node --help
-      - backend-test-tools --help
-      - if: unix
-        then:
-          - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
-          - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
-          - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
-          - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
-          - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
-
-      # - if: win
-      #   then:
-      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx.dll" exit 1
-      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.dll" exit 1
-      #     - if not exist "%LIBRARY_PREFIX%\\lib\\onnx.lib" exit 1
-      #     - if not exist "%LIBRARY_PREFIX%\\bin\\onnx_proto.lib" exit 1
+        - python
+        - ml_dtypes
+        - protobuf
+        - typing_extensions
+        - ${{ pin_subpackage('libonnx', exact=True) }}
+    tests:
+      - python:
+          imports:
+            - onnx
+      - requirements:
+          run:
+            - pip
+        script:
+          - pip check
+          - check-model --help
+          - check-node --help
+          - backend-test-tools --help
 
 about:
   license: Apache-2.0
@@ -87,8 +140,6 @@ about:
     defines an extensible computation graph model, as well as definitions of
     built-in operators and standard data types. Initially we focus on the
     capabilities needed for inferencing (evaluation).
-
-
   homepage: https://github.com/onnx/onnx/
 
 extra:

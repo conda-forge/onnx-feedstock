@@ -1,7 +1,7 @@
-From bb41150099a906c5977f29180e3ce6e5908054a2 Mon Sep 17 00:00:00 2001
+From a1b6eedc0454c91f9f9753f25ecb25cfa6869626 Mon Sep 17 00:00:00 2001
 From: Christian Bourjau <christian.bourjau@quantco.com>
 Date: Wed, 1 Apr 2026 15:44:36 +0200
-Subject: [PATCH] Patch Python and nanobind cmake config
+Subject: [PATCH 1/9] Patch Python and nanobind cmake config
 
 Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
 ---
@@ -11,7 +11,7 @@ Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
  3 files changed, 13 insertions(+), 44 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 044996e1b..c2aa00162 100644
+index 044996e..c2aa001 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -135,22 +135,8 @@ if(ONNX_BUILD_PYTHON)
@@ -81,7 +81,7 @@ index 044996e1b..c2aa00162 100644
    add_dependencies(onnx_cpp2py_export onnx)
  endif()
 diff --git a/cmake/summary.cmake b/cmake/summary.cmake
-index aadf595c9..cb5e58663 100644
+index aadf595..cb5e586 100644
 --- a/cmake/summary.cmake
 +++ b/cmake/summary.cmake
 @@ -73,14 +73,14 @@ function(onnx_print_configuration_summary)
@@ -107,7 +107,7 @@ index aadf595c9..cb5e58663 100644
        message(STATUS "    Python SOABI                  : ${Python_SOABI}")
      endif()
 diff --git a/setup.py b/setup.py
-index db78bfa2b..2ffbe81d1 100644
+index db78bfa..2ffbe81 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -336,7 +336,7 @@ CMD_CLASS = {
@@ -119,3 +119,6 @@ index db78bfa2b..2ffbe81d1 100644
  
  macros = []
  if USE_LIMITED_API:
+-- 
+2.53.0
+

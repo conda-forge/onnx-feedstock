@@ -1,0 +1,79 @@
+From c541c32f84598e37b88615f6f995e8d534930a57 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 19:23:45 -0400
+Subject: [PATCH 4/9] Decorate the protobuf-generated classes with ONNX_API
+
+The protobuf-generated *Proto classes carried no export decoration, so
+they were absent from the ONNX shared library's import library on
+Windows. Invoke protoc with dllexport_decl=ONNX_API so every generated
+class, function and data symbol is annotated, and prepend an include of
+onnx/onnx_pb.h (which defines ONNX_API) to each generated header via
+cmake/ONNXProtoApiHeader.cmake.
+---
+ CMakeLists.txt                 |  9 ++++++++-
+ cmake/ONNXProtoApiHeader.cmake | 21 +++++++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+ create mode 100644 cmake/ONNXProtoApiHeader.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e8af218..7b45967 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -356,12 +356,16 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS)
+         COMMENT "Running gen_proto.py on ${INFILE}")
+     message("Generated: ${GENERATED_PROTO}")
+ 
++    # dllexport_decl annotates every generated message class, free function
++    # and data symbol with ONNX_API so the protobuf types are exported from
++    # the ONNX shared library (notably on Windows). ONNX_API is supplied by
++    # onnx/onnx_pb.h, which is prepended to each generated header below.
+     set(PROTOC_ARGS
+         ${GENERATED_PROTO}
+         -I
+         ${CMAKE_CURRENT_BINARY_DIR}
+         --cpp_out
+-        ${CMAKE_CURRENT_BINARY_DIR})
++        dllexport_decl=ONNX_API:${CMAKE_CURRENT_BINARY_DIR})
+     if(ONNX_BUILD_PYTHON)
+       list(APPEND PROTOC_ARGS --python_out)
+       if(ONNX_GEN_PB_TYPE_STUBS)
+@@ -373,6 +377,9 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS)
+     list(APPEND GENERATED_FILES "${GENERATED_PROTO}")
+     add_custom_command(OUTPUT "${OUTPUT_PB_SRC}"
+         COMMAND "${ONNX_PROTOC_EXECUTABLE}" ${PROTOC_ARGS}
++        COMMAND ${CMAKE_COMMAND}
++                -DONNX_PB_HEADER=${OUTPUT_PROTO_DIR}/${GENERATED_FILE_WE}.pb.h
++                -P ${ONNX_ROOT}/cmake/ONNXProtoApiHeader.cmake
+         DEPENDS ${GENERATED_FILES}
+         COMMENT "Running C++ protocol buffer compiler on ${GENERATED_PROTO}")
+   endforeach()
+diff --git a/cmake/ONNXProtoApiHeader.cmake b/cmake/ONNXProtoApiHeader.cmake
+new file mode 100644
+index 0000000..60b6e51
+--- /dev/null
++++ b/cmake/ONNXProtoApiHeader.cmake
+@@ -0,0 +1,21 @@
++# Copyright (c) ONNX Project Contributors
++#
++# SPDX-License-Identifier: Apache-2.0
++#
++# Prepend an include of onnx/onnx_pb.h to a protobuf-generated header.
++#
++# protoc is invoked with dllexport_decl=ONNX_API, which annotates the
++# generated classes, functions and data with the ONNX_API attribute but does
++# not define it. onnx/onnx_pb.h provides that definition. The include is
++# placed before the generated header's own include guard; onnx_pb.h includes
++# the generated header back, but its include guard makes that re-entry a
++# no-op, so ONNX_API is defined by the time the generated declarations are
++# parsed.
++#
++# Expects ONNX_PB_HEADER to be set to the generated header's path.
++
++file(READ "${ONNX_PB_HEADER}" _onnx_pb_contents)
++if(NOT _onnx_pb_contents MATCHES "onnx/onnx_pb\\.h")
++  file(WRITE "${ONNX_PB_HEADER}"
++       "#include \"onnx/onnx_pb.h\"  // defines ONNX_API\n${_onnx_pb_contents}")
++endif()
+-- 
+2.53.0
+
