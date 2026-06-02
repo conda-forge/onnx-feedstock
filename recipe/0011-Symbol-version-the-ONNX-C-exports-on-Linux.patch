@@ -1,0 +1,56 @@
+From 54c1e5525a663524df835515c366b2272d85ee5a Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Tue, 2 Jun 2026 13:00:00 -0400
+Subject: [PATCH] Symbol-version the ONNX C++ exports on Linux
+
+Tag the exported ONNX_API symbols of the onnx and onnx_proto shared
+libraries with an ONNX_<major.minor> version node on Linux, via a
+generated linker version script. ELF uses a flat symbol namespace, so two
+ABI-incompatible libonnx versions loaded into one process would otherwise
+interpose each other's symbols; the version node makes each consumer bind
+to the libonnx it was built against. Hidden visibility already limits the
+exported set to ONNX_API, so 'global: *' versions exactly that set and
+leaves internals local. macOS (two-level namespace) and Windows (per-DLL)
+already isolate symbols per library.
+
+This does not address protobuf's process-global descriptor pool, which is
+still shared because libprotobuf is linked shared and single-version; it
+isolates ONNX's own symbols only.
+---
+ CMakeLists.txt | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b200f28..fb060a6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -444,6 +444,26 @@ if(BUILD_SHARED_LIBS)
+   string(REGEX MATCH "^[0-9]+\\.[0-9]+" ONNX_ABI_VERSION "${ONNX_VERSION}")
+   set_target_properties(onnx PROPERTIES OUTPUT_NAME "onnx-${ONNX_ABI_VERSION}")
+   set_target_properties(onnx_proto PROPERTIES OUTPUT_NAME "onnx_proto-${ONNX_ABI_VERSION}")
++
++  # Symbol-version the exported ONNX C++ API on Linux so that two
++  # ABI-incompatible libonnx versions loaded into the same process bind to
++  # their own definitions instead of interposing in the ELF flat namespace
++  # (macOS two-level namespaces and Windows per-DLL namespaces already isolate
++  # symbols per library). Hidden visibility already restricts the exported set
++  # to the ONNX_API symbols, so "global: *" simply tags that whole set with
++  # ONNX_<major.minor>. NOTE: protobuf is linked shared and is single-version,
++  # so its process-global descriptor pool is still shared between versions;
++  # this isolates ONNX's own symbols, it does not by itself make two libonnx
++  # versions safe to use concurrently in one process.
++  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
++    set(ONNX_VERSION_SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/onnx-symbols.map")
++    file(WRITE "${ONNX_VERSION_SCRIPT}"
++         "ONNX_${ONNX_ABI_VERSION} {\n  global: *;\n};\n")
++    target_link_options(onnx PRIVATE
++      "LINKER:--version-script=${ONNX_VERSION_SCRIPT}")
++    target_link_options(onnx_proto PRIVATE
++      "LINKER:--version-script=${ONNX_VERSION_SCRIPT}")
++  endif()
+ endif()
+ 
+ if(ONNX_BUILD_PYTHON)
+-- 
+2.43.0
+
