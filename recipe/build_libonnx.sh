@@ -24,6 +24,7 @@ cmake -G Ninja -S . -B build ${CMAKE_ARGS} \
     -DBUILD_SHARED_LIBS=ON \
     -DONNX_BUILD_PYTHON=OFF \
     -DONNX_ML=1 \
+    -DONNX_NAMESPACE="${ONNX_NAMESPACE}" \
     -DCMAKE_CXX_STANDARD=17 \
     -DProtobuf_PROTOC_EXECUTABLE="${PROTOC}" \
     -DProtobuf_LIBRARY="${PREFIX}/lib/libprotobuf${SHLIB_EXT}" \

@@ -11,6 +11,15 @@ context:
   # the dash form is used for the conda package name, which may not contain dots.
   abi_version: ${{ (version | split("."))[0] ~ "." ~ (version | split("."))[1] }}
   libonnx: ${{ "libonnx" ~ (version | split("."))[0] ~ "-" ~ (version | split("."))[1] }}
+  # C++ namespace / protobuf package for this ABI series (underscores -- a valid
+  # C++/proto identifier). Setting ONNX_NAMESPACE makes ONNX's C++ symbols and
+  # its onnx.proto registrations (proto file name, package, and message
+  # full-names) unique per version, so two libonnx versions can be loaded into
+  # and used by the same process without ELF symbol interposition or a protobuf
+  # "duplicate file/symbol" descriptor-pool clash. It is a PUBLIC compile
+  # definition, so find_package(ONNX) consumers compile against the same
+  # namespace automatically (use ONNX_NAMESPACE::, not a hard-coded onnx::).
+  onnx_namespace: ${{ "onnx_" ~ (version | split("."))[0] ~ "_" ~ (version | split("."))[1] }}
 
 recipe:
   name: onnx
@@ -30,7 +39,6 @@ source:
     - 0008-Make-ONNX_API-resolve-to-dllimport-for-shared-librar.patch
     - 0009-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
     - 0010-Version-the-onnx-shared-libraries-for-co-installabil.patch
-    - 0011-Symbol-version-the-ONNX-C-exports-on-Linux.patch
 
 build:
   number: 2
@@ -44,6 +52,8 @@ outputs:
     build:
       script:
         file: ${{ "build_libonnx.bat" if win else "build_libonnx.sh" }}
+        env:
+          ONNX_NAMESPACE: ${{ onnx_namespace }}
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -168,6 +178,9 @@ outputs:
     build:
       script:
         file: ${{ "build_onnx.bat" if win else "build_onnx.sh" }}
+        env:
+          # Must match the libonnx the extension links against (patch 0006).
+          ONNX_NAMESPACE: ${{ onnx_namespace }}
       python:
         entry_points:
           - check-model = onnx.bin.checker:check_model
