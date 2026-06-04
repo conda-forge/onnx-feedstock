@@ -1,0 +1,41 @@
+From 429ac964a2f8ce3af1be1f05b54db6dff30f54d9 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 19:22:43 -0400
+Subject: [PATCH 3/9] Define ONNX_BUILD_SHARED_LIBS when building shared
+ libraries
+
+ONNX_API only expands to a dllexport / default-visibility attribute when
+ONNX_BUILD_SHARED_LIBS (or ONNX_BUILD_MAIN_LIB) is defined; nothing in the
+build ever defined it, so a Windows BUILD_SHARED_LIBS=ON build produced a
+DLL that exported none of its annotated public API. Define
+ONNX_BUILD_SHARED_LIBS privately on the onnx and onnx_proto targets for
+shared builds so the public API is exported and consumers see dllimport.
+---
+ CMakeLists.txt | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c2aa001..e8af218 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -408,6 +408,17 @@ add_dependencies(onnx onnx_proto)
+ set_source_files_properties(${ONNX_SRCS} PROPERTIES CXX_VISIBILITY_PRESET hidden)
+ add_onnx_global_defines(onnx)
+ 
++# Export the ONNX C++ API from the shared libraries. The ONNX_API attribute
++# (see onnx/onnx_pb.h) expands to __declspec(dllexport) on Windows, and to
++# visibility("default") elsewhere, only while ONNX_BUILD_SHARED_LIBS is
++# defined; consumers of the headers instead see __declspec(dllimport).
++# Define it privately on the library targets so the annotated public API is
++# exported, without leaking the macro to dependent targets.
++if(BUILD_SHARED_LIBS)
++  target_compile_definitions(onnx PRIVATE ONNX_BUILD_SHARED_LIBS)
++  target_compile_definitions(onnx_proto PRIVATE ONNX_BUILD_SHARED_LIBS)
++endif()
++
+ if(ONNX_BUILD_PYTHON)
+   # find system nanobind
+   if(NOT DEFINED nanobind_DIR OR "${nanobind_DIR}" STREQUAL "")
+-- 
+2.53.0
+

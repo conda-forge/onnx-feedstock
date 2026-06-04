@@ -1,7 +1,7 @@
-From 1714692e9d816ccc2f1dcacb236a8514a291cd94 Mon Sep 17 00:00:00 2001
+From 8a593d86437114e8eaa014dcb84561e08a3b30b7 Mon Sep 17 00:00:00 2001
 From: Christian Bourjau <christian.bourjau@quantco.com>
 Date: Wed, 1 Apr 2026 17:28:59 +0200
-Subject: [PATCH 2/2] Link protobuf and abseil privately
+Subject: [PATCH 2/9] Link protobuf and abseil privately
 
 Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
 ---
@@ -9,7 +9,7 @@ Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/cmake/Utils.cmake b/cmake/Utils.cmake
-index 1987edd45..777497bbe 100644
+index 1987edd..777497b 100644
 --- a/cmake/Utils.cmake
 +++ b/cmake/Utils.cmake
 @@ -135,10 +135,10 @@ function(add_onnx_compile_options target)
@@ -25,3 +25,6 @@ index 1987edd45..777497bbe 100644
      endif()
    endforeach()
    # Prevent "undefined symbol: _ZNSt10filesystem7__cxx114path14_M_split_cmptsEv"
+-- 
+2.53.0
+

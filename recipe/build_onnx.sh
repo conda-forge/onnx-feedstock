@@ -13,6 +13,9 @@ fi
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_LIBRARY=$PREFIX/lib/libprotobuf${SHLIB_EXT}"
 export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_INCLUDE_DIR:PATH=${PREFIX}/include"
 export CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_STANDARD=17"
+# Must match the namespace libonnx was built with so the extension resolves
+# its onnx_<ver>:: symbols at run time.
+export CMAKE_ARGS="${CMAKE_ARGS} -DONNX_NAMESPACE=${ONNX_NAMESPACE}"
 export CMAKE_ARGS="${CMAKE_ARGS} -DNPY_TARGET_VERSION=NPY_1_19_API_VERSION"
 export CMAKE_ARGS="${CMAKE_ARGS} -DPython_EXECUTABLE=$PYTHON"
 export CMAKE_ARGS="${CMAKE_ARGS} -DFETCHCONTENT_FULLY_DISCONNECTED=ON"
@@ -22,5 +25,8 @@ export CMAKE_ARGS="${CMAKE_ARGS} -DFETCHCONTENT_FULLY_DISCONNECTED=ON"
 if [[ "${target_platform}" == osx-64 ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
+# Only the Python package is installed here. The onnx_cpp2py_export
+# extension links the libonnx shared library (provided by the libonnx
+# output); the C++ library, headers and CMake package are shipped by
+# libonnx, so this output does not run `cmake --install`.
 $PYTHON -m pip install --no-deps --ignore-installed --verbose .
-cmake --install .setuptools-cmake-build

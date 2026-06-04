@@ -1,0 +1,33 @@
+From 5a55f16cb0493797044b0a0787260abbdf7d35f1 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 15:51:41 -0400
+Subject: [PATCH 5/9] Install shared libraries to standard destinations
+
+A bare DESTINATION applies to every artifact kind, so on Windows both
+onnx.dll and its import library landed in CMAKE_INSTALL_LIBDIR. Split the
+install into RUNTIME/LIBRARY/ARCHIVE destinations so the DLL is installed
+to bin while the import library and Unix shared/static libraries stay in
+lib.
+---
+ CMakeLists.txt | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7b45967..f37ffde 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -530,7 +530,10 @@ endif()
+ if(ONNX_INSTALL)
+   install(TARGETS
+     onnx onnx_proto
+-    EXPORT ONNXTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
++    EXPORT ONNXTargets
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+   install(EXPORT ONNXTargets
+     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/ONNX"
+-- 
+2.53.0
+

@@ -1,0 +1,43 @@
+From f4f1e358fa688a98dd75e2125844ccfb67d10c2f Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark@ramonaoptics.com>
+Date: Sat, 16 May 2026 22:38:59 -0400
+Subject: [PATCH 8/9] Make ONNX_API resolve to dllimport for shared-library
+ consumers
+
+On MSVC, ONNX_IMPORT (and therefore ONNX_API when ONNX is not being
+built) expanded to nothing instead of __declspec(dllimport). Functions
+still resolve against an import library when declared that way, but data
+symbols and vtables do not, so a separate module linking onnx.dll failed
+with unresolved externals for every ONNX/protobuf class vtable. Always
+define ONNX_IMPORT as __declspec(dllimport) on MSVC.
+---
+ onnx/onnx_pb.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/onnx/onnx_pb.h b/onnx/onnx_pb.h
+index 624cf04..5bed03a 100644
+--- a/onnx/onnx_pb.h
++++ b/onnx/onnx_pb.h
+@@ -9,14 +9,14 @@
+ // different declarations (dllexport and dllimport). On Linux/Mac, it just
+ // resolves to the same "default visibility" setting.
+ #ifdef _MSC_VER
+-#if defined(ONNX_BUILD_SHARED_LIBS) || defined(ONNX_BUILD_MAIN_LIB)
++// ONNX_IMPORT must stay __declspec(dllimport) for consumers of the shared
++// library: unlike functions, data symbols and vtables are not resolved
++// against an import library unless the declaration is dllimport. ONNX_API
++// below still selects export vs. import from the build macros. (A purely
++// static Windows build is not supported by this feedstock.)
+ #define ONNX_EXPORT __declspec(dllexport)
+ #define ONNX_IMPORT __declspec(dllimport)
+ #else
+-#define ONNX_EXPORT
+-#define ONNX_IMPORT
+-#endif
+-#else
+ #ifdef __GNUC__
+ #define ONNX_EXPORT __attribute__((__visibility__("default")))
+ #else
+-- 
+2.53.0
+
