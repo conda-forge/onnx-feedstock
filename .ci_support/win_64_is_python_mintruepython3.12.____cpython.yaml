@@ -8,6 +8,10 @@ channel_targets:
 - conda-forge main
 cxx_compiler:
 - vs2022
+is_abi3:
+- true
+is_python_min:
+- true
 libprotobuf:
 - 6.33.5
 pin_run_as_build:
@@ -15,6 +19,11 @@ pin_run_as_build:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.11.* *_cpython
+- 3.12.* *_cpython
+python_min:
+- '3.12'
 target_platform:
 - win-64
+zip_keys:
+- - python
+  - is_python_min
