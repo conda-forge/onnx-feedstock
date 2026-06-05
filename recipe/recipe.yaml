@@ -2,22 +2,30 @@ schema_version: 1
 
 context:
   name: onnx
-  version: "1.21.0"
+  version: "1.22.0rc1"
 
 package:
   name: ${{ name|lower }}
   version: ${{ version }}
 
 source:
-  url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: 42ffedcd8c9b6363694300c6ffec1ada77f9620176465719acb27b13a4d6f2de
+  # 1.22.0 has no GitHub release tag yet (only the rel-1.22.0 branch); use the
+  # official PyPI sdist for the release candidate. See ISSUES.md / issue #147.
+  url: https://pypi.org/packages/source/o/onnx/onnx-${{ version }}.tar.gz
+  sha256: 7799c0762c3ef6cfcb65f2eb5415ba1e527207c5f4870c08a46be698cec709b6
   patches:
     - 0001-Patch-Python-and-nanobind-cmake-config.patch
     - 0002-Link-protobuf-and-abseil-privately.patch
 
 build:
   number: 0
+  # Build a single abi3 (CPython stable ABI) artifact against python_min that
+  # works on all newer CPython versions. The nanobind extension is compiled
+  # with STABLE_ABI (see patch 0001 / upstream CMakeLists). Only the python_min
+  # variant produces a package; the others are skipped.
+  skip: is_abi3 and not is_python_min
   python:
+    version_independent: ${{ is_abi3 }}
     entry_points:
       - check-model = onnx.bin.checker:check_model
       - check-node = onnx.bin.checker:check_node
@@ -36,13 +44,20 @@ requirements:
     - ${{ compiler('cxx') }}
     - cmake
     - ninja
+    - if: unix
+      then:
+        - make
   host:
     - python
+    - if: is_abi3
+      then:
+        - python-abi3
     - libprotobuf
     - pip
     - protobuf
     - nanobind
-    - setuptools
+    # onnx 1.22 switched its build backend from setuptools to scikit-build-core
+    - scikit-build-core
   run:
     - python
     - ml_dtypes
@@ -53,6 +68,12 @@ tests:
   - python:
       imports:
         - onnx
+      # For the abi3 build, test the import on the minimum Python; the same
+      # artifact is resolved for all newer versions at install time.
+      python_version:
+        - if: is_abi3
+          then: ${{ python_min }}.*
+        - "*"
   - requirements:
       run:
         - pip
@@ -68,6 +89,15 @@ tests:
           - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
           - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
           - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
+  # Verify the compiled extension really only uses the limited / stable ABI.
+  - if: is_abi3
+    then:
+      requirements:
+        run:
+          - abi3audit
+      script:
+        - if: unix
+          then: abi3audit $SP_DIR/onnx/onnx_cpp2py_export*.so -s -v --assume-minimum-abi3 ${{ python_min }}
 
       # - if: win
       #   then:

@@ -1,0 +1,19 @@
+# onnx's Python extension is built with nanobind in stable-ABI (abi3) mode.
+# nanobind only supports the CPython stable ABI on Python >= 3.12, which is
+# also why onnx sets `wheel.py-api = "cp312"`. conda-forge's global python_min
+# is 3.10, but the abi3 artifact must be built against >= 3.12.
+#
+# `is_python_min` is a hard-coded list zipped with `python` in the global
+# pinning (true only on the 3.10 row), so overriding `python_min` alone does
+# not move the "minimum" row. We therefore also collapse `python` /
+# `is_python_min` to the 3.12 row so the single abi3 artifact is built against
+# CPython 3.12. See recipe/ISSUES.md section 3.
+python_min:
+  - "3.12"
+python:
+  - 3.12.* *_cpython
+is_python_min:
+  - true
+zip_keys:
+  - - python
+    - is_python_min

@@ -5,6 +5,10 @@ export ONNX_ML=1
 # build script looks at this, but not set on
 export CONDA_PREFIX="$PREFIX"
 export CMAKE_ARGS="${CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON"
+# onnx 1.22's pyproject.toml sets ONNX_INSTALL=OFF for the scikit-build-core
+# wheel build; re-enable it so the C++ shared library, headers and CMake config
+# are installed (they land inside the wheel and are relocated below).
+export CMAKE_ARGS="${CMAKE_ARGS} -DONNX_INSTALL=ON"
 if [[ ${CONDA_BUILD_CROSS_COMPILATION:-} == "1" ]]; then
     export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
 else
@@ -23,4 +27,17 @@ if [[ "${target_platform}" == osx-64 ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 $PYTHON -m pip install --no-deps --ignore-installed --verbose .
-cmake --install .setuptools-cmake-build
+
+# onnx 1.22 builds with scikit-build-core, whose CMAKE_INSTALL_PREFIX is the
+# wheel staging directory. With -DONNX_INSTALL=ON the C++ shared library,
+# headers and CMake package config are therefore installed *inside* the wheel
+# (under $SP_DIR/lib and $SP_DIR/include) instead of into $PREFIX. Relocate
+# them to the standard conda prefix locations so downstream C++ consumers and
+# the package tests can find them. The Python extension links onnx_core
+# statically, so it does not depend on libonnx at runtime.
+sp_dir=$(${PYTHON} -c "import sysconfig; print(sysconfig.get_path('platlib'))")
+mkdir -p "${PREFIX}/lib/cmake" "${PREFIX}/include"
+mv "${sp_dir}/lib/cmake/ONNX" "${PREFIX}/lib/cmake/"
+mv "${sp_dir}/lib/"libonnx* "${PREFIX}/lib/"
+mv "${sp_dir}/include/onnx" "${PREFIX}/include/"
+rmdir "${sp_dir}/lib/cmake" "${sp_dir}/lib" "${sp_dir}/include" 2>/dev/null || true

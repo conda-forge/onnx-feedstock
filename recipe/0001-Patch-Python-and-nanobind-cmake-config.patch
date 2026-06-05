@@ -1,20 +1,19 @@
-From bb41150099a906c5977f29180e3ce6e5908054a2 Mon Sep 17 00:00:00 2001
+From fcd0bfa4e8ff20ff2796edfc234f7cab8fd5ca41 Mon Sep 17 00:00:00 2001
 From: Christian Bourjau <christian.bourjau@quantco.com>
 Date: Wed, 1 Apr 2026 15:44:36 +0200
-Subject: [PATCH] Patch Python and nanobind cmake config
+Subject: [PATCH 1/2] Patch Python and nanobind cmake config
 
 Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
 ---
- CMakeLists.txt      | 41 +++++------------------------------------
+ CMakeLists.txt      | 37 +++----------------------------------
  cmake/summary.cmake | 14 +++++++-------
- setup.py            |  2 +-
- 3 files changed, 13 insertions(+), 44 deletions(-)
+ 2 files changed, 10 insertions(+), 41 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 044996e1b..c2aa00162 100644
+index 365af87..972e701 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -135,22 +135,8 @@ if(ONNX_BUILD_PYTHON)
+@@ -140,22 +140,8 @@ if(ONNX_BUILD_PYTHON)
    set(python_dev_component Development.Module Development.SABIModule)
  endif()
  
@@ -34,21 +33,12 @@ index 044996e1b..c2aa00162 100644
 -  find_package(Python REQUIRED COMPONENTS Interpreter ${python_dev_component})
 -  set(ONNX_PYTHON_INTERPRETER Python3::Interpreter)
 -endif()
-+find_package(Python REQUIRED COMPONENTS Interpreter Development)
++find_package(Python REQUIRED COMPONENTS Interpreter ${python_dev_component})
 +set(ONNX_PYTHON_INTERPRETER Python::Interpreter)
  
  if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
    set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
-@@ -426,7 +412,7 @@ if(ONNX_BUILD_PYTHON)
-   # find system nanobind
-   if(NOT DEFINED nanobind_DIR OR "${nanobind_DIR}" STREQUAL "")
-     execute_process(
--      COMMAND ${Python_EXECUTABLE} -m nanobind --cmake-dir
-+      COMMAND ${Python_EXECUTABLE} -m nanobind --cmake_dir
-       RESULT_VARIABLE NANOBIND_CMAKE_RESULT
-       OUTPUT_VARIABLE NANOBIND_CMAKE_DIR
-       OUTPUT_STRIP_TRAILING_WHITESPACE
-@@ -435,29 +421,12 @@ if(ONNX_BUILD_PYTHON)
+@@ -551,24 +537,7 @@ if(ONNX_BUILD_PYTHON)
        set(nanobind_DIR "${NANOBIND_CMAKE_DIR}")
      endif()
    endif()
@@ -61,11 +51,11 @@ index 044996e1b..c2aa00162 100644
 -        "FetchContent dependency provider for first-run offline builds.")
 -    endif()
 -    include(FetchContent)
--
+-    sbom_get_dep("nanobind" _nanobind)
 -    FetchContent_Declare(
 -      nanobind
--      GIT_REPOSITORY https://github.com/wjakob/nanobind.git
--      GIT_TAG v2.10.2
+-      GIT_REPOSITORY ${_nanobind_URL}
+-      GIT_TAG v${_nanobind_VERSION}
 -      GIT_SHALLOW TRUE
 -    )
 -    FetchContent_MakeAvailable(nanobind)
@@ -74,17 +64,11 @@ index 044996e1b..c2aa00162 100644
  
    # Configure nanobind: https://nanobind.readthedocs.io/en/latest/api_cmake.html
    nanobind_add_module(
-     onnx_cpp2py_export
--    NB_STATIC NB_DOMAIN onnx STABLE_ABI FREE_THREADED LTO
-+    NB_STATIC NB_DOMAIN onnx FREE_THREADED LTO
-     "${ONNX_ROOT}/onnx/cpp2py_export.cc" ${ONNX_SRCS} ${ONNX_PROTO_SRCS})
-   add_dependencies(onnx_cpp2py_export onnx)
- endif()
 diff --git a/cmake/summary.cmake b/cmake/summary.cmake
-index aadf595c9..cb5e58663 100644
+index f262a3b..57e39f8 100644
 --- a/cmake/summary.cmake
 +++ b/cmake/summary.cmake
-@@ -73,14 +73,14 @@ function(onnx_print_configuration_summary)
+@@ -75,14 +75,14 @@ function(onnx_print_configuration_summary)
    endif()
    message(STATUS "  ONNX_BUILD_PYTHON                 : ${ONNX_BUILD_PYTHON}")
    if(ONNX_BUILD_PYTHON)
@@ -106,16 +90,6 @@ index aadf595c9..cb5e58663 100644
      if(Python_SOABI)
        message(STATUS "    Python SOABI                  : ${Python_SOABI}")
      endif()
-diff --git a/setup.py b/setup.py
-index db78bfa2b..2ffbe81d1 100644
---- a/setup.py
-+++ b/setup.py
-@@ -336,7 +336,7 @@ CMD_CLASS = {
- 
- NO_GIL = hasattr(sys, "_is_gil_enabled") and not sys._is_gil_enabled()
- PY_312_OR_NEWER = sys.version_info >= (3, 12)
--USE_LIMITED_API = not NO_GIL and PY_312_OR_NEWER and platform.system() != "FreeBSD"
-+USE_LIMITED_API = False and not NO_GIL and PY_312_OR_NEWER and platform.system() != "FreeBSD"
- 
- macros = []
- if USE_LIMITED_API:
+-- 
+2.43.0
+
