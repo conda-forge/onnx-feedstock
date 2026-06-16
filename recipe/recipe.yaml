@@ -66,8 +66,10 @@ tests:
           - grep -q protobuf "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake" && exit 1 || true
   - package_contents:
       lib:
-        - onnx
-        - onnx_proto
+        - if: unix
+          then:
+            - onnx
+            - onnx_proto
       files:
         - if: unix
           then:
