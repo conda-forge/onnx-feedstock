@@ -4,7 +4,15 @@ set -euxo pipefail
 export ONNX_ML=1
 # build script looks at this, but not set on
 export CONDA_PREFIX="$PREFIX"
-export CMAKE_ARGS="${CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON"
+# Build in parallel. scikit-build-core (the pip install below) and
+# `cmake --build` both honor this, so neither step runs single-threaded.
+export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+# conda build environments ship ninja but not make, so pin the generator for
+# both scikit-build-core and the manual cmake invocation below. Without this
+# scikit-build-core defaults to "Unix Makefiles" and configure fails with
+# "CMAKE_MAKE_PROGRAM is not set".
+export CMAKE_GENERATOR="Ninja"
+export CMAKE_ARGS="${CMAKE_ARGS}"
 if [[ ${CONDA_BUILD_CROSS_COMPILATION:-} == "1" ]]; then
     export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
 else
@@ -23,4 +31,14 @@ if [[ "${target_platform}" == osx-64 ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 $PYTHON -m pip install --no-deps --ignore-installed --verbose .
+
+# Reconfigure the build to produce the shared C++ libraries without the
+# Python bindings, then install them. onnx's pyproject.toml sets
+# ONNX_INSTALL=OFF for the wheel build, so we have to flip it back on here
+# for `cmake --install` to emit the C++ targets and cmake config files.
+cmake -S . -B .setuptools-cmake-build ${CMAKE_ARGS} \
+    -DONNX_BUILD_PYTHON=OFF \
+    -DBUILD_SHARED_LIBS=ON \
+    -DONNX_INSTALL=ON
+cmake --build .setuptools-cmake-build
 cmake --install .setuptools-cmake-build
