@@ -1,0 +1,29 @@
+From 1df756b52570a7cccd8350dc7080555015052e9a Mon Sep 17 00:00:00 2001
+From: Christian Bourjau <christian.bourjau@quantco.com>
+Date: Tue, 16 Jun 2026 09:51:02 +0200
+Subject: [PATCH 2/2] Link protobuf and abseil privately
+
+Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
+Signed-off-by: Christian Bourjau <christian.bourjau@quantco.com>
+---
+ cmake/Utils.cmake | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/cmake/Utils.cmake b/cmake/Utils.cmake
+index 44e306aa3..0b8204061 100644
+--- a/cmake/Utils.cmake
++++ b/cmake/Utils.cmake
+@@ -187,11 +187,11 @@ function(add_onnx_compile_options target)
+     ${target}
+     PUBLIC $<BUILD_INTERFACE:${ONNX_ROOT}> $<INSTALL_INTERFACE:include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+-  target_link_libraries(${target} PUBLIC ${LINKED_PROTOBUF_TARGET})
++  target_link_libraries(${target} PRIVATE ${LINKED_PROTOBUF_TARGET})
+   get_target_property(_onnx_linked_protobuf_is_imported ${LINKED_PROTOBUF_TARGET} IMPORTED)
+   foreach(ABSL_USED_TARGET IN LISTS protobuf_ABSL_USED_TARGETS)
+     if(TARGET ${ABSL_USED_TARGET})
+-      target_link_libraries(${target} PUBLIC ${ABSL_USED_TARGET})
++      target_link_libraries(${target} PRIVATE ${ABSL_USED_TARGET})
+       if(NOT _onnx_linked_protobuf_is_imported)
+         add_dependencies(${LINKED_PROTOBUF_TARGET} ${ABSL_USED_TARGET})
+       endif()
