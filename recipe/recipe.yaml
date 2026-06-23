@@ -16,7 +16,7 @@ source:
     - patches/0002-Link-protobuf-and-abseil-privately.patch
 
 build:
-  number: 0
+  number: 1
   python:
     entry_points:
       - check-model = onnx.bin.checker:check_model
