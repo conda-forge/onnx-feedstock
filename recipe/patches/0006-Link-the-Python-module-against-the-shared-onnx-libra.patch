@@ -1,0 +1,58 @@
+From cc9368a7e75d317bbf7c674325f452efd0a1bef9 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Thu, 10 Sep 2026 21:47:38 -0400
+Subject: [PATCH 6/8] Link the Python module against the shared onnx library
+
+onnx 1.22 refuses to configure ONNX_BUILD_PYTHON=ON together with
+BUILD_SHARED_LIBS=ON and always force-loads a static onnx archive into
+onnx_cpp2py_export, which duplicates every ONNX symbol and the
+operator-schema registry between the module and the onnx shared library.
+Drop that guard and, for shared builds, link the module against the onnx
+shared library so there is a single shared instance. Static builds keep
+the whole-archive link.
+---
+ CMakeLists.txt | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8c288e86e..e7870cbd1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -525,14 +525,6 @@ if(BUILD_SHARED_LIBS)
+ endif()
+ 
+ if(ONNX_BUILD_PYTHON)
+-  if(BUILD_SHARED_LIBS)
+-    # The extension links ONNX internals not on the public ONNX_API surface,
+-    # which a hidden-visibility shared libonnx does not export. The wheel always
+-    # builds onnx statically; a shared libonnx is for C++ use only.
+-    message(FATAL_ERROR
+-      "ONNX_BUILD_PYTHON=ON requires a static onnx; do not combine it with "
+-      "BUILD_SHARED_LIBS=ON. Use ONNX_BUILD_PYTHON=OFF to build a shared libonnx.")
+-  endif()
+   # find system nanobind
+   if(NOT DEFINED nanobind_DIR OR "${nanobind_DIR}" STREQUAL "")
+     execute_process(
+@@ -552,11 +544,17 @@ if(ONNX_BUILD_PYTHON)
+     onnx_cpp2py_export
+     NB_STATIC NB_DOMAIN onnx FREE_THREADED LTO
+     "${ONNX_ROOT}/onnx/cpp2py_export.cc")
+-  # Force-load the whole (static) archive so the operator schemas' static
+-  # initializers are not dropped as apparently-unused. $<LINK_LIBRARY:WHOLE_ARCHIVE,...>
+-  # is the portable --whole-archive / -force_load / /WHOLEARCHIVE spelling.
+-  target_link_libraries(onnx_cpp2py_export PRIVATE
+-    $<LINK_LIBRARY:WHOLE_ARCHIVE,onnx>)
++  if(BUILD_SHARED_LIBS)
++    # Link the onnx shared library so the module and libonnx share a single
++    # copy of the ONNX symbols (and a single operator-schema registry).
++    target_link_libraries(onnx_cpp2py_export PRIVATE onnx)
++  else()
++    # Force-load the whole (static) archive so the operator schemas' static
++    # initializers are not dropped as apparently-unused. $<LINK_LIBRARY:WHOLE_ARCHIVE,...>
++    # is the portable --whole-archive / -force_load / /WHOLEARCHIVE spelling.
++    target_link_libraries(onnx_cpp2py_export PRIVATE
++      $<LINK_LIBRARY:WHOLE_ARCHIVE,onnx>)
++  endif()
+ endif()
+ 
+ add_onnx_compile_options(onnx_proto)

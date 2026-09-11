@@ -4,15 +4,13 @@ set -euxo pipefail
 export ONNX_ML=1
 # build script looks at this, but not set on
 export CONDA_PREFIX="$PREFIX"
-# Build in parallel. scikit-build-core (the pip install below) and
-# `cmake --build` both honor this, so neither step runs single-threaded.
+# Build in parallel; scikit-build-core honors this.
 export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
 # conda build environments ship ninja but not make, so pin the generator for
-# both scikit-build-core and the manual cmake invocation below. Without this
-# scikit-build-core defaults to "Unix Makefiles" and configure fails with
-# "CMAKE_MAKE_PROGRAM is not set".
+# scikit-build-core. Without this scikit-build-core defaults to
+# "Unix Makefiles" and configure fails with "CMAKE_MAKE_PROGRAM is not set".
 export CMAKE_GENERATOR="Ninja"
-export CMAKE_ARGS="${CMAKE_ARGS}"
+export CMAKE_ARGS="${CMAKE_ARGS} -DBUILD_SHARED_LIBS=ON"
 if [[ ${CONDA_BUILD_CROSS_COMPILATION:-} == "1" ]]; then
     export CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
 else
@@ -30,15 +28,8 @@ export CMAKE_ARGS="${CMAKE_ARGS} -DFETCHCONTENT_FULLY_DISCONNECTED=ON"
 if [[ "${target_platform}" == osx-64 ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
+# Only the Python package is installed here. The onnx_cpp2py_export
+# extension links the libonnx shared library (provided by the libonnx
+# output); the C++ library, headers and CMake package are shipped by
+# libonnx, so this output does not run `cmake --install`.
 $PYTHON -m pip install --no-deps --ignore-installed --verbose .
-
-# Reconfigure the build to produce the shared C++ libraries without the
-# Python bindings, then install them. onnx's pyproject.toml sets
-# ONNX_INSTALL=OFF for the wheel build, so we have to flip it back on here
-# for `cmake --install` to emit the C++ targets and cmake config files.
-cmake -S . -B .setuptools-cmake-build ${CMAKE_ARGS} \
-    -DONNX_BUILD_PYTHON=OFF \
-    -DBUILD_SHARED_LIBS=ON \
-    -DONNX_INSTALL=ON
-cmake --build .setuptools-cmake-build
-cmake --install .setuptools-cmake-build
