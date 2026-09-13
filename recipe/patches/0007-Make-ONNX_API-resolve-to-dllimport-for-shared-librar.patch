@@ -1,4 +1,4 @@
-From 17cd074f3f0cc1699b553ea8bb08f2aed95e916c Mon Sep 17 00:00:00 2001
+From 2f3a272e6dde60f9f3bd9c465c9452d2f75d08c0 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Thu, 10 Sep 2026 21:49:37 -0400
 Subject: [PATCH 7/8] Make ONNX_API resolve to dllimport for shared-library
@@ -10,12 +10,147 @@ still resolve against an import library when declared that way, but data
 symbols and vtables do not, so a separate module linking onnx.dll failed
 with unresolved externals for every ONNX/protobuf class vtable. Always
 define ONNX_IMPORT as __declspec(dllimport) on MSVC.
----
- onnx/onnx_pb.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
+MSVC rejects __declspec(dllimport) on a function definition (C2491) and
+treats a definition it does accept as an import, so ONNX_API must stay
+off every function a consumer's translation units define:
+
+- the RegisterOpSetSchema and FunctionBodyHelper/FunctionBuilder member
+  function templates, which are defined in the headers and instantiated
+  in each translation unit;
+- the GetOpSchema specializations written by ONNX_OPERATOR_SET_SCHEMA_EX.
+  onnxruntime uses that macro to define its own contrib schemas, which
+  otherwise become unresolved imports from onnx.dll. The macro now uses
+  ONNX_OPERATOR_SET_SCHEMA_API, which is ONNX_API while building ONNX and
+  empty for MSVC consumers.
+---
+ onnx/defs/function.h | 18 +++++++++---------
+ onnx/defs/schema.h   | 16 ++++++++++++++--
+ onnx/onnx_pb.h       | 10 +++++-----
+ 3 files changed, 28 insertions(+), 16 deletions(-)
+
+diff --git a/onnx/defs/function.h b/onnx/defs/function.h
+index 57b61dc..79fe272 100644
+--- a/onnx/defs/function.h
++++ b/onnx/defs/function.h
+@@ -93,12 +93,12 @@ class FunctionBodyHelper {
+       const std::vector<OperatorSetIdProto>& relied_opsets);
+ 
+   template <typename T>
+-  ONNX_API static NodeDef Const(const std::string& name, const T& value) {
++  static NodeDef Const(const std::string& name, const T& value) {
+     return NodeDef{{name}, "Constant", {}, {{"value", ToTensor<T>(value)}}};
+   }
+ 
+   template <typename T>
+-  ONNX_API static NodeDef Const(const std::string& name, const std::vector<T>& values) {
++  static NodeDef Const(const std::string& name, const std::vector<T>& values) {
+     return NodeDef{{name}, "Constant", {}, {{"value", ToTensor<T>(values)}}};
+   }
+ };
+@@ -138,12 +138,12 @@ class FunctionBuilder {
+   }
+ 
+   template <typename T>
+-  ONNX_API FunctionBuilder& Add(const char* node_txt, const std::string& attr_name, const T& attr_value) {
++  FunctionBuilder& Add(const char* node_txt, const std::string& attr_name, const T& attr_value) {
+     return Add(node_txt, MakeAttribute(attr_name, attr_value));
+   }
+ 
+   template <typename T>
+-  ONNX_API FunctionBuilder& AddAttributeToNode(const std::string& attr_name, const T& attr_value) {
++  FunctionBuilder& AddAttributeToNode(const std::string& attr_name, const T& attr_value) {
+     auto& nodes = *funProto.mutable_node();
+     int nodes_size = nodes.size();
+     if (nodes_size != 0) {
+@@ -156,7 +156,7 @@ class FunctionBuilder {
+   }
+ 
+   template <typename T, typename... Args>
+-  ONNX_API FunctionBuilder& AddAttributes(const std::string& attr_name, const T& attr_value, Args... args) {
++  FunctionBuilder& AddAttributes(const std::string& attr_name, const T& attr_value, Args... args) {
+     AddAttributeToNode(attr_name, attr_value);
+     if constexpr (sizeof...(args) > 0) {
+       AddAttributes(args...);
+@@ -166,7 +166,7 @@ class FunctionBuilder {
+ 
+   // Adds variable number of attributes to a node
+   template <typename... Args>
+-  ONNX_API FunctionBuilder& Add(const char* node_txt, const Args&... args) {
++  FunctionBuilder& Add(const char* node_txt, const Args&... args) {
+     Add(node_txt);
+     if constexpr (sizeof...(args) % 2 == 0) {
+       AddAttributes(args...);
+@@ -182,7 +182,7 @@ class FunctionBuilder {
+ 
+   // Creates a scalar constant (a tensor of rank zero).
+   template <typename T>
+-  ONNX_API FunctionBuilder& Const(const std::string& name, T const_value) {
++  FunctionBuilder& Const(const std::string& name, T const_value) {
+     std::string constant_op(name);
+     constant_op += " = Constant()";
+     return Add(constant_op.c_str(), MakeAttribute("value", ToTensor(const_value)));
+@@ -190,7 +190,7 @@ class FunctionBuilder {
+ 
+   // Creates a 1D tensor constant consisting of a single value.
+   template <typename T>
+-  ONNX_API FunctionBuilder& Const1D(const std::string& name, T const_value) {
++  FunctionBuilder& Const1D(const std::string& name, T const_value) {
+     std::string constant_op(name);
+     constant_op += " = Constant()";
+     auto tensor = ToTensor(const_value);
+@@ -200,7 +200,7 @@ class FunctionBuilder {
+ 
+   // Creates a 1D tensor constant consisting of zero or more values.
+   template <typename T>
+-  ONNX_API FunctionBuilder& Const(const std::string& name, const std::vector<T>& values) {
++  FunctionBuilder& Const(const std::string& name, const std::vector<T>& values) {
+     std::string constant_op(name);
+     constant_op += " = Constant()";
+     auto tensor = ToTensor(values);
+diff --git a/onnx/defs/schema.h b/onnx/defs/schema.h
+index 94d0e20..784fd30 100644
+--- a/onnx/defs/schema.h
++++ b/onnx/defs/schema.h
+@@ -1269,7 +1269,9 @@ ONNX_API void DeregisterSchema(const std::string& op_type, int version, const st
+ // Registers the latest opset schema before opset_version_to_load
+ // By default opset_version_to_load=0 means it will register all versions
+ template <class T>
+-ONNX_API void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_duplicate_schema = true) {
++// Not annotated with ONNX_API: a function template is instantiated in each
++// translation unit, so it must not carry __declspec(dllimport/dllexport).
++void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_duplicate_schema = true) {
+   T::ForEachSchema([opset_version_to_load, fail_duplicate_schema](OpSchema&& schema) {
+     RegisterSchema(std::move(schema), opset_version_to_load, fail_duplicate_schema);
+   });
+@@ -1281,6 +1283,16 @@ ONNX_API void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_dupli
+ template <typename T>
+ ONNX_API OpSchema GetOpSchema();
+ 
++// Annotation for the GetOpSchema specializations defined by
++// ONNX_OPERATOR_SET_SCHEMA_EX. Consumers such as onnxruntime use the macro to
++// define their own schemas, and on MSVC a definition must not carry ONNX_API
++// (__declspec(dllimport) outside ONNX), or the linker looks for it in onnx.dll.
++#if defined(_MSC_VER) && !(defined(ONNX_BUILD_SHARED_LIBS) || defined(ONNX_BUILD_MAIN_LIB))
++#define ONNX_OPERATOR_SET_SCHEMA_API
++#else
++#define ONNX_OPERATOR_SET_SCHEMA_API ONNX_API
++#endif
++
+ #define ONNX_OPERATOR_SET_SCHEMA(name, ver, impl) ONNX_OPERATOR_SET_SCHEMA_EX(name, Onnx, ONNX_DOMAIN, ver, true, impl)
+ 
+ #define ONNX_ML_OPERATOR_SET_SCHEMA(name, ver, impl) \
+@@ -1331,7 +1343,7 @@ class DbgOperatorSetTracker {
+ #define ONNX_OPERATOR_SET_SCHEMA_EX(name, domain, domain_str, ver, dbg_included_in_static_opset, impl)  \
+   class ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name);                                         \
+   template <>                                                                                           \
+-  ONNX_API OpSchema GetOpSchema<ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name)>() {             \
++  ONNX_OPERATOR_SET_SCHEMA_API OpSchema GetOpSchema<ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name)>() { \
+     return impl.SetName(#name).SetDomain(domain_str).SinceVersion(ver).SetLocation(__FILE__, __LINE__); \
+   }                                                                                                     \
+   ONNX_OPERATOR_SET_SCHEMA_DEBUG_VARIABLE(name, domain, ver, dbg_included_in_static_opset)
 diff --git a/onnx/onnx_pb.h b/onnx/onnx_pb.h
-index 624cf0471..5bed03a81 100644
+index 624cf04..5bed03a 100644
 --- a/onnx/onnx_pb.h
 +++ b/onnx/onnx_pb.h
 @@ -9,14 +9,14 @@
@@ -38,3 +173,6 @@ index 624cf0471..5bed03a81 100644
  #ifdef __GNUC__
  #define ONNX_EXPORT __attribute__((__visibility__("default")))
  #else
+-- 
+2.55.0
+
