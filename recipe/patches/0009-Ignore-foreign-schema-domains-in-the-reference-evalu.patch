@@ -1,0 +1,47 @@
+From 5fa2af288addab032663b35ddb90ab9c12548641 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Sun, 13 Sep 2026 21:51:15 -0400
+Subject: [PATCH 9/9] Ignore foreign schema domains in the reference evaluator
+
+onnx.reference indexes every schema in the ONNX schema registry by
+operator name and raises NotImplementedError when a name appears in two
+domains. With onnx linked against a shared ONNX library, that registry is
+shared with everything else in the process: importing onnxruntime before
+onnx.reference registers com.microsoft operators such as Unique, and
+the import fails with
+
+  NotImplementedError: This function assumes every operator has a unique
+  name 'Unique' even across multiple domains 'com.microsoft' and ''.
+
+The reference evaluator only implements operators from ONNX's own
+domains, so skip schemas from any other domain.
+---
+ onnx/reference/op_run.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/onnx/reference/op_run.py b/onnx/reference/op_run.py
+index 58b1700..8cad218 100644
+--- a/onnx/reference/op_run.py
++++ b/onnx/reference/op_run.py
+@@ -44,9 +44,18 @@ class RefAttrName:
+         return f"{self.__class__.__name__}({self.name!r})"
+ 
+ 
++# The reference evaluator only implements operators from ONNX's own domains.
++_ONNX_DOMAINS = frozenset(("", "ai.onnx", "ai.onnx.ml", "ai.onnx.preview", "ai.onnx.preview.training"))
++
++
+ def _build_schemas() -> dict[str, onnx.defs.OpSchema]:
+     res: dict[str, onnx.defs.OpSchema] = {}
+     for schema in onnx.defs.onnx.defs.get_all_schemas_with_history():
++        # The schema registry is shared by everything that links the ONNX
++        # library in this process, e.g. onnxruntime registers com.microsoft
++        # operators such as Unique into it. Ignore domains ONNX does not define.
++        if schema.domain not in _ONNX_DOMAINS:
++            continue
+         # Multiple version can coexist. The last one is kept.
+         if schema.name in res:
+             if schema.domain != res[schema.name].domain:
+-- 
+2.55.0
+

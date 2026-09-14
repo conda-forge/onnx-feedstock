@@ -19,6 +19,7 @@ source:
     - patches/0006-Link-the-Python-module-against-the-shared-onnx-libra.patch
     - patches/0007-Make-ONNX_API-resolve-to-dllimport-for-shared-librar.patch
     - patches/0008-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
+    - patches/0009-Ignore-foreign-schema-domains-in-the-reference-evalu.patch
 
 build:
   number: 4
@@ -127,6 +128,11 @@ outputs:
           - check-model --help
           - check-node --help
           - backend-test-tools --help
+      - files:
+          recipe:
+            - test_reference_foreign_domain.py
+        script:
+          - python test_reference_foreign_domain.py
 
 about:
   license: Apache-2.0
