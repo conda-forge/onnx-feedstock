@@ -1,7 +1,7 @@
-From 1fbc9755022cc1a74d5432018ceeb37b3ca91f69 Mon Sep 17 00:00:00 2001
+From 4529a1235690565f68a7d5d2eb978d14882c4bb8 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 13 Sep 2026 18:35:34 -0400
-Subject: [PATCH 8/8] Annotate the remaining public C++ API with ONNX_API
+Subject: [PATCH 8/9] Annotate the remaining public C++ API with ONNX_API
 
 With the shared ONNX libraries built with hidden visibility, and on
 Windows exporting only ONNX_API symbols, separate consumers failed to
@@ -26,26 +26,59 @@ onnxruntime_provider_test on linux, osx and Windows):
 - both shape_inference::InferShapeForFunctionNode overloads;
 - the ParseData template, whose instantiations live in the library.
 
+The ToTensor and ParseData specializations are defined in
+tensor_proto_util.cc and tensor_util.cc. GCC and clang give an explicit
+specialization the visibility of its primary template, but MSVC only
+exports it when the definition itself is dllexport, so onnx.dll exported
+none of them and onnxruntime_conda.dll failed to link against
+ParseData<int>, ParseData<int64_t> and ToTensor<int64_t>. Annotate the
+definitions, and the ParseData(const Tensor*) declaration, with ONNX_API.
+
+The exception classes InferenceError, SchemaError, ValidationError and
+ConvertError are exported as whole classes too. They are defined inline
+in the headers, so with hidden visibility every library gets its own
+local typeinfo. GCC's runtime matches exception types by name, but on
+macOS a `catch (const onnx::InferenceError&)` in onnxruntime does not
+match an InferenceError thrown inside libonnx. Shape-inference errors that
+onnxruntime tolerates or rewraps then escape: on osx-arm64, 27 of
+onnxruntime's own unit tests failed, e.g. models that should load with a
+shape warning fail with "[ShapeInferenceError] Mismatch between number of
+inferred and declared dimensions". SchemaError's member annotations move
+to the class.
+
 GraphInferencerImpl is exported as a whole class so its vtable is
 available to onnx_cpp2py_export, which instantiates it; MSVC forbids
 dllexport on members of a dllexport class, so doInferencing loses its
 own annotation.
 ---
- onnx/checker.h                        | 24 +++++++++++------------
+ onnx/checker.h                        | 26 ++++++++++++-------------
+ onnx/common/ir_pb_converter.h         |  2 +-
  onnx/defs/data_type_utils.h           |  8 ++++----
  onnx/defs/math/utils.h                |  6 +++---
  onnx/defs/printer.h                   | 28 +++++++++++++--------------
- onnx/defs/schema.h                    | 14 +++++++-------
- onnx/defs/shape_inference.h           | 12 ++++++------
+ onnx/defs/schema.h                    | 20 +++++++++----------
+ onnx/defs/shape_inference.h           | 14 +++++++-------
+ onnx/defs/tensor_proto_util.cc        | 10 +++++-----
  onnx/defs/tensor_proto_util.h         |  2 +-
+ onnx/defs/tensor_util.cc              |  2 +-
+ onnx/defs/tensor_util.h               |  2 +-
  onnx/inliner/inliner.h                | 10 +++++-----
  onnx/shape_inference/implementation.h |  8 ++++----
- 9 files changed, 56 insertions(+), 56 deletions(-)
+ 13 files changed, 69 insertions(+), 69 deletions(-)
 
 diff --git a/onnx/checker.h b/onnx/checker.h
-index bb281a9..ff52b52 100644
+index bb281a9..ba096bd 100644
 --- a/onnx/checker.h
 +++ b/onnx/checker.h
+@@ -19,7 +19,7 @@ namespace ONNX_NAMESPACE {
+ namespace checker {
+ // std::string member means copy may throw when allocation fails
+ // NOLINTNEXTLINE(bugprone-exception-copy-constructor-throws)
+-class ValidationError final : public std::runtime_error {
++class ONNX_API ValidationError final : public std::runtime_error {
+  public:
+   using std::runtime_error::runtime_error;
+   const char* what() const noexcept override {
 @@ -146,16 +146,16 @@ class LexicalScopeContext final {
  };
  
@@ -89,6 +122,19 @@ index bb281a9..ff52b52 100644
      const std::string& base_dir,
      const std::string& location,
      const std::string& tensor_name,
+diff --git a/onnx/common/ir_pb_converter.h b/onnx/common/ir_pb_converter.h
+index 177d445..608166b 100644
+--- a/onnx/common/ir_pb_converter.h
++++ b/onnx/common/ir_pb_converter.h
+@@ -14,7 +14,7 @@
+ 
+ namespace ONNX_NAMESPACE {
+ 
+-class ConvertError final : public std::runtime_error {
++class ONNX_API ConvertError final : public std::runtime_error {
+  public:
+   using std::runtime_error::runtime_error;
+ 
 diff --git a/onnx/defs/data_type_utils.h b/onnx/defs/data_type_utils.h
 index 126cdb4..12d2583 100644
 --- a/onnx/defs/data_type_utils.h
@@ -186,9 +232,33 @@ index 98d695f..7d225c1 100644
  template <typename ProtoType>
  std::string ProtoToString(const ProtoType& proto) {
 diff --git a/onnx/defs/schema.h b/onnx/defs/schema.h
-index 784fd30..451face 100644
+index 784fd30..8fbd411 100644
 --- a/onnx/defs/schema.h
 +++ b/onnx/defs/schema.h
+@@ -94,20 +94,20 @@ class OpSchema;
+ using ContextDependentFunctionBodyBuilder =
+     std::function<bool(const FunctionBodyBuildContext&, const OpSchema&, FunctionProto&)>;
+ 
+-class SchemaError final : public std::runtime_error {
++class ONNX_API SchemaError final : public std::runtime_error {
+  public:
+   using std::runtime_error::runtime_error;
+ 
+   explicit SchemaError(const std::string& message) : std::runtime_error(message) {}
+ 
+-  ONNX_API const char* what() const noexcept override {
++  const char* what() const noexcept override {
+     if (!expanded_message_.empty()) {
+       return expanded_message_.c_str();
+     }
+     return std::runtime_error::what();
+   }
+ 
+-  ONNX_API void AppendContext(const std::string& context) {
++  void AppendContext(const std::string& context) {
+     expanded_message_ = ONNX_NAMESPACE::MakeString(std::runtime_error::what(), "\n\n==> Context: ", context);
+   }
+ 
 @@ -331,7 +331,7 @@ class OpSchema final {
     * @brief Verifies if a NodeProto matches the pattern specified in
     * the schema.
@@ -242,9 +312,18 @@ index 784fd30..451face 100644
  // Legacy macros to register schema at static initialization
  #define ONNX_OPERATOR_SCHEMA(name) ONNX_OPERATOR_SCHEMA_UNIQ_HELPER(__COUNTER__, name)
 diff --git a/onnx/defs/shape_inference.h b/onnx/defs/shape_inference.h
-index 8e235d3..49fc017 100644
+index 8e235d3..21764e7 100644
 --- a/onnx/defs/shape_inference.h
 +++ b/onnx/defs/shape_inference.h
+@@ -57,7 +57,7 @@ class GraphInferencer {
+ 
+ // Exception class used for handling errors in type and shape inference
+ 
+-class InferenceError final : public std::runtime_error {
++class ONNX_API InferenceError final : public std::runtime_error {
+  public:
+   using std::runtime_error::runtime_error;
+ 
 @@ -779,9 +779,9 @@ inline void mergeInDimensionInfo(
    }
  }
@@ -281,6 +360,41 @@ index 8e235d3..49fc017 100644
  
  // target-type = Union (target-type, source-type)
  // target and source are required to have the same type.
+diff --git a/onnx/defs/tensor_proto_util.cc b/onnx/defs/tensor_proto_util.cc
+index 222db66..351771c 100644
+--- a/onnx/defs/tensor_proto_util.cc
++++ b/onnx/defs/tensor_proto_util.cc
+@@ -16,8 +16,8 @@
+ namespace ONNX_NAMESPACE {
+ 
+ #define DEFINE_TO_TENSOR_ONE(type, enumType, field) \
+-  template <>                                       \
+-  TensorProto ToTensor<type>(const type& value) {   \
++  template <>                                                \
++  ONNX_API TensorProto ToTensor<type>(const type& value) {   \
+     TensorProto t;                                  \
+     t.set_data_type(enumType);                      \
+     t.add_##field##_data(value);                    \
+@@ -25,8 +25,8 @@ namespace ONNX_NAMESPACE {
+   }
+ 
+ #define DEFINE_TO_TENSOR_LIST(type, enumType, field)            \
+-  template <>                                                   \
+-  TensorProto ToTensor<type>(const std::vector<type>& values) { \
++  template <>                                                            \
++  ONNX_API TensorProto ToTensor<type>(const std::vector<type>& values) { \
+     TensorProto t;                                              \
+     t.clear_##field##_data();                                   \
+     t.set_data_type(enumType);                                  \
+@@ -38,7 +38,7 @@ namespace ONNX_NAMESPACE {
+ 
+ #define DEFINE_PARSE_DATA(type, typed_data_fetch, tensorproto_datatype)                                              \
+   template <>                                                                                                        \
+-  std::vector<type> ParseData(const TensorProto* tensor_proto) {                                                     \
++  ONNX_API std::vector<type> ParseData(const TensorProto* tensor_proto) {                                            \
+     if (!tensor_proto->has_data_type() || tensor_proto->data_type() == TensorProto_DataType_UNDEFINED) {             \
+       fail_shape_inference("The type of tensor: ", tensor_proto->name(), " is undefined so it cannot be parsed.");   \
+     } else if (tensor_proto->data_type() != tensorproto_datatype) {                                                  \
 diff --git a/onnx/defs/tensor_proto_util.h b/onnx/defs/tensor_proto_util.h
 index 46d058a..6c21039 100644
 --- a/onnx/defs/tensor_proto_util.h
@@ -291,6 +405,31 @@ index 46d058a..6c21039 100644
  template <typename T>
 -std::vector<T> ParseData(const TensorProto* tensor_proto);
 +ONNX_API std::vector<T> ParseData(const TensorProto* tensor_proto);
+ 
+ } // namespace ONNX_NAMESPACE
+diff --git a/onnx/defs/tensor_util.cc b/onnx/defs/tensor_util.cc
+index e38e9d4..9784d3d 100644
+--- a/onnx/defs/tensor_util.cc
++++ b/onnx/defs/tensor_util.cc
+@@ -13,7 +13,7 @@ namespace ONNX_NAMESPACE {
+ 
+ #define DEFINE_PARSE_DATA(type, typed_data_fetch)                          \
+   template <>                                                              \
+-  std::vector<type> ParseData(const Tensor* tensor) {                      \
++  ONNX_API std::vector<type> ParseData(const Tensor* tensor) {             \
+     std::vector<type> res;                                                 \
+     if (!tensor->is_raw_data()) {                                          \
+       const auto& data = tensor->typed_data_fetch();                       \
+diff --git a/onnx/defs/tensor_util.h b/onnx/defs/tensor_util.h
+index 7bcf76f..ca52d0c 100644
+--- a/onnx/defs/tensor_util.h
++++ b/onnx/defs/tensor_util.h
+@@ -11,6 +11,6 @@
+ namespace ONNX_NAMESPACE {
+ 
+ template <typename T>
+-std::vector<T> ParseData(const Tensor* tensor);
++ONNX_API std::vector<T> ParseData(const Tensor* tensor);
  
  } // namespace ONNX_NAMESPACE
 diff --git a/onnx/inliner/inliner.h b/onnx/inliner/inliner.h

@@ -19,9 +19,10 @@ source:
     - patches/0006-Link-the-Python-module-against-the-shared-onnx-libra.patch
     - patches/0007-Make-ONNX_API-resolve-to-dllimport-for-shared-librar.patch
     - patches/0008-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
+    - patches/0009-Ignore-foreign-schema-domains-in-the-reference-evalu.patch
 
 build:
-  number: 3
+  number: 4
 
 outputs:
   # The ONNX C++ shared library (libonnx / libonnx_proto), headers and the
@@ -74,6 +75,27 @@ outputs:
               - if not exist %LIBRARY_PREFIX%\lib\onnx_proto.lib exit 1
               - if not exist %LIBRARY_PREFIX%\lib\cmake\ONNX\ONNXConfig.cmake exit 1
               - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
+      # Exceptions thrown inside libonnx must be catchable by type from another
+      # module built with hidden visibility, like onnxruntime (patch 0008).
+      - files:
+          recipe:
+            - test_libonnx_exceptions/
+        requirements:
+          run:
+            - ${{ compiler('cxx') }}
+            - ${{ stdlib('c') }}
+            - cmake
+            - ninja
+        script:
+          - if: unix
+            then:
+              - cmake -S test_libonnx_exceptions -B build_exceptions -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PREFIX
+              - cmake --build build_exceptions
+              - ./build_exceptions/test_libonnx_exceptions
+            else:
+              - cmake -S test_libonnx_exceptions -B build_exceptions -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%
+              - cmake --build build_exceptions
+              - build_exceptions\test_libonnx_exceptions.exe
 
   # The ONNX Python package. The onnx_cpp2py_export extension links the
   # libonnx shared library rather than recompiling ONNX (patch 0005).
@@ -127,6 +149,11 @@ outputs:
           - check-model --help
           - check-node --help
           - backend-test-tools --help
+      - files:
+          recipe:
+            - test_reference_foreign_domain.py
+        script:
+          - python test_reference_foreign_domain.py
 
 about:
   license: Apache-2.0
