@@ -20,12 +20,13 @@ source:
     - patches/0007-Make-ONNX_API-resolve-to-dllimport-for-shared-librar.patch
     - patches/0008-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
     - patches/0009-Ignore-foreign-schema-domains-in-the-reference-evalu.patch
+    - patches/0010-Build-the-protobuf-sources-into-the-onnx-shared-libr.patch
 
 build:
-  number: 4
+  number: 5
 
 outputs:
-  # The ONNX C++ shared library (libonnx / libonnx_proto), headers and the
+  # The ONNX C++ shared library (libonnx), headers and the
   # ONNX CMake package. Built directly with CMake and no Python involvement.
   - package:
       name: libonnx
@@ -61,7 +62,9 @@ outputs:
           - if: unix
             then:
               - test -f "${PREFIX}/lib/libonnx${SHLIB_EXT}"
-              - test -f "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
+              # The protobuf code lives only in libonnx (patch 0010); a second copy
+              # would register onnx/onnx-ml.proto twice in one process.
+              - test ! -e "${PREFIX}/lib/libonnx_proto${SHLIB_EXT}"
               - test -f "${PREFIX}/lib/cmake/ONNX/ONNXConfig.cmake"
               - test -f "${PREFIX}/lib/cmake/ONNX/ONNXTargets.cmake"
               - test -f "${PREFIX}/include/onnx/onnx_pb.h"
@@ -70,9 +73,9 @@ outputs:
           - if: win
             then:
               - if not exist %LIBRARY_PREFIX%\bin\onnx.dll exit 1
-              - if not exist %LIBRARY_PREFIX%\bin\onnx_proto.dll exit 1
+              - if exist %LIBRARY_PREFIX%\bin\onnx_proto.dll exit 1
               - if not exist %LIBRARY_PREFIX%\lib\onnx.lib exit 1
-              - if not exist %LIBRARY_PREFIX%\lib\onnx_proto.lib exit 1
+              - if exist %LIBRARY_PREFIX%\lib\onnx_proto.lib exit 1
               - if not exist %LIBRARY_PREFIX%\lib\cmake\ONNX\ONNXConfig.cmake exit 1
               - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
       # Exceptions thrown inside libonnx must be catchable by type from another
