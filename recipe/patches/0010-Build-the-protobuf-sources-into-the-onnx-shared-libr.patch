@@ -1,0 +1,127 @@
+From cbc5b70d1aaa80f89cebd3bb8331abde07a1ac81 Mon Sep 17 00:00:00 2001
+From: Mark Harfouche <mark.harfouche@gmail.com>
+Date: Mon, 14 Sep 2026 05:06:41 -0400
+Subject: [PATCH 10/10] Build the protobuf sources into the onnx shared library
+ only
+
+The onnx library compiles in the objects of onnx_proto
+($<TARGET_OBJECTS:onnx_proto>), and onnx_proto is also built as a library
+of its own. As shared libraries, libonnx and libonnx_proto then both
+contain the generated onnx-ml.pb.cc, and a process that loads both
+registers onnx/onnx-ml.proto twice. On Linux, symbol interposition makes
+both copies use one descriptor table, so the second registration is a
+no-op. With macOS two-level namespaces each dylib keeps its own copy, and
+protobuf aborts while loading the second one:
+
+  E descriptor_database.cc:683] File already exists in database: onnx/onnx-ml.proto
+  F descriptor.cc:2531] Check failed: GeneratedDatabase()->Add(encoded_file_descriptor, size)
+
+This aborted onnxruntime_autoep_test on osx-arm64.
+
+For shared builds, compile the protobuf sources in an OBJECT library that
+only onnx pulls in, and keep onnx_proto as an INTERFACE target that links
+onnx, so ONNX::onnx_proto remains available to consumers. Static builds
+are unchanged.
+---
+ CMakeLists.txt      | 30 +++++++++++++++++++++++-------
+ cmake/summary.cmake |  8 ++++----
+ 2 files changed, 27 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e7870cb..e38f1fd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -501,15 +501,31 @@ endif()
+ 
+ # Compile the generated .pb.cc sources in exactly one target: Xcode's build
+ # system rejects a protoc custom command shared across several targets.
+-add_library(onnx_proto ${ONNX_PROTO_SRCS})
+-add_onnx_global_defines(onnx_proto)
+-add_dependencies(onnx_proto onnx_proto_gen)
++if(BUILD_SHARED_LIBS)
++  # The protobuf objects live only in the onnx shared library. A separate
++  # onnx_proto shared library would carry a second copy of the generated
++  # descriptors, and a process loading both registers onnx/onnx-ml.proto twice:
++  # protobuf aborts with "File already exists in database" wherever the two
++  # copies are not merged by symbol interposition (e.g. macOS two-level
++  # namespaces). onnx_proto is kept below as an interface target for consumers.
++  set(ONNX_PROTO_OBJECTS_TARGET onnx_proto_objects)
++  add_library(onnx_proto_objects OBJECT ${ONNX_PROTO_SRCS})
++else()
++  set(ONNX_PROTO_OBJECTS_TARGET onnx_proto)
++  add_library(onnx_proto ${ONNX_PROTO_SRCS})
++endif()
++add_onnx_global_defines(${ONNX_PROTO_OBJECTS_TARGET})
++add_dependencies(${ONNX_PROTO_OBJECTS_TARGET} onnx_proto_gen)
+ 
+ # Core library. Hand-written sources come from target_sources(onnx ...) in the
+ # subdirectories; the protobuf objects are pulled in from onnx_proto.
+-add_library(onnx $<TARGET_OBJECTS:onnx_proto>)
++add_library(onnx $<TARGET_OBJECTS:${ONNX_PROTO_OBJECTS_TARGET}>)
+ add_subdirectory(onnx)
+-add_dependencies(onnx onnx_proto)
++add_dependencies(onnx ${ONNX_PROTO_OBJECTS_TARGET})
++if(BUILD_SHARED_LIBS)
++  add_library(onnx_proto INTERFACE)
++  target_link_libraries(onnx_proto INTERFACE onnx)
++endif()
+ set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
+ add_onnx_global_defines(onnx)
+ 
+@@ -521,7 +537,7 @@ add_onnx_global_defines(onnx)
+ # exported, without leaking the macro to dependent targets.
+ if(BUILD_SHARED_LIBS)
+   target_compile_definitions(onnx PRIVATE ONNX_BUILD_SHARED_LIBS)
+-  target_compile_definitions(onnx_proto PRIVATE ONNX_BUILD_SHARED_LIBS)
++  target_compile_definitions(${ONNX_PROTO_OBJECTS_TARGET} PRIVATE ONNX_BUILD_SHARED_LIBS)
+ endif()
+ 
+ if(ONNX_BUILD_PYTHON)
+@@ -557,7 +573,7 @@ if(ONNX_BUILD_PYTHON)
+   endif()
+ endif()
+ 
+-add_onnx_compile_options(onnx_proto)
++add_onnx_compile_options(${ONNX_PROTO_OBJECTS_TARGET})
+ add_onnx_compile_options(onnx)
+ if(TARGET onnx_cpp2py_export)
+   add_onnx_global_defines(onnx_cpp2py_export)
+diff --git a/cmake/summary.cmake b/cmake/summary.cmake
+index 57e39f8..7c614cf 100644
+--- a/cmake/summary.cmake
++++ b/cmake/summary.cmake
+@@ -30,19 +30,19 @@ function(onnx_print_configuration_summary)
+ 
+   get_target_property(tmp onnx COMPILE_OPTIONS)
+   message(STATUS "  onnx compile options              : ${tmp}")
+-  get_target_property(tmp onnx_proto COMPILE_OPTIONS)
++  get_target_property(tmp ${ONNX_PROTO_OBJECTS_TARGET} COMPILE_OPTIONS)
+   if(tmp)
+     message(STATUS "  onnx_proto compile options        : ${tmp}")
+   endif()
+   get_target_property(tmp onnx COMPILE_DEFINITIONS)
+   message(STATUS "  onnx compile definitions          : ${tmp}")
+-  get_target_property(tmp onnx_proto COMPILE_DEFINITIONS)
++  get_target_property(tmp ${ONNX_PROTO_OBJECTS_TARGET} COMPILE_DEFINITIONS)
+   message(STATUS "  onnx_proto compile definitions    : ${tmp}")
+   get_target_property(tmp onnx LINK_OPTIONS)
+   if(tmp)
+     message(STATUS "  onnx link options                 : ${tmp}")
+   endif()
+-  get_target_property(tmp onnx_proto LINK_OPTIONS)
++  get_target_property(tmp ${ONNX_PROTO_OBJECTS_TARGET} LINK_OPTIONS)
+   if(tmp)
+     message(STATUS "  onnx_proto link options           : ${tmp}")
+   endif()
+@@ -50,7 +50,7 @@ function(onnx_print_configuration_summary)
+   if(tmp)
+     message(STATUS "  onnx link libraries               : ${tmp}")
+   endif()
+-  get_target_property(tmp onnx_proto LINK_LIBRARIES)
++  get_target_property(tmp ${ONNX_PROTO_OBJECTS_TARGET} LINK_LIBRARIES)
+   if(tmp)
+     message(STATUS "  onnx_proto link libraries         : ${tmp}")
+   endif()
+-- 
+2.55.0
+
