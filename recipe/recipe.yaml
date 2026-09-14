@@ -75,6 +75,27 @@ outputs:
               - if not exist %LIBRARY_PREFIX%\lib\onnx_proto.lib exit 1
               - if not exist %LIBRARY_PREFIX%\lib\cmake\ONNX\ONNXConfig.cmake exit 1
               - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
+      # Exceptions thrown inside libonnx must be catchable by type from another
+      # module built with hidden visibility, like onnxruntime (patch 0008).
+      - files:
+          recipe:
+            - test_libonnx_exceptions/
+        requirements:
+          run:
+            - ${{ compiler('cxx') }}
+            - ${{ stdlib('c') }}
+            - cmake
+            - ninja
+        script:
+          - if: unix
+            then:
+              - cmake -S test_libonnx_exceptions -B build_exceptions -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PREFIX
+              - cmake --build build_exceptions
+              - ./build_exceptions/test_libonnx_exceptions
+            else:
+              - cmake -S test_libonnx_exceptions -B build_exceptions -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%
+              - cmake --build build_exceptions
+              - build_exceptions\test_libonnx_exceptions.exe
 
   # The ONNX Python package. The onnx_cpp2py_export extension links the
   # libonnx shared library rather than recompiling ONNX (patch 0005).
