@@ -1,4 +1,4 @@
-From 1fbc9755022cc1a74d5432018ceeb37b3ca91f69 Mon Sep 17 00:00:00 2001
+From 0633f15e9021b9c3f96edaa0201cb61abca38e82 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 13 Sep 2026 18:35:34 -0400
 Subject: [PATCH 8/8] Annotate the remaining public C++ API with ONNX_API
@@ -26,6 +26,14 @@ onnxruntime_provider_test on linux, osx and Windows):
 - both shape_inference::InferShapeForFunctionNode overloads;
 - the ParseData template, whose instantiations live in the library.
 
+The ToTensor and ParseData specializations are defined in
+tensor_proto_util.cc and tensor_util.cc. GCC and clang give an explicit
+specialization the visibility of its primary template, but MSVC only
+exports it when the definition itself is dllexport, so onnx.dll exported
+none of them and onnxruntime_conda.dll failed to link against
+ParseData<int>, ParseData<int64_t> and ToTensor<int64_t>. Annotate the
+definitions, and the ParseData(const Tensor*) declaration, with ONNX_API.
+
 GraphInferencerImpl is exported as a whole class so its vtable is
 available to onnx_cpp2py_export, which instantiates it; MSVC forbids
 dllexport on members of a dllexport class, so doInferencing loses its
@@ -37,10 +45,13 @@ own annotation.
  onnx/defs/printer.h                   | 28 +++++++++++++--------------
  onnx/defs/schema.h                    | 14 +++++++-------
  onnx/defs/shape_inference.h           | 12 ++++++------
+ onnx/defs/tensor_proto_util.cc        | 10 +++++-----
  onnx/defs/tensor_proto_util.h         |  2 +-
+ onnx/defs/tensor_util.cc              |  2 +-
+ onnx/defs/tensor_util.h               |  2 +-
  onnx/inliner/inliner.h                | 10 +++++-----
  onnx/shape_inference/implementation.h |  8 ++++----
- 9 files changed, 56 insertions(+), 56 deletions(-)
+ 12 files changed, 63 insertions(+), 63 deletions(-)
 
 diff --git a/onnx/checker.h b/onnx/checker.h
 index bb281a9..ff52b52 100644
@@ -281,6 +292,41 @@ index 8e235d3..49fc017 100644
  
  // target-type = Union (target-type, source-type)
  // target and source are required to have the same type.
+diff --git a/onnx/defs/tensor_proto_util.cc b/onnx/defs/tensor_proto_util.cc
+index 222db66..351771c 100644
+--- a/onnx/defs/tensor_proto_util.cc
++++ b/onnx/defs/tensor_proto_util.cc
+@@ -16,8 +16,8 @@
+ namespace ONNX_NAMESPACE {
+ 
+ #define DEFINE_TO_TENSOR_ONE(type, enumType, field) \
+-  template <>                                       \
+-  TensorProto ToTensor<type>(const type& value) {   \
++  template <>                                                \
++  ONNX_API TensorProto ToTensor<type>(const type& value) {   \
+     TensorProto t;                                  \
+     t.set_data_type(enumType);                      \
+     t.add_##field##_data(value);                    \
+@@ -25,8 +25,8 @@ namespace ONNX_NAMESPACE {
+   }
+ 
+ #define DEFINE_TO_TENSOR_LIST(type, enumType, field)            \
+-  template <>                                                   \
+-  TensorProto ToTensor<type>(const std::vector<type>& values) { \
++  template <>                                                            \
++  ONNX_API TensorProto ToTensor<type>(const std::vector<type>& values) { \
+     TensorProto t;                                              \
+     t.clear_##field##_data();                                   \
+     t.set_data_type(enumType);                                  \
+@@ -38,7 +38,7 @@ namespace ONNX_NAMESPACE {
+ 
+ #define DEFINE_PARSE_DATA(type, typed_data_fetch, tensorproto_datatype)                                              \
+   template <>                                                                                                        \
+-  std::vector<type> ParseData(const TensorProto* tensor_proto) {                                                     \
++  ONNX_API std::vector<type> ParseData(const TensorProto* tensor_proto) {                                            \
+     if (!tensor_proto->has_data_type() || tensor_proto->data_type() == TensorProto_DataType_UNDEFINED) {             \
+       fail_shape_inference("The type of tensor: ", tensor_proto->name(), " is undefined so it cannot be parsed.");   \
+     } else if (tensor_proto->data_type() != tensorproto_datatype) {                                                  \
 diff --git a/onnx/defs/tensor_proto_util.h b/onnx/defs/tensor_proto_util.h
 index 46d058a..6c21039 100644
 --- a/onnx/defs/tensor_proto_util.h
@@ -291,6 +337,31 @@ index 46d058a..6c21039 100644
  template <typename T>
 -std::vector<T> ParseData(const TensorProto* tensor_proto);
 +ONNX_API std::vector<T> ParseData(const TensorProto* tensor_proto);
+ 
+ } // namespace ONNX_NAMESPACE
+diff --git a/onnx/defs/tensor_util.cc b/onnx/defs/tensor_util.cc
+index e38e9d4..9784d3d 100644
+--- a/onnx/defs/tensor_util.cc
++++ b/onnx/defs/tensor_util.cc
+@@ -13,7 +13,7 @@ namespace ONNX_NAMESPACE {
+ 
+ #define DEFINE_PARSE_DATA(type, typed_data_fetch)                          \
+   template <>                                                              \
+-  std::vector<type> ParseData(const Tensor* tensor) {                      \
++  ONNX_API std::vector<type> ParseData(const Tensor* tensor) {             \
+     std::vector<type> res;                                                 \
+     if (!tensor->is_raw_data()) {                                          \
+       const auto& data = tensor->typed_data_fetch();                       \
+diff --git a/onnx/defs/tensor_util.h b/onnx/defs/tensor_util.h
+index 7bcf76f..ca52d0c 100644
+--- a/onnx/defs/tensor_util.h
++++ b/onnx/defs/tensor_util.h
+@@ -11,6 +11,6 @@
+ namespace ONNX_NAMESPACE {
+ 
+ template <typename T>
+-std::vector<T> ParseData(const Tensor* tensor);
++ONNX_API std::vector<T> ParseData(const Tensor* tensor);
  
  } // namespace ONNX_NAMESPACE
 diff --git a/onnx/inliner/inliner.h b/onnx/inliner/inliner.h
