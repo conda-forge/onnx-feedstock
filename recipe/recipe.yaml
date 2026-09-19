@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "1.22.0"
+  version: "1.23.0"
 
 recipe:
   name: onnx
@@ -9,7 +9,7 @@ recipe:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: 70bb8b25cf31ea9b1d9f94baacfdc8c4fa27a760f9a10f5d93881bc9eede5fbc
+  sha256: b0ff8a948f6f2b8200493857e7549109f51a31ecbeb8a12c7e8c60c2c4fc93a4
   patches:
     - patches/0001-Patch-Python-and-nanobind-cmake-config.patch
     - patches/0002-Link-protobuf-and-abseil-privately.patch
@@ -23,7 +23,7 @@ source:
     - patches/0010-Build-the-protobuf-sources-into-the-onnx-shared-libr.patch
 
 build:
-  number: 5
+  number: 0
 
 outputs:
   # The ONNX C++ shared library (libonnx), headers and the
