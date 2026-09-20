@@ -1,8 +1,7 @@
-From f1889ee48e821c8556d73a8c92de321a2d23ae3a Mon Sep 17 00:00:00 2001
+From 47aac9736311de194086febfae7245a6594ac82c Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Thu, 10 Sep 2026 21:49:37 -0400
-Subject: [PATCH 3/8] Define ONNX_BUILD_SHARED_LIBS when building shared
- libraries
+Subject: [PATCH] Define ONNX_BUILD_SHARED_LIBS when building shared libraries
 
 ONNX_API only expands to a dllexport / default-visibility attribute when
 ONNX_BUILD_SHARED_LIBS (or ONNX_BUILD_MAIN_LIB) is defined; nothing in the
@@ -15,10 +14,10 @@ shared builds so the public API is exported and consumers see dllimport.
  1 file changed, 11 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6e82c9d6d..210e1bf56 100644
+index f882dcd..d335c43 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -506,6 +506,17 @@ add_dependencies(onnx onnx_proto)
+@@ -540,6 +540,17 @@ add_dependencies(onnx onnx_proto)
  set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
  add_onnx_global_defines(onnx)
  

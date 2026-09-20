@@ -1,7 +1,7 @@
-From 4529a1235690565f68a7d5d2eb978d14882c4bb8 Mon Sep 17 00:00:00 2001
+From 95f24e674088853c9e94b19152894c03fc124f67 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 13 Sep 2026 18:35:34 -0400
-Subject: [PATCH 8/9] Annotate the remaining public C++ API with ONNX_API
+Subject: [PATCH] Annotate the remaining public C++ API with ONNX_API
 
 With the shared ONNX libraries built with hidden visibility, and on
 Windows exporting only ONNX_API symbols, separate consumers failed to
@@ -54,7 +54,7 @@ own annotation.
  onnx/checker.h                        | 26 ++++++++++++-------------
  onnx/common/ir_pb_converter.h         |  2 +-
  onnx/defs/data_type_utils.h           |  8 ++++----
- onnx/defs/math/utils.h                |  6 +++---
+ onnx/defs/math/utils.h                |  4 ++--
  onnx/defs/printer.h                   | 28 +++++++++++++--------------
  onnx/defs/schema.h                    | 20 +++++++++----------
  onnx/defs/shape_inference.h           | 14 +++++++-------
@@ -64,14 +64,14 @@ own annotation.
  onnx/defs/tensor_util.h               |  2 +-
  onnx/inliner/inliner.h                | 10 +++++-----
  onnx/shape_inference/implementation.h |  8 ++++----
- 13 files changed, 69 insertions(+), 69 deletions(-)
+ 13 files changed, 68 insertions(+), 68 deletions(-)
 
 diff --git a/onnx/checker.h b/onnx/checker.h
-index bb281a9..ba096bd 100644
+index fe88cee..63ac71e 100644
 --- a/onnx/checker.h
 +++ b/onnx/checker.h
-@@ -19,7 +19,7 @@ namespace ONNX_NAMESPACE {
- namespace checker {
+@@ -18,7 +18,7 @@
+ namespace ONNX_NAMESPACE::checker {
  // std::string member means copy may throw when allocation fails
  // NOLINTNEXTLINE(bugprone-exception-copy-constructor-throws)
 -class ValidationError final : public std::runtime_error {
@@ -79,7 +79,7 @@ index bb281a9..ba096bd 100644
   public:
    using std::runtime_error::runtime_error;
    const char* what() const noexcept override {
-@@ -146,16 +146,16 @@ class LexicalScopeContext final {
+@@ -145,16 +145,16 @@ class LexicalScopeContext final {
  };
  
  using IR_VERSION_TYPE = decltype(Version::IR_VERSION);
@@ -106,7 +106,7 @@ index bb281a9..ba096bd 100644
      const FunctionProto& function,
      const CheckerContext& /*ctx*/,
      const LexicalScopeContext& /*parent_lex*/);
-@@ -187,13 +187,13 @@ ONNX_API void check_model(
+@@ -186,13 +186,13 @@ ONNX_API void check_model(
      bool full_check = false,
      bool skip_opset_compatibility_check = false,
      bool check_custom_domain = false);
@@ -161,10 +161,10 @@ index 126cdb4..12d2583 100644
   private:
    static void FromString(const std::string& type_str, TypeProto& type_proto);
 diff --git a/onnx/defs/math/utils.h b/onnx/defs/math/utils.h
-index e5aeb6f..116f79f 100644
+index d3cb30a..c2b371d 100644
 --- a/onnx/defs/math/utils.h
 +++ b/onnx/defs/math/utils.h
-@@ -46,11 +46,11 @@ T GetScalarValueFromTensor(const ONNX_NAMESPACE::TensorProto* t) {
+@@ -46,9 +46,9 @@ T GetScalarValueFromTensor(const ONNX_NAMESPACE::TensorProto* t) {
    }
  }
  
@@ -174,10 +174,7 @@ index e5aeb6f..116f79f 100644
 -void QLinearMatMulShapeInference(ONNX_NAMESPACE::InferenceContext& ctx);
 +ONNX_API void QLinearMatMulShapeInference(ONNX_NAMESPACE::InferenceContext& ctx);
  
--const char* QLinearMatMulDoc();
-+ONNX_API const char* QLinearMatMulDoc();
- 
- int MathOpTwoIntegers(const std::string& op_type, int a, int b);
+ int64_t MathOpTwoIntegers(const std::string& op_type, int64_t a, int64_t b);
  
 diff --git a/onnx/defs/printer.h b/onnx/defs/printer.h
 index 98d695f..7d225c1 100644
@@ -232,7 +229,7 @@ index 98d695f..7d225c1 100644
  template <typename ProtoType>
  std::string ProtoToString(const ProtoType& proto) {
 diff --git a/onnx/defs/schema.h b/onnx/defs/schema.h
-index 784fd30..8fbd411 100644
+index 2d12374..bd59d07 100644
 --- a/onnx/defs/schema.h
 +++ b/onnx/defs/schema.h
 @@ -94,20 +94,20 @@ class OpSchema;
@@ -268,7 +265,7 @@ index 784fd30..8fbd411 100644
  
    // Functions to set the property of the operator schemas.
    // Sets the number of inputs, either a fixed number or a min and a max.
-@@ -440,12 +440,12 @@ class OpSchema final {
+@@ -446,12 +446,12 @@ class OpSchema final {
  
  // Register "optional" attribute with default value.
  #define ATTR_SETTER_WITH_DEFAULT_VALUE(TypeName)                                                                    \
@@ -284,7 +281,7 @@ index 784fd30..8fbd411 100644
        std::string name,                                                                                             \
        std::string description,                                                                                      \
        AttributeProto::AttributeType type,                                                                           \
-@@ -455,7 +455,7 @@ class OpSchema final {
+@@ -461,7 +461,7 @@ class OpSchema final {
    ATTR_SETTER_WITH_DEFAULT_VALUE(float)
    ATTR_SETTER_WITH_DEFAULT_VALUE(std::string)
    // Overload for const char* default value to prevent implicit conversion to bool
@@ -293,7 +290,7 @@ index 784fd30..8fbd411 100644
    Attr(const char* name, const char* description, AttributeProto::AttributeType type, const char* defaultValue);
    ATTR_SETTER_WITH_DEFAULT_VALUE(TensorProto)
    ATTR_SETTER_WITH_DEFAULT_VALUE(GraphProto)
-@@ -1226,7 +1226,7 @@ class OpSchemaRegistry final : public ISchemaRegistry {
+@@ -1240,7 +1240,7 @@ class OpSchemaRegistry final : public ISchemaRegistry {
     */
    ONNX_API static OpName_Domain_Version_Schema_Map& GetMapWithoutEnsuringRegistration();
    ONNX_API static OpName_Domain_Version_Schema_Map& map();
@@ -302,7 +299,7 @@ index 784fd30..8fbd411 100644
  
   public:
    static std::vector<OpSchema> get_all_schemas_with_history() {
-@@ -1360,7 +1360,7 @@ class DbgOperatorSetTracker {
+@@ -1373,7 +1373,7 @@ class DbgOperatorSetTracker {
    ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(OnnxPreview, ver, name)
  
  // Helper function
@@ -312,10 +309,10 @@ index 784fd30..8fbd411 100644
  // Legacy macros to register schema at static initialization
  #define ONNX_OPERATOR_SCHEMA(name) ONNX_OPERATOR_SCHEMA_UNIQ_HELPER(__COUNTER__, name)
 diff --git a/onnx/defs/shape_inference.h b/onnx/defs/shape_inference.h
-index 8e235d3..21764e7 100644
+index eba2024..2f61ec5 100644
 --- a/onnx/defs/shape_inference.h
 +++ b/onnx/defs/shape_inference.h
-@@ -57,7 +57,7 @@ class GraphInferencer {
+@@ -62,7 +62,7 @@ class GraphInferencer {
  
  // Exception class used for handling errors in type and shape inference
  
@@ -324,7 +321,7 @@ index 8e235d3..21764e7 100644
   public:
    using std::runtime_error::runtime_error;
  
-@@ -779,9 +779,9 @@ inline void mergeInDimensionInfo(
+@@ -815,9 +815,9 @@ inline void mergeInDimensionInfo(
    }
  }
  
@@ -336,7 +333,7 @@ index 8e235d3..21764e7 100644
  
  /*
  Merge the shape information from two TypeProto_Tensor instances.
-@@ -794,9 +794,9 @@ If both have shape information:
+@@ -830,9 +830,9 @@ If both have shape information:
  - Prefer target param over source param if mismatched.
  Fail if there are mismatches in number of dimensions or dimension values.
  */
@@ -348,7 +345,7 @@ index 8e235d3..21764e7 100644
  
  // Return a copy of a type, with a specified dimension removed from its shape.
  inline TypeProto RemoveIthDimensionFromShape(const TypeProto& proto, int removed_dim) {
-@@ -957,9 +957,9 @@ inline void unifyDim(Dim& dim, int64_t value) {
+@@ -996,9 +996,9 @@ inline void unifyDim(Dim& dim, int64_t value) {
  //    input1 shape: (2, 3, 4, 'x')
  //    input2 shape: (2, 3, 4)
  //    output shape: None
@@ -361,11 +358,11 @@ index 8e235d3..21764e7 100644
  // target-type = Union (target-type, source-type)
  // target and source are required to have the same type.
 diff --git a/onnx/defs/tensor_proto_util.cc b/onnx/defs/tensor_proto_util.cc
-index 222db66..351771c 100644
+index 35838f4..1d9977d 100644
 --- a/onnx/defs/tensor_proto_util.cc
 +++ b/onnx/defs/tensor_proto_util.cc
-@@ -16,8 +16,8 @@
- namespace ONNX_NAMESPACE {
+@@ -35,8 +35,8 @@ int64_t RawDataElementCount(const TensorProto& tensor, size_t element_size, bool
+ }
  
  #define DEFINE_TO_TENSOR_ONE(type, enumType, field) \
 -  template <>                                       \
@@ -375,7 +372,7 @@ index 222db66..351771c 100644
      TensorProto t;                                  \
      t.set_data_type(enumType);                      \
      t.add_##field##_data(value);                    \
-@@ -25,8 +25,8 @@ namespace ONNX_NAMESPACE {
+@@ -44,8 +44,8 @@ int64_t RawDataElementCount(const TensorProto& tensor, size_t element_size, bool
    }
  
  #define DEFINE_TO_TENSOR_LIST(type, enumType, field)            \
@@ -386,40 +383,41 @@ index 222db66..351771c 100644
      TensorProto t;                                              \
      t.clear_##field##_data();                                   \
      t.set_data_type(enumType);                                  \
-@@ -38,7 +38,7 @@ namespace ONNX_NAMESPACE {
+@@ -57,7 +57,7 @@ int64_t RawDataElementCount(const TensorProto& tensor, size_t element_size, bool
  
- #define DEFINE_PARSE_DATA(type, typed_data_fetch, tensorproto_datatype)                                              \
-   template <>                                                                                                        \
--  std::vector<type> ParseData(const TensorProto* tensor_proto) {                                                     \
-+  ONNX_API std::vector<type> ParseData(const TensorProto* tensor_proto) {                                            \
-     if (!tensor_proto->has_data_type() || tensor_proto->data_type() == TensorProto_DataType_UNDEFINED) {             \
-       fail_shape_inference("The type of tensor: ", tensor_proto->name(), " is undefined so it cannot be parsed.");   \
-     } else if (tensor_proto->data_type() != tensorproto_datatype) {                                                  \
+ #define DEFINE_PARSE_DATA(type, typed_data_fetch, tensorproto_datatype)                                            \
+   template <>                                                                                                      \
+-  std::vector<type> ParseData(const TensorProto* tensor_proto) {                                                   \
++  ONNX_API std::vector<type> ParseData(const TensorProto* tensor_proto) {                                          \
+     if (!tensor_proto->has_data_type() || tensor_proto->data_type() == TensorProto_DataType_UNDEFINED) {           \
+       fail_shape_inference("The type of tensor: ", tensor_proto->name(), " is undefined so it cannot be parsed."); \
+     } else if (tensor_proto->data_type() != (tensorproto_datatype)) {                                              \
 diff --git a/onnx/defs/tensor_proto_util.h b/onnx/defs/tensor_proto_util.h
-index 46d058a..6c21039 100644
+index 89f083b..2048dd0 100644
 --- a/onnx/defs/tensor_proto_util.h
 +++ b/onnx/defs/tensor_proto_util.h
-@@ -16,6 +16,6 @@ template <typename T>
+@@ -22,7 +22,7 @@ template <typename T>
  ONNX_API TensorProto ToTensor(const std::vector<T>& values);
  
  template <typename T>
 -std::vector<T> ParseData(const TensorProto* tensor_proto);
 +ONNX_API std::vector<T> ParseData(const TensorProto* tensor_proto);
  
- } // namespace ONNX_NAMESPACE
+ // Elements that dims implies, checked against raw_data's length. With exact_fit
+ // the two must agree exactly; otherwise raw_data may hold trailing bytes, which
 diff --git a/onnx/defs/tensor_util.cc b/onnx/defs/tensor_util.cc
-index e38e9d4..9784d3d 100644
+index cdc24be..0da0fba 100644
 --- a/onnx/defs/tensor_util.cc
 +++ b/onnx/defs/tensor_util.cc
-@@ -13,7 +13,7 @@ namespace ONNX_NAMESPACE {
+@@ -14,7 +14,7 @@ namespace ONNX_NAMESPACE {
  
- #define DEFINE_PARSE_DATA(type, typed_data_fetch)                          \
-   template <>                                                              \
--  std::vector<type> ParseData(const Tensor* tensor) {                      \
-+  ONNX_API std::vector<type> ParseData(const Tensor* tensor) {             \
-     std::vector<type> res;                                                 \
-     if (!tensor->is_raw_data()) {                                          \
-       const auto& data = tensor->typed_data_fetch();                       \
+ #define DEFINE_PARSE_DATA(type, typed_data_fetch)                                             \
+   template <>                                                                                 \
+-  std::vector<type> ParseData(const Tensor* tensor) {                                         \
++  ONNX_API std::vector<type> ParseData(const Tensor* tensor) {                                \
+     std::vector<type> res;                                                                    \
+     if (!tensor->is_raw_data()) {                                                             \
+       const auto& data = tensor->typed_data_fetch();                                          \
 diff --git a/onnx/defs/tensor_util.h b/onnx/defs/tensor_util.h
 index 7bcf76f..ca52d0c 100644
 --- a/onnx/defs/tensor_util.h
@@ -433,10 +431,10 @@ index 7bcf76f..ca52d0c 100644
  
  } // namespace ONNX_NAMESPACE
 diff --git a/onnx/inliner/inliner.h b/onnx/inliner/inliner.h
-index c883309..0422b30 100644
+index 5856708..854ab0d 100644
 --- a/onnx/inliner/inliner.h
 +++ b/onnx/inliner/inliner.h
-@@ -37,7 +37,7 @@ class FunctionIdSet {
+@@ -36,7 +36,7 @@ class FunctionIdSet {
  
    // Creates a set representing the elements in the given vector, if invert is false.
    // Otherwise, creates a set representing elements not in the given vector.
@@ -445,7 +443,7 @@ index c883309..0422b30 100644
  };
  
  /**
-@@ -48,7 +48,7 @@ class FunctionIdSet {
+@@ -47,7 +47,7 @@ class FunctionIdSet {
   *        the default schema registry is used.
   * @note Only call-sites in the main graph are inlined.
   */
@@ -454,7 +452,7 @@ index c883309..0422b30 100644
  
  /**
   * @brief Inlines the model-local functions in the given model that are in the given set.
-@@ -63,7 +63,7 @@ void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline,
+@@ -62,7 +62,7 @@ void InlineSelectedFunctions(ModelProto& model, const FunctionIdSet& to_inline,
   * @note This function does not perform schema-defined function inlining. For schema-defined
   *       function inlining, use InlineSelectedFunctions instead.
   */
@@ -463,7 +461,7 @@ index c883309..0422b30 100644
  
  /**
   * @brief Inlines the model-local functions in the given model that are in the given set.
-@@ -71,14 +71,14 @@ void InlineSelectedLocalFunctions(ModelProto& model, const FunctionIdSet& to_inl
+@@ -70,14 +70,14 @@ void InlineSelectedLocalFunctions(ModelProto& model, const FunctionIdSet& to_inl
   * to avoid confusion with the overloaded version of InlineSelectedFunctions that
   * inlines schema-defined functions as well.
   */
@@ -481,11 +479,11 @@ index c883309..0422b30 100644
  /**
   * @brief A utility class for renaming variables during graph inlining operations.
 diff --git a/onnx/shape_inference/implementation.h b/onnx/shape_inference/implementation.h
-index c3fd19e..b3bb63c 100644
+index 08ab521..cebac47 100644
 --- a/onnx/shape_inference/implementation.h
 +++ b/onnx/shape_inference/implementation.h
-@@ -119,7 +119,7 @@ struct GraphInferenceContext {
-   const int ir_version;
+@@ -145,7 +145,7 @@ struct GraphInferenceContext {
+   const int64_t ir_version;
  };
  
 -class GraphInferencerImpl : public GraphInferencer {
@@ -493,7 +491,7 @@ index c3fd19e..b3bb63c 100644
   public:
    GraphInferencerImpl(GraphProto& g, GraphInferenceContext& context) : g_{&g}, context_{&context} {}
    GraphInferencerImpl(GraphProto& g, GraphInferenceContext& context, const ShapeInferenceOptions& options)
-@@ -501,7 +501,7 @@ ONNX_API void InferShapes(
+@@ -550,7 +550,7 @@ ONNX_API void InferShapes(
  /// ModelLocalFunctionsMap is a map of function id -> model local function proto
  /// All the ONNX helper utilities expect the function id == <function_proto.domain>:<function_proto.name>
  ///
@@ -502,7 +500,7 @@ index c3fd19e..b3bb63c 100644
      const FunctionProto& func,
      const ISchemaRegistry* schema_registry,
      InferenceContext& ctx,
-@@ -514,7 +514,7 @@ void InferShapeForFunctionNode(
+@@ -563,7 +563,7 @@ void InferShapeForFunctionNode(
  /// ModelLocalFunctionsMap is a map of function id -> model local function proto
  /// All the ONNX helper utilities expect the function id == <function_proto.domain>:<function_proto.name>
  ///
@@ -511,15 +509,12 @@ index c3fd19e..b3bb63c 100644
      const FunctionProto& func_proto,
      const std::unordered_map<std::string, int>& func_opset_imports,
      const ISchemaRegistry* schema_registry,
-@@ -532,7 +532,7 @@ void InferShapeForFunctionNode(
- /// A TypeProto with value_case() == TypeProto::ValueCase::VALUE_NOT_SET is used
- /// for missing optional parameters.
+@@ -587,7 +587,7 @@ void InferShapeForFunctionNode(
+ /// represent an input that is present but whose type is unknown: such an input is
+ /// indistinguishable, from this API's perspective, from one that is simply absent.
  ///
 -std::vector<TypeProto> InferFunctionOutputTypes(
 +ONNX_API std::vector<TypeProto> InferFunctionOutputTypes(
      const FunctionProto& function_proto,
      const std::vector<TypeProto>& input_types,
      const std::vector<AttributeProto>& attributes);
--- 
-2.55.0
-

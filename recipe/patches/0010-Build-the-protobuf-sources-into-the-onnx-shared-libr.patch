@@ -1,8 +1,7 @@
-From cbc5b70d1aaa80f89cebd3bb8331abde07a1ac81 Mon Sep 17 00:00:00 2001
+From 6a017298dcecc065be297a1ba907fb3d0d0c17c0 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Mon, 14 Sep 2026 05:06:41 -0400
-Subject: [PATCH 10/10] Build the protobuf sources into the onnx shared library
- only
+Subject: [PATCH] Build the protobuf sources into the onnx shared library only
 
 The onnx library compiles in the objects of onnx_proto
 ($<TARGET_OBJECTS:onnx_proto>), and onnx_proto is also built as a library
@@ -23,21 +22,28 @@ only onnx pulls in, and keep onnx_proto as an INTERFACE target that links
 onnx, so ONNX::onnx_proto remains available to consumers. Static builds
 are unchanged.
 ---
- CMakeLists.txt      | 30 +++++++++++++++++++++++-------
+ CMakeLists.txt      | 38 +++++++++++++++++++++++++++-----------
  cmake/summary.cmake |  8 ++++----
- 2 files changed, 27 insertions(+), 11 deletions(-)
+ 2 files changed, 31 insertions(+), 15 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e7870cb..e38f1fd 100644
+index ab5a164..e1c7523 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -501,15 +501,31 @@ endif()
+@@ -531,19 +531,35 @@ endif()
  
  # Compile the generated .pb.cc sources in exactly one target: Xcode's build
- # system rejects a protoc custom command shared across several targets.
+ # system rejects a protoc custom command shared across several targets. Since
+-# onnx_proto_headers also depends on those same .pb.cc files (it just doesn't
+-# compile them), make onnx_proto depend on onnx_proto_headers so Xcode treats
+-# it as the owner of that custom command instead of erroring out.
 -add_library(onnx_proto ${ONNX_PROTO_SRCS})
 -add_onnx_global_defines(onnx_proto)
 -add_dependencies(onnx_proto onnx_proto_gen)
+-add_dependencies(onnx_proto onnx_proto_headers)
++# onnx_proto_headers also depends on those same .pb.cc files (it just does not
++# compile them), make the compiling target depend on onnx_proto_headers so
++# Xcode treats it as the owner of that custom command instead of erroring out.
 +if(BUILD_SHARED_LIBS)
 +  # The protobuf objects live only in the onnx shared library. A separate
 +  # onnx_proto shared library would carry a second copy of the generated
@@ -53,6 +59,7 @@ index e7870cb..e38f1fd 100644
 +endif()
 +add_onnx_global_defines(${ONNX_PROTO_OBJECTS_TARGET})
 +add_dependencies(${ONNX_PROTO_OBJECTS_TARGET} onnx_proto_gen)
++add_dependencies(${ONNX_PROTO_OBJECTS_TARGET} onnx_proto_headers)
  
  # Core library. Hand-written sources come from target_sources(onnx ...) in the
  # subdirectories; the protobuf objects are pulled in from onnx_proto.
@@ -68,7 +75,7 @@ index e7870cb..e38f1fd 100644
  set_target_properties(onnx PROPERTIES CXX_VISIBILITY_PRESET hidden)
  add_onnx_global_defines(onnx)
  
-@@ -521,7 +537,7 @@ add_onnx_global_defines(onnx)
+@@ -555,7 +571,7 @@ add_onnx_global_defines(onnx)
  # exported, without leaking the macro to dependent targets.
  if(BUILD_SHARED_LIBS)
    target_compile_definitions(onnx PRIVATE ONNX_BUILD_SHARED_LIBS)
@@ -77,7 +84,7 @@ index e7870cb..e38f1fd 100644
  endif()
  
  if(ONNX_BUILD_PYTHON)
-@@ -557,7 +573,7 @@ if(ONNX_BUILD_PYTHON)
+@@ -591,7 +607,7 @@ if(ONNX_BUILD_PYTHON)
    endif()
  endif()
  
@@ -122,6 +129,3 @@ index 57e39f8..7c614cf 100644
    if(tmp)
      message(STATUS "  onnx_proto link libraries         : ${tmp}")
    endif()
--- 
-2.55.0
-

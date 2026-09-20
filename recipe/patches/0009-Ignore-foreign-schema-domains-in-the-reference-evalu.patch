@@ -1,7 +1,7 @@
-From 8d8499d17b464f786f1b4e08b32a41d359b04b6f Mon Sep 17 00:00:00 2001
+From 1bd92ec46fabff3365f61704268b866edf7d7443 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Sun, 13 Sep 2026 21:51:15 -0400
-Subject: [PATCH 9/9] Ignore foreign schema domains in the reference evaluator
+Subject: [PATCH] Ignore foreign schema domains in the reference evaluator
 
 onnx.reference indexes every schema in the ONNX schema registry by
 operator name and raises NotImplementedError when a name appears in two
@@ -20,7 +20,7 @@ domains, so skip schemas from any other domain.
  1 file changed, 9 insertions(+)
 
 diff --git a/onnx/reference/op_run.py b/onnx/reference/op_run.py
-index 58b1700..8cad218 100644
+index 6ed95e7..dfee8a9 100644
 --- a/onnx/reference/op_run.py
 +++ b/onnx/reference/op_run.py
 @@ -44,9 +44,18 @@ class RefAttrName:
@@ -42,6 +42,3 @@ index 58b1700..8cad218 100644
          # Multiple version can coexist. The last one is kept.
          if schema.name in res:
              if schema.domain != res[schema.name].domain:
--- 
-2.55.0
-

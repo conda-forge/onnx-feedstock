@@ -1,7 +1,7 @@
-From 612ed34f2fe2e1676555c33fa83d6ccc212f3ca6 Mon Sep 17 00:00:00 2001
+From f894de378f9d2fbc832a80c755af04d3a62d0896 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Thu, 10 Sep 2026 21:49:37 -0400
-Subject: [PATCH 4/8] Decorate the protobuf-generated classes with ONNX_API
+Subject: [PATCH] Decorate the protobuf-generated classes with ONNX_API
 
 The protobuf-generated *Proto classes carried no export decoration, so
 they were absent from the ONNX shared library's import library on
@@ -16,10 +16,10 @@ cmake/ONNXProtoApiHeader.cmake.
  create mode 100644 cmake/ONNXProtoApiHeader.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 210e1bf56..b514307be 100644
+index d335c43..3677d8d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -436,12 +436,16 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS)
+@@ -450,12 +450,16 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS)
          COMMENT "Running gen_proto.py on ${INFILE}")
      message("Generated: ${GENERATED_PROTO}")
  
@@ -37,19 +37,19 @@ index 210e1bf56..b514307be 100644
      if(ONNX_BUILD_PYTHON)
        list(APPEND PROTOC_ARGS --python_out)
        if(ONNX_GEN_PB_TYPE_STUBS)
-@@ -467,6 +471,9 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS)
- 
+@@ -485,6 +489,9 @@ function(RELATIVE_PROTOBUF_GENERATE_CPP SRCS)
+     endif()
      add_custom_command(OUTPUT ${_protoc_outputs}
          COMMAND "${ONNX_PROTOC_EXECUTABLE}" ${PROTOC_ARGS}
 +        COMMAND ${CMAKE_COMMAND}
 +                -DONNX_PB_HEADER=${OUTPUT_PROTO_DIR}/${GENERATED_FILE_WE}.pb.h
 +                -P ${ONNX_ROOT}/cmake/ONNXProtoApiHeader.cmake
          DEPENDS ${GENERATED_FILES}
-         COMMENT "Running C++ protocol buffer compiler on ${GENERATED_PROTO}")
-   endforeach()
+         COMMENT "Running C++ protocol buffer compiler on ${GENERATED_PROTO}"
+         ${_codegen_option})
 diff --git a/cmake/ONNXProtoApiHeader.cmake b/cmake/ONNXProtoApiHeader.cmake
 new file mode 100644
-index 000000000..60b6e51c4
+index 0000000..60b6e51
 --- /dev/null
 +++ b/cmake/ONNXProtoApiHeader.cmake
 @@ -0,0 +1,21 @@

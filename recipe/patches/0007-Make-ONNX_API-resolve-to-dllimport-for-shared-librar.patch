@@ -1,7 +1,7 @@
-From 2f3a272e6dde60f9f3bd9c465c9452d2f75d08c0 Mon Sep 17 00:00:00 2001
+From 80e905bca8149072f81110d0466f6a86a7c1530d Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Thu, 10 Sep 2026 21:49:37 -0400
-Subject: [PATCH 7/8] Make ONNX_API resolve to dllimport for shared-library
+Subject: [PATCH] Make ONNX_API resolve to dllimport for shared-library
  consumers
 
 On MSVC, ONNX_IMPORT (and therefore ONNX_API when ONNX is not being
@@ -25,9 +25,9 @@ off every function a consumer's translation units define:
   empty for MSVC consumers.
 ---
  onnx/defs/function.h | 18 +++++++++---------
- onnx/defs/schema.h   | 16 ++++++++++++++--
+ onnx/defs/schema.h   | 26 +++++++++++++++++++-------
  onnx/onnx_pb.h       | 10 +++++-----
- 3 files changed, 28 insertions(+), 16 deletions(-)
+ 3 files changed, 33 insertions(+), 21 deletions(-)
 
 diff --git a/onnx/defs/function.h b/onnx/defs/function.h
 index 57b61dc..79fe272 100644
@@ -109,10 +109,10 @@ index 57b61dc..79fe272 100644
      constant_op += " = Constant()";
      auto tensor = ToTensor(values);
 diff --git a/onnx/defs/schema.h b/onnx/defs/schema.h
-index 94d0e20..784fd30 100644
+index 997bbf5..2d12374 100644
 --- a/onnx/defs/schema.h
 +++ b/onnx/defs/schema.h
-@@ -1269,7 +1269,9 @@ ONNX_API void DeregisterSchema(const std::string& op_type, int version, const st
+@@ -1283,7 +1283,9 @@ ONNX_API void DeregisterSchema(const std::string& op_type, int version, const st
  // Registers the latest opset schema before opset_version_to_load
  // By default opset_version_to_load=0 means it will register all versions
  template <class T>
@@ -123,7 +123,7 @@ index 94d0e20..784fd30 100644
    T::ForEachSchema([opset_version_to_load, fail_duplicate_schema](OpSchema&& schema) {
      RegisterSchema(std::move(schema), opset_version_to_load, fail_duplicate_schema);
    });
-@@ -1281,6 +1283,16 @@ ONNX_API void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_dupli
+@@ -1295,6 +1297,16 @@ ONNX_API void RegisterOpSetSchema(int opset_version_to_load = 0, bool fail_dupli
  template <typename T>
  ONNX_API OpSchema GetOpSchema();
  
@@ -140,15 +140,25 @@ index 94d0e20..784fd30 100644
  #define ONNX_OPERATOR_SET_SCHEMA(name, ver, impl) ONNX_OPERATOR_SET_SCHEMA_EX(name, Onnx, ONNX_DOMAIN, ver, true, impl)
  
  #define ONNX_ML_OPERATOR_SET_SCHEMA(name, ver, impl) \
-@@ -1331,7 +1343,7 @@ class DbgOperatorSetTracker {
- #define ONNX_OPERATOR_SET_SCHEMA_EX(name, domain, domain_str, ver, dbg_included_in_static_opset, impl)  \
-   class ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name);                                         \
-   template <>                                                                                           \
--  ONNX_API OpSchema GetOpSchema<ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name)>() {             \
+@@ -1341,12 +1353,12 @@ class DbgOperatorSetTracker {
+ // assists with runtime validation in DEBUG builds ensuring the intended set
+ // of operator schema is registered.
+ 
+-#define ONNX_OPERATOR_SET_SCHEMA_EX(name, domain, domain_str, ver, dbg_included_in_static_opset, impl)    \
+-  class ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name);                                           \
+-  template <>                                                                                             \
+-  ONNX_API OpSchema GetOpSchema<ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name)>() {               \
+-    return (impl).SetName(#name).SetDomain(domain_str).SinceVersion(ver).SetLocation(__FILE__, __LINE__); \
+-  }                                                                                                       \
++#define ONNX_OPERATOR_SET_SCHEMA_EX(name, domain, domain_str, ver, dbg_included_in_static_opset, impl)          \
++  class ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name);                                                 \
++  template <>                                                                                                   \
 +  ONNX_OPERATOR_SET_SCHEMA_API OpSchema GetOpSchema<ONNX_OPERATOR_SET_SCHEMA_CLASS_NAME(domain, ver, name)>() { \
-     return impl.SetName(#name).SetDomain(domain_str).SinceVersion(ver).SetLocation(__FILE__, __LINE__); \
-   }                                                                                                     \
++    return (impl).SetName(#name).SetDomain(domain_str).SinceVersion(ver).SetLocation(__FILE__, __LINE__);       \
++  }                                                                                                             \
    ONNX_OPERATOR_SET_SCHEMA_DEBUG_VARIABLE(name, domain, ver, dbg_included_in_static_opset)
+ #ifndef NDEBUG
+ #define ONNX_DBG_GET_COUNT_IN_OPSETS() DbgOperatorSetTracker::Instance().GetCount()
 diff --git a/onnx/onnx_pb.h b/onnx/onnx_pb.h
 index 624cf04..5bed03a 100644
 --- a/onnx/onnx_pb.h
@@ -173,6 +183,3 @@ index 624cf04..5bed03a 100644
  #ifdef __GNUC__
  #define ONNX_EXPORT __attribute__((__visibility__("default")))
  #else
--- 
-2.55.0
-
