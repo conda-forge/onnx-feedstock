@@ -23,7 +23,7 @@ source:
     - patches/0010-Build-the-protobuf-sources-into-the-onnx-shared-libr.patch
 
 build:
-  number: 5
+  number: 6
 
 outputs:
   # The ONNX C++ shared library (libonnx), headers and the
