@@ -1,20 +1,20 @@
-From eba09c49a4810104a8dfc271f3cfa604428d81bf Mon Sep 17 00:00:00 2001
+From 9c63a5cdf7a26223900dc79e3206be6924267834 Mon Sep 17 00:00:00 2001
 From: Christian Bourjau <christian.bourjau@quantco.com>
 Date: Tue, 16 Jun 2026 09:48:49 +0200
-Subject: [PATCH 1/2] Patch Python and nanobind cmake config
+Subject: [PATCH] Patch Python and nanobind cmake config
 
 Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
 Signed-off-by: Christian Bourjau <christian.bourjau@quantco.com>
 ---
- CMakeLists.txt      | 39 ++++-----------------------------------
- cmake/summary.cmake | 14 +++++++-------
- 2 files changed, 11 insertions(+), 42 deletions(-)
+ CMakeLists.txt      | 52 ++++-----------------------------------------
+ cmake/summary.cmake | 14 ++++++------
+ 2 files changed, 11 insertions(+), 55 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 791e24bf0..6e82c9d6d 100644
+index 6f1d569..f882dcd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -140,22 +140,8 @@ if(ONNX_BUILD_PYTHON)
+@@ -149,35 +149,8 @@ if(ONNX_BUILD_PYTHON)
    set(python_dev_component Development.Module Development.SABIModule)
  endif()
  
@@ -27,6 +27,19 @@ index 791e24bf0..6e82c9d6d 100644
 -  endif()
 -  find_package(Python REQUIRED COMPONENTS Interpreter)
 -  set(ONNX_PYTHON_INTERPRETER Python::Interpreter)
+-  if(ONNX_BUILD_PYTHON)
+-    # nanobind >= 2.13 only auto-runs its own find_package(Python ...) when
+-    # neither Python::Interpreter nor Python::Module exist yet. Since
+-    # Python::Interpreter is already provided above (host interpreter, while
+-    # Python3::Module above is the cross-compilation target's dev libs),
+-    # nanobind would otherwise skip that step and fail to find Python::Module.
+-    if(NOT TARGET Python::Module)
+-      add_library(Python::Module ALIAS Python3::Module)
+-    endif()
+-    if(TARGET Python3::SABIModule AND NOT TARGET Python::SABIModule)
+-      add_library(Python::SABIModule ALIAS Python3::SABIModule)
+-    endif()
+-  endif()
 -else()
 -  find_package(Python3 REQUIRED COMPONENTS Interpreter ${python_dev_component})
 -  # Find Python for nanobind
@@ -39,7 +52,7 @@ index 791e24bf0..6e82c9d6d 100644
  
  if(CMAKE_SYSTEM_NAME STREQUAL "AIX")
    set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
-@@ -541,29 +527,12 @@ if(ONNX_BUILD_PYTHON)
+@@ -588,29 +561,12 @@ if(ONNX_BUILD_PYTHON)
        set(nanobind_DIR "${NANOBIND_CMAKE_DIR}")
      endif()
    endif()
@@ -72,7 +85,7 @@ index 791e24bf0..6e82c9d6d 100644
    # Force-load the whole (static) archive so the operator schemas' static
    # initializers are not dropped as apparently-unused. $<LINK_LIBRARY:WHOLE_ARCHIVE,...>
 diff --git a/cmake/summary.cmake b/cmake/summary.cmake
-index f262a3b30..57e39f84f 100644
+index f262a3b..57e39f8 100644
 --- a/cmake/summary.cmake
 +++ b/cmake/summary.cmake
 @@ -75,14 +75,14 @@ function(onnx_print_configuration_summary)

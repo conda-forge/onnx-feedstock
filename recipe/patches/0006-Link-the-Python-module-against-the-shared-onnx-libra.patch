@@ -1,7 +1,7 @@
-From cc9368a7e75d317bbf7c674325f452efd0a1bef9 Mon Sep 17 00:00:00 2001
+From 063b303fec4adbb608cdd144d8818bf406d1e8f4 Mon Sep 17 00:00:00 2001
 From: Mark Harfouche <mark.harfouche@gmail.com>
 Date: Thu, 10 Sep 2026 21:47:38 -0400
-Subject: [PATCH 6/8] Link the Python module against the shared onnx library
+Subject: [PATCH] Link the Python module against the shared onnx library
 
 onnx 1.22 refuses to configure ONNX_BUILD_PYTHON=ON together with
 BUILD_SHARED_LIBS=ON and always force-loads a static onnx archive into
@@ -15,10 +15,10 @@ the whole-archive link.
  1 file changed, 11 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8c288e86e..e7870cbd1 100644
+index c5deea7..ab5a164 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -525,14 +525,6 @@ if(BUILD_SHARED_LIBS)
+@@ -559,14 +559,6 @@ if(BUILD_SHARED_LIBS)
  endif()
  
  if(ONNX_BUILD_PYTHON)
@@ -33,7 +33,7 @@ index 8c288e86e..e7870cbd1 100644
    # find system nanobind
    if(NOT DEFINED nanobind_DIR OR "${nanobind_DIR}" STREQUAL "")
      execute_process(
-@@ -552,11 +544,17 @@ if(ONNX_BUILD_PYTHON)
+@@ -586,11 +578,17 @@ if(ONNX_BUILD_PYTHON)
      onnx_cpp2py_export
      NB_STATIC NB_DOMAIN onnx FREE_THREADED LTO
      "${ONNX_ROOT}/onnx/cpp2py_export.cc")

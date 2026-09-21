@@ -11,8 +11,12 @@ else
 fi
 
 # See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk
-# Does not apply to osx-arm64 as its SDK is higher
-if [[ "${target_platform}" == osx-64 ]]; then
+# Needed on every osx target, not just osx-64: both deployment targets are
+# 12.0, and onnx 1.23.0 formats floats with std::to_chars, which libc++
+# annotates as introduced in macOS 13.3. conda-forge ships its own libcxx,
+# which does export those overloads, so the availability check is what has to
+# go -- not the deployment target.
+if [[ "${target_platform}" == osx-* ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 

@@ -1,7 +1,7 @@
-From 1df756b52570a7cccd8350dc7080555015052e9a Mon Sep 17 00:00:00 2001
+From e808f955c1a4b708296f1ce8813bb0ec364b8a8d Mon Sep 17 00:00:00 2001
 From: Christian Bourjau <christian.bourjau@quantco.com>
 Date: Tue, 16 Jun 2026 09:51:02 +0200
-Subject: [PATCH 2/2] Link protobuf and abseil privately
+Subject: [PATCH] Link protobuf and abseil privately
 
 Co-authored-by: Mark Harfouche <mark.harfouche@gmail.com>
 Signed-off-by: Christian Bourjau <christian.bourjau@quantco.com>
@@ -10,7 +10,7 @@ Signed-off-by: Christian Bourjau <christian.bourjau@quantco.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/cmake/Utils.cmake b/cmake/Utils.cmake
-index 44e306aa3..0b8204061 100644
+index d036aa1..05ad0c2 100644
 --- a/cmake/Utils.cmake
 +++ b/cmake/Utils.cmake
 @@ -187,11 +187,11 @@ function(add_onnx_compile_options target)
