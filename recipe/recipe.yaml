@@ -2,6 +2,7 @@ schema_version: 1
 
 context:
   version: "1.22.0"
+  build_number: 6
 
 recipe:
   name: onnx
@@ -23,7 +24,7 @@ source:
     - patches/0010-Build-the-protobuf-sources-into-the-onnx-shared-libr.patch
 
 build:
-  number: 6
+  number: ${{ build_number }}
 
 outputs:
   # The ONNX C++ shared library (libonnx), headers and the
@@ -54,6 +55,11 @@ outputs:
         - libprotobuf
       host:
         - libprotobuf
+      run_constraints:
+        # 1.22.0, builds 2 was the first libonnx build
+        # older onnx didn't have a requirement on libonnx
+        # so we want to make sure it isn't co-installed with new libonnx
+        - onnx ==${{ version }} *_${{ build_number }}
       run_exports:
         # ONNX offers no stable ABI for its C++ library.
         - ${{ pin_subpackage('libonnx', upper_bound='x.x.x') }}
