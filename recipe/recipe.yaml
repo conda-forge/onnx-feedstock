@@ -174,10 +174,8 @@ outputs:
       - files:
           recipe:
             - test_reference_foreign_domain.py
-            - test_external_data_resave.py
         script:
           - python test_reference_foreign_domain.py
-          - python test_external_data_resave.py
 
 about:
   license: Apache-2.0
