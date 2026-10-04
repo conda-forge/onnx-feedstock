@@ -22,6 +22,10 @@ source:
     - patches/0008-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
     - patches/0009-Ignore-foreign-schema-domains-in-the-reference-evalu.patch
     - patches/0010-Build-the-protobuf-sources-into-the-onnx-shared-libr.patch
+    # https://github.com/onnx/onnx/issues/8529
+    # main has this since https://github.com/onnx/onnx/pull/8409, which also
+    # moves the development opset to 29 and so cannot be backported as is.
+    - patches/0011-Report-opset-28-as-the-last-released-ai.onnx-opset.patch
 
 build:
   number: ${{ build_number }}
@@ -86,9 +90,12 @@ outputs:
               - if not exist %LIBRARY_PREFIX%\include\onnx\onnx_pb.h exit 1
       # Exceptions thrown inside libonnx must be catchable by type from another
       # module built with hidden visibility, like onnxruntime (patch 0008).
+      # The last released opset of each domain must be the highest one this
+      # release defines, onnxruntime rejects models above it (patch 0011).
       - files:
           recipe:
             - test_libonnx_exceptions/
+            - test_libonnx_released_opsets/
         requirements:
           run:
             - ${{ compiler('cxx') }}
@@ -101,10 +108,16 @@ outputs:
               - cmake -S test_libonnx_exceptions -B build_exceptions -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PREFIX
               - cmake --build build_exceptions
               - ./build_exceptions/test_libonnx_exceptions
+              - cmake -S test_libonnx_released_opsets -B build_released_opsets -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PREFIX
+              - cmake --build build_released_opsets
+              - ./build_released_opsets/test_libonnx_released_opsets
             else:
               - cmake -S test_libonnx_exceptions -B build_exceptions -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%
               - cmake --build build_exceptions
               - build_exceptions\test_libonnx_exceptions.exe
+              - cmake -S test_libonnx_released_opsets -B build_released_opsets -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%
+              - cmake --build build_released_opsets
+              - build_released_opsets\test_libonnx_released_opsets.exe
 
   # The ONNX Python package. The onnx_cpp2py_export extension links the
   # libonnx shared library rather than recompiling ONNX (patch 0005).
@@ -161,8 +174,10 @@ outputs:
       - files:
           recipe:
             - test_reference_foreign_domain.py
+            - test_external_data_resave.py
         script:
           - python test_reference_foreign_domain.py
+          - python test_external_data_resave.py
 
 about:
   license: Apache-2.0
