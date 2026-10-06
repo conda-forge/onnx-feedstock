@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "1.23.1"
+  version: "1.23.2"
   build_number: 0
 
 recipe:
@@ -10,7 +10,7 @@ recipe:
 
 source:
   url: https://github.com/onnx/onnx/archive/v${{ version }}.tar.gz
-  sha256: c8732e2711faba94caf208b75d0c28c2ea473ab0bf57a01b1176e5f0d51a6c06
+  sha256: 2f23784e27d210a23b059a847c305e305034fb4a842fface3ff37283f85a2b40
   patches:
     - patches/0001-Patch-Python-and-nanobind-cmake-config.patch
     - patches/0002-Link-protobuf-and-abseil-privately.patch
