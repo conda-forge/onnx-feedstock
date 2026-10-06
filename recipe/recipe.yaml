@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   version: "1.23.2"
-  build_number: 0
+  build_number: 1
 
 recipe:
   name: onnx
@@ -22,12 +22,6 @@ source:
     - patches/0008-Annotate-the-remaining-public-C-API-with-ONNX_API.patch
     - patches/0009-Ignore-foreign-schema-domains-in-the-reference-evalu.patch
     - patches/0010-Build-the-protobuf-sources-into-the-onnx-shared-libr.patch
-    # https://github.com/onnx/onnx/issues/8529
-    # Sent upstream for the 1.23 release branch as
-    # https://github.com/onnx/onnx/pull/8539
-    # main has this since https://github.com/onnx/onnx/pull/8409, which also
-    # moves the development opset to 29 and so cannot be backported as is.
-    - patches/0011-Report-opset-28-as-the-last-released-ai.onnx-opset.patch
 
 build:
   number: ${{ build_number }}
