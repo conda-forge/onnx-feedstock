@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   version: "1.23.2"
-  build_number: 1
+  build_number: 2
 
 recipe:
   name: onnx
@@ -55,6 +55,8 @@ outputs:
         - libprotobuf
       host:
         - libprotobuf
+        - if: win
+          then: libabseil
       run_constraints:
         # 1.22.0, builds 2 was the first libonnx build
         # older onnx didn't have a requirement on libonnx
