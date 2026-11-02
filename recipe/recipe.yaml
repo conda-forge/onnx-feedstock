@@ -35,6 +35,8 @@ outputs:
     build:
       script:
         file: ${{ "build_libonnx.bat" if win else "build_libonnx.sh" }}
+      dynamic_linking:
+        overlinking_behavior: error
       variant:
         # libonnx is a pure C++ library; the Python interpreter is only a
         # build tool (gen_proto.py), so the package is not Python-versioned.
@@ -125,6 +127,8 @@ outputs:
     build:
       script:
         file: ${{ "build_onnx.bat" if win else "build_onnx.sh" }}
+      dynamic_linking:
+        overlinking_behavior: error
       python:
         entry_points:
           - check-model = onnx.bin.checker:check_model
