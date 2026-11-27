@@ -18,6 +18,12 @@ cxx_compiler_version:
 - '15'
 docker_image:
 - quay.io/condaforge/linux-anvil-x86_64:alma10
+is_freethreading:
+- false
+- false
+- false
+- false
+- false
 libprotobuf:
 - 7.35.1
 pin_run_as_build:
@@ -29,10 +35,11 @@ python:
 - 3.12.* *_cpython
 - 3.13.* *_cp313
 - 3.14.* *_cp314
-- 3.14.* *_cp314t
 - 3.15.* *_cp315
 target_platform:
 - linux-ppc64le
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
+- - python
+  - is_freethreading

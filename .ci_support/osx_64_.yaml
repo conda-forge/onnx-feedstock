@@ -16,6 +16,13 @@ cxx_compiler:
 - clangxx
 cxx_compiler_version:
 - '22'
+is_freethreading:
+- false
+- false
+- false
+- false
+- true
+- false
 libprotobuf:
 - 7.35.1
 macos_machine:
@@ -36,3 +43,5 @@ target_platform:
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
+- - python
+  - is_freethreading
