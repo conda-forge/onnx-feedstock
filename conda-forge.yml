@@ -2,7 +2,7 @@ bot:
   run_deps_from_wheel: true
   version_updates:
     exclude:
-      - 12.0.0
+    - 12.0.0
 build_platform:
   linux_ppc64le: linux_64
 conda_build:
@@ -13,7 +13,7 @@ conda_install_tool: pixi
 github:
   branch_name: main
   tooling_branch_name: main
-test: native_and_emulated
 provider:
   linux_aarch64: default
   osx_arm64: default
+test: native_and_emulated

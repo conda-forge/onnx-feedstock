@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   version: "1.23.2"
-  build_number: 2
+  build_number: 3
 
 recipe:
   name: onnx
@@ -125,6 +125,10 @@ outputs:
       name: onnx
       version: ${{ version }}
     build:
+      # No free-threaded protobuf on win-64; FindPython fails for
+      # free-threaded cross-compilation to ppc64le.
+      skip:
+        - is_freethreading and (win or target_platform == "linux-ppc64le")
       script:
         file: ${{ "build_onnx.bat" if win else "build_onnx.sh" }}
       dynamic_linking:
